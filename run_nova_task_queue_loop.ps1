@@ -16,6 +16,18 @@ if (!(Test-Path $Aider)) {
 
 $env:OLLAMA_API_BASE = "http://127.0.0.1:11434"
 
+# Keep Aider/Rich output safe in Windows PowerShell and VS Code terminals.
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+$env:NO_COLOR = "1"
+$env:FORCE_COLOR = "0"
+$env:RICH_NO_COLOR = "1"
+$env:TERM = "dumb"
+try {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $OutputEncoding = [System.Text.Encoding]::UTF8
+} catch {}
+
 $LogDir = Join-Path $Repo "local_ai_cycles"
 $MemoryDir = Join-Path $LogDir "memory"
 New-Item -ItemType Directory -Force $LogDir | Out-Null
@@ -273,6 +285,22 @@ function Validate-Diff {
         throw "Rejected placeholder/speculative patch language."
     }
 
+    if ($bad.Contains("-def default_command_contracts")) {
+        throw "Rejected patch that removes or breaks default_command_contracts."
+    }
+
+    if ($bad.Contains('CommandContract("/command-verify"') -or $bad.Contains("CommandContract('/command-verify'")) {
+        throw "Rejected recursive /command-verify default contract."
+    }
+
+    if ($bad.Contains("test_idle_propose_is_suggested") -or $bad.Contains("test_self_improve_suggestion") -or $bad.Contains("/idle propose what can I improve?")) {
+        throw "Rejected invented exact self-improve suggestion test."
+    }
+
+    if ($bad.Contains("/self-improve automatically") -or $bad.Contains("/self-improve blocked") -or $bad.Contains("/self-improve disallowed")) {
+        throw "Rejected blanket self-improve blocking."
+    }
+
     if ($bad -match 'CommandContract\("\/command-verify"') {
         throw "Rejected recursive /command-verify default contract. Existing tests require /command-verify to stay outside default contracts."
     }
@@ -442,6 +470,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     if (!(git status --porcelain)) {
         Add-Summary "Result: no change"
         Add-Summary "Why: model found no source-backed improvement or produced identical output."
+        Add-Summary "Cooldown note: this task will be skipped for the rest of this run."
         "$(Get-Date -Format s) task=$($task.Id) reason=no-change" | Add-Content $NoChangeTargets
         continue
     }
