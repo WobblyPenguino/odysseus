@@ -2,7 +2,13 @@ param(
     [int]$Cycles = 1,
     [string]$Repo = "C:\Users\Daniel\Documents\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
     [string]$AiderVenv = "C:\Users\Daniel\Documents\aider-venv-py312",
-    [string]$Model = "ollama_chat/qwen3-coder:30b"
+    [string]$Model = "ollama_chat/qwen3-coder:30b",
+    [int]$ContextMaxKB = 420,
+    [int]$ContextMaxEstimatedTokens = 120000,
+    [int]$SourceExcerptLines = 80,
+    [int]$LogTailLines = 25,
+    [int]$RadarMaxKB = 120,
+    [int]$SearchHintLimit = 80
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +27,105 @@ New-Item -ItemType Directory -Force $MemoryDir | Out-Null
 $MistakeMemory = Join-Path $MemoryDir "MISTAKE_MEMORY.md"
 $SuccessMemory = Join-Path $MemoryDir "SUCCESS_MEMORY.md"
 $LastTestResults = Join-Path $MemoryDir "LAST_TEST_RESULTS.md"
+
+function Get-TextBudget {
+    param([string]$Text)
+    $safeText = ""
+    if ($null -ne $Text) { $safeText = [string]$Text }
+    $chars = $safeText.Length
+    return [pscustomobject]@{
+        Chars = $chars
+        KB = [Math]::Round($chars / 1024, 1)
+        EstimatedTokens = [Math]::Ceiling($chars / 4)
+    }
+}
+
+function Get-FileBudget {
+    param([string]$Path)
+    if (!(Test-Path $Path)) { return Get-TextBudget "" }
+    return Get-TextBudget (Get-Content $Path -Raw -ErrorAction SilentlyContinue)
+}
+
+function Add-CappedFileContent {
+    param(
+        [string]$Source,
+        [string]$Destination,
+        [int]$MaxKB,
+        [string]$Label = ""
+    )
+    if (!(Test-Path $Source)) { return }
+    $raw = Get-Content $Source -Raw -ErrorAction SilentlyContinue
+    $budget = Get-TextBudget $raw
+    if ($Label) { "`n### $Label" | Add-Content $Destination }
+    if ($budget.KB -le $MaxKB) {
+        $raw | Add-Content $Destination
+        return
+    }
+    $maxChars = [Math]::Max(1024, $MaxKB * 1024)
+    $raw.Substring(0, [Math]::Min($raw.Length, $maxChars)) | Add-Content $Destination
+    "`n[Context capped: omitted approximately $([Math]::Round($budget.KB - $MaxKB, 1)) KB from $Source.]" | Add-Content $Destination
+}
+
+function Write-ContextBudgetNote {
+    param(
+        [string]$Path,
+        [string]$Target,
+        [object]$Budget,
+        [string[]]$Files
+    )
+    $note = Join-Path $LogDir ("NEEDS_MANUAL_REVIEW_CONTEXT_BUDGET_{0}.md" -f (Get-Date -Format "yyyyMMdd_HHmmss"))
+@"
+# Nova Guarded Loop Context Budget Stop
+
+Question:
+How should the local loop reduce context for `$Target` before asking Aider/Ollama to edit?
+
+Why it matters:
+The assembled context is about $($Budget.KB) KB / $($Budget.EstimatedTokens) estimated tokens, above the configured safe window of $ContextMaxKB KB / $ContextMaxEstimatedTokens estimated tokens. Sending it risks model truncation, irrelevant file additions, or fake edits.
+
+Files involved:
+$($Files -join "`n")
+
+Risk:
+Oversized context can make the model ignore the chosen target, invent APIs, or add unrelated files to the chat.
+
+Validation plan:
+- Reduce source excerpts, log tails, or read-only files.
+- Re-run `powershell -NoProfile -ExecutionPolicy Bypass -File .\run_nova_guarded_context_loop.ps1 -Cycles 1`.
+- Confirm Aider reports a context below the model limit and the loop still validates before commit.
+
+Needs Daniel approval: yes, if the loop needs broader file access or a larger model/context window.
+"@ | Set-Content $note
+    Write-Host "STOP: context budget exceeded. Wrote manual-review note: $note"
+}
+
+function Test-ContextBudget {
+    param([string]$ContextPath, [string]$PromptPath, [string]$Target)
+    $files = @(
+        $ContextPath,
+        $PromptPath,
+        "NOVA_AGENT_MEMORY.md",
+        "NOVA_ARCHITECTURE_CONTEXT.md",
+        "NOVA_APPROVED_FEATURE_BACKLOG.md",
+        "NOVA_RESEARCH_QUEUE.md",
+        "winlocalassistant/command_verifier.py",
+        "winlocalassistant/main.py",
+        "winlocalassistant/command_suggestions.py",
+        $Target
+    ) | Where-Object { $_ -and (Test-Path $_) }
+    $text = ""
+    foreach ($file in $files) {
+        $text += "`n## $file`n"
+        $text += Get-Content $file -Raw -ErrorAction SilentlyContinue
+    }
+    $budget = Get-TextBudget $text
+    Write-Host "Context preflight: $($budget.KB) KB, approx $($budget.EstimatedTokens) tokens."
+    if ($budget.KB -gt $ContextMaxKB -or $budget.EstimatedTokens -gt $ContextMaxEstimatedTokens) {
+        Write-ContextBudgetNote -Path $ContextPath -Target $Target -Budget $budget -Files $files
+        return $false
+    }
+    return $true
+}
 
 function Run-Cmd {
     param([string]$Command, [string]$AppendTo = $null)
@@ -222,7 +327,8 @@ function Write-ContextPack {
     foreach ($rel in (Get-RelatedFiles -Target $Target)) {
         if (Test-Path $rel) {
             "`n### $rel" | Add-Content $Path
-            Get-Content $rel -TotalCount 180 -ErrorAction SilentlyContinue | Add-Content $Path
+            Get-Content $rel -TotalCount $SourceExcerptLines -ErrorAction SilentlyContinue | Add-Content $Path
+            "[Source excerpt capped at $SourceExcerptLines lines. Inspect the real file before asserting APIs.]" | Add-Content $Path
         }
     }
 
@@ -240,18 +346,20 @@ function Write-ContextPack {
     if (Test-Path "logs") {
         Get-ChildItem logs -Recurse -File -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending |
-            Select-Object -First 8 |
+            Select-Object -First 6 |
             ForEach-Object {
                 "`n### $($_.FullName)" | Add-Content $Path
-                Get-Content $_.FullName -Tail 60 -ErrorAction SilentlyContinue | Add-Content $Path
+                Get-Content $_.FullName -Tail $LogTailLines -ErrorAction SilentlyContinue | Add-Content $Path
+                "[Log tail capped at $LogTailLines lines.]" | Add-Content $Path
             }
     }
 
     "`n## Relevant command/help/release search hints" | Add-Content $Path
     Select-String -Path .\tests_*.py, .\winlocalassistant\*.py, .\nova\*.py -Pattern "/help","help-full","release-readiness","legacy-continuity-audit","command" -ErrorAction SilentlyContinue |
-        Select-Object -First 120 |
+        Select-Object -First $SearchHintLimit |
         ForEach-Object { "$($_.Path):$($_.LineNumber): $($_.Line.Trim())" } |
         Add-Content $Path
+    "[Search hints capped at $SearchHintLimit matches.]" | Add-Content $Path
 }
 
 function Is-RiskyDiff {
@@ -370,8 +478,13 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $radarPath = powershell -NoProfile -ExecutionPolicy Bypass -File .\build_nova_agent_context.ps1
     Write-ContextPack -Path $context -Target $target
     Add-Content $context "`n## Code radar"
-    Get-Content $radarPath -Raw | Add-Content $context
+    Add-CappedFileContent -Source $radarPath -Destination $context -MaxKB $RadarMaxKB -Label "Capped generated code radar"
     Write-Prompt -Path $prompt -Target $target
+
+    if (!(Test-ContextBudget -ContextPath $context -PromptPath $prompt -Target $target)) {
+        Append-Mistake -Target $target -Reason "Context budget exceeded before Aider run" -OutputPath $context -WhatNotToRepeat "Do not send oversized context to Aider/Ollama; reduce excerpts, log tails, or read-only files first."
+        exit 0
+    }
 
     Write-Host "Editable target: $target"
     Write-Host "Context: $context"
