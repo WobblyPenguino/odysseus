@@ -62,7 +62,7 @@ function Select-NovaLocalModel {
     }
 
     if ($Mode -eq "code") {
-        if ((HasModel "qwen3-coder:30b") -and (($vram -ge 14000) -or ($vram -eq 0))) { return "ollama_chat/qwen3-coder:30b" }
+        if ((HasModel "qwen3-coder:30b") -and ($vram -ge 22000)) { return "ollama_chat/qwen3-coder:30b" }
         if (HasModel "qwen2.5-coder:7b") { return "ollama_chat/qwen2.5-coder:7b" }
         if (HasModel "gpt-oss:20b") { return "ollama_chat/gpt-oss:20b" }
         if (HasModel "gemma3:12b") { return "ollama_chat/gemma3:12b" }
