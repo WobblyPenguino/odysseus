@@ -40,6 +40,17 @@ $mistakeBox = New-Tab "Mistakes"
 
 $form.Controls.Add($tabs)
 
+function Join-Lines {
+    param([object]$Value)
+    if ($null -eq $Value) {
+        return ""
+    }
+    if ($Value -is [array]) {
+        return ($Value -join [Environment]::NewLine)
+    }
+    return [string]$Value
+}
+
 function Read-Tail {
     param(
         [string]$Path,
@@ -89,6 +100,7 @@ function Refresh-NovaMonitor {
         $aiderText = "File: $($latestAider.FullName)`r`n`r`n" + (Read-Tail $latestAider.FullName 260)
     }
 
+    $nl = [Environment]::NewLine
     $statusBox.Text = @"
 Repo: $Repo
 Updated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")

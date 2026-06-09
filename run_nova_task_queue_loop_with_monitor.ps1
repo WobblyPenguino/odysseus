@@ -3,22 +3,37 @@ param(
     [ValidateSet("fast", "code", "plan")]
     [string]$Mode = "fast",
     [switch]$AllowTestOnly,
-    [int]$MinChangedLines = 6
+    [int]$MinChangedLines = 6,
+    [switch]$NoMonitor
 )
 
 $ErrorActionPreference = "Stop"
 $Repo = (Get-Location).Path
 
-Start-Process powershell -ArgumentList @(
-    "-NoExit",
-    "-ExecutionPolicy", "Bypass",
-    "-File", (Join-Path $Repo "Start-NovaLoopMonitor.ps1"),
-    "-Repo", $Repo
-)
+$MonitorScript = Join-Path $Repo "Start-NovaLoopMonitor.ps1"
+$LoopScript = Join-Path $Repo "run_nova_task_queue_loop.ps1"
 
-$argsList = @("-Cycles", $Cycles, "-Mode", $Mode, "-MinChangedLines", $MinChangedLines)
-if ($AllowTestOnly) {
-    $argsList += "-AllowTestOnly"
+if (!(Test-Path $LoopScript)) {
+    throw "Missing loop script: $LoopScript"
 }
 
-& (Join-Path $Repo "run_nova_task_queue_loop.ps1") @argsList
+if (!$NoMonitor) {
+    if (!(Test-Path $MonitorScript)) {
+        throw "Missing monitor script: $MonitorScript"
+    }
+
+    Start-Process powershell -ArgumentList @(
+        "-NoExit",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $MonitorScript,
+        "-Repo", $Repo
+    )
+}
+
+# Run the real task loop in THIS terminal exactly like normal.
+# The monitor is only an extra viewer window.
+if ($AllowTestOnly) {
+    & $LoopScript -Cycles $Cycles -Mode $Mode -MinChangedLines $MinChangedLines -AllowTestOnly
+} else {
+    & $LoopScript -Cycles $Cycles -Mode $Mode -MinChangedLines $MinChangedLines
+}
