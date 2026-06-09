@@ -517,7 +517,10 @@ Hard rules:
 - Do not print or request full file contents.
 - Do not claim success; the PowerShell loop will validate.
 
-Use the read-only context files to remember past mistakes, logs, architecture, previous versions, and test results.
+Use the read-only context files to remember past mistakes, logs, architecture, previous versions, test results, approved features, research queue, and development director rules.
+
+Choose the next best safe improvement for Nova within the allowed target.
+If the allowed target has no real useful improvement, make no changes.
 "@ | Set-Content $Path
 }
 
@@ -563,6 +566,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         --read NOVA_ARCHITECTURE_CONTEXT.md `
         --read NOVA_APPROVED_FEATURE_BACKLOG.md `
         --read NOVA_RESEARCH_QUEUE.md `
+        --read NOVA_DEVELOPMENT_DIRECTOR.md `
         --read winlocalassistant/command_verifier.py `
         --read winlocalassistant/main.py `
         --read winlocalassistant/command_suggestions.py `
