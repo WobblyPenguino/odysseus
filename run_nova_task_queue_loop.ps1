@@ -259,6 +259,14 @@ function Validate-Diff {
         throw "Rejected placeholder/speculative patch language."
     }
 
+    if ($bad -match 'CommandContract\("\/command-verify"') {
+        throw "Rejected recursive /command-verify default contract. Existing tests require /command-verify to stay outside default contracts."
+    }
+
+    if ($bad -match '"\/self-improve"\s*,\s*#|''\/self-improve''\s*,\s*#|"/self-improve",|''/self-improve'',') {
+        throw "Rejected blanket /self-improve block. Manual guarded self-improve must remain suggestible as high-risk."
+    }
+
     return "changed"
 }
 
@@ -435,17 +443,17 @@ for ($i = 1; $i -le $Cycles; $i++) {
     catch {
         Append-Mistake $task.Id $_.Exception.Message
         "$(Get-Date -Format s) task=$($task.Id) reason=validation-or-significance-failed" | Add-Content $NoChangeTargets
+        Add-Summary "Result: rejected"
+        Add-Summary "Why: $($_.Exception.Message)"
         git diff --stat
         git reset --hard
         git clean -fd
-        throw
+        Clean-GeneratedNoise
+        continue
     }
 
     Clean-GeneratedNoise
-    Assert-CleanGit
 
-    # Re-apply staged decision after clean check by checking committed diff from working tree.
-    # If the cleaner left no diff, skip.
     if (!(git status --porcelain)) {
         Add-Summary "Result: no source diff after cleanup"
         "$(Get-Date -Format s) task=$($task.Id) reason=no-source-diff-after-cleanup" | Add-Content $NoChangeTargets
@@ -454,6 +462,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     git add $($task.Editable)
     git commit -m "Task queue improvement: $($task.Id)"
+
+    Clean-GeneratedNoise
+    Assert-CleanGit
 
     $after = git rev-parse --short HEAD
     $linesChanged = Get-ChangedLineCount -Before $before -After $after
