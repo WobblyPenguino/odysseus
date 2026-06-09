@@ -23,6 +23,9 @@ $env:NO_COLOR = "1"
 $env:FORCE_COLOR = "0"
 $env:RICH_NO_COLOR = "1"
 $env:TERM = "dumb"
+$env:PAGER = "cat"
+$env:GIT_PAGER = "cat"
+$env:LESS = "-F -X"
 try {
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
     $OutputEncoding = [System.Text.Encoding]::UTF8
@@ -293,6 +296,10 @@ function Validate-Diff {
         throw "Rejected recursive /command-verify default contract."
     }
 
+    if ($bad.Contains("output: str =") -or $bad.Contains("output=output_text") -or $bad.Contains("item.get('output')")) {
+        throw "Rejected full command output capture in verifier; use bounded output_preview instead."
+    }
+
     if ($bad.Contains("test_idle_propose_is_suggested") -or $bad.Contains("test_self_improve_suggestion") -or $bad.Contains("/idle propose what can I improve?")) {
         throw "Rejected invented exact self-improve suggestion test."
     }
@@ -439,7 +446,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         $aiderArgs += $f
     }
 
-    $denyInput = ((1..200 | ForEach-Object { "s" }) -join "`n") + "`n"
+    $denyInput = ((1..200 | ForEach-Object { "skip" }) -join "`n") + "`n"
     $denyInput | & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
