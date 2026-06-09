@@ -226,7 +226,7 @@ function Get-TaskOutcomeCategory {
     if (($Result -eq "committed") -or ($lower -match "recent-success-cooldown|source/test task passed")) { return "success-cooldown" }
     if ($lower -match "no source diff after cleanup|generated-noise|dirty git state") { return "generated-noise-dirty-state" }
     if ($lower -match "no-change|no change") { return "no-change" }
-    if ($lower -match "dead error-body|dead added variable|unreachable error-body|no-op") { return "low-significance" }
+    if ($lower -match "claim/diff mismatch|dead error-body|dead added variable|unreachable error-body|no-op") { return "low-significance" }
     if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
     if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
     if ($lower -match "aider failed|aider exited") { return "aider-failed" }
@@ -499,8 +499,52 @@ function Get-DeadAddedVariableName {
     return ""
 }
 
+function Remove-AnsiText {
+    param([string]$Text)
+
+    $esc = [char]27
+    return ($Text -replace "$esc\[[0-9;?]*[ -/]*[@-~]", "")
+}
+
+function Test-AddedLinesUseErrorBody {
+    param([string[]]$AddedLines)
+
+    foreach ($line in $AddedLines) {
+        if ($line -match '_set_last_error\(.*\bbody\b') {
+            return $true
+        }
+        if ($line -match '_OLLAMA_LAST\[[^\]]*error[^\]]*\].*\bbody\b') {
+            return $true
+        }
+        if ($line -match '\["error"\]\s*=.*\bbody\b') {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Validate-AiderClaimsAgainstDiff {
+    param([string]$OutputPath, [string]$DiffText)
+
+    if (!$OutputPath -or !(Test-Path $OutputPath)) { return }
+    $raw = Get-Content $OutputPath -Raw -ErrorAction SilentlyContinue
+    $plain = Remove-AnsiText $raw
+    $claimsHttpBodyCapture = (
+        $plain -match '(?is)(full\s+)?http\s+response\s+body' -or
+        $plain -match '(?is)response\s+body\s+is\s+captured' -or
+        $plain -match '(?is)captur(?:e|ed|ing).*response\s+body'
+    )
+
+    if ($claimsHttpBodyCapture) {
+        $addedLines = Get-AddedDiffLines -DiffText $DiffText
+        if (!(Test-AddedLinesUseErrorBody -AddedLines $addedLines)) {
+            throw "Rejected Aider claim/diff mismatch: claimed HTTP response body capture but diff does not use body in error recording."
+        }
+    }
+}
+
 function Validate-Diff {
-    param([hashtable]$Task)
+    param([hashtable]$Task, [string]$AiderOutputPath = "")
 
     $allowed = @($Task.Editable | ForEach-Object { $_ -replace "/", "\" })
     $changed = @(git diff --name-only | ForEach-Object { $_ -replace "/", "\" })
@@ -544,6 +588,8 @@ function Validate-Diff {
     }
 
     $bad = git diff
+    Validate-AiderClaimsAgainstDiff -OutputPath $AiderOutputPath -DiffText $bad
+
     $addedLines = Get-AddedDiffLines -DiffText $bad
     $deadAddedVariable = Get-DeadAddedVariableName -AddedLines $addedLines
     if ($deadAddedVariable) {
@@ -789,7 +835,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     git diff --stat
 
     try {
-        $diffResult = Validate-Diff -Task $task
+        $diffResult = Validate-Diff -Task $task -AiderOutputPath $out
         if ($diffResult -eq "no-change") {
             Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no change after diff validation" -Category "no-change" -Tests $task.Tests -Before $before
             Add-Summary "Result: no change after diff validation"
