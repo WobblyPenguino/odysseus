@@ -36,6 +36,11 @@ def test_self_improve_text_does_not_suggest_automatic_self_improve() -> None:
     blocked_commands = ["/idle start", "/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe", "/reset-project"]
     for suggestion in suggestions:
         assert suggestion.command not in blocked_commands
+        
+    # Ensure that when "self-improve" is mentioned, we get appropriate suggestions
+    # but not automatic/self-starting commands
+    assert any("idle" in cmd for cmd in cmds)  # Should suggest idle-related commands
+    assert any("safe" in cmd.lower() or "improve" in cmd.lower() for cmd in cmds)  # Should suggest safe improvement commands
 
 
 def test_manual_self_improve_can_be_marked_high_risk() -> None:
