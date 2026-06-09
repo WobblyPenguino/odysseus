@@ -29,6 +29,7 @@ New-Item -ItemType Directory -Force $MemoryDir | Out-Null
 $MistakeMemory = Join-Path $MemoryDir "MISTAKE_MEMORY.md"
 $SuccessMemory = Join-Path $MemoryDir "SUCCESS_MEMORY.md"
 $LastTestResults = Join-Path $MemoryDir "LAST_TEST_RESULTS.md"
+$NoChangeTargets = Join-Path $MemoryDir "NO_CHANGE_TARGETS.md"
 
 function Get-TextBudget {
     param([string]$Text)
@@ -323,11 +324,38 @@ function Get-TargetCandidates {
 }
 
 function Pick-Target {
-    $Script:LastTargetCandidates = @(Get-TargetCandidates)
-    if (!$Script:LastTargetCandidates -or $Script:LastTargetCandidates.Count -eq 0) {
-        throw "No safe target test file found."
+    $targets = @(
+        "tests_command_verifier.py",
+        "tests_command_suggestions.py",
+        "tests_runtime_usability_release_gate.py",
+        "tests_project_state_continuity.py",
+        "tests_model_health_timeout.py",
+        "tests_validation_status_command.py",
+        "tests_report_hygiene.py",
+        "tests_release_hygiene.py",
+        "tests_model_context_pack.py"
+    )
+
+    $recentNoChange = @()
+    if (Test-Path $NoChangeTargets) {
+        $recentNoChange = Get-Content $NoChangeTargets -Tail 12 | ForEach-Object {
+            if ($_ -match "target=(.+)$") { $Matches[1].Trim() }
+        }
     }
-    return $Script:LastTargetCandidates[0].Path
+
+    foreach ($t in $targets) {
+        if ((Test-Path $t) -and ($recentNoChange -notcontains $t)) {
+            return $t
+        }
+    }
+
+    foreach ($t in $targets) {
+        if (Test-Path $t) {
+            return $t
+        }
+    }
+
+    throw "No safe target test file found."
 }
 
 function Get-NextSuggestedTarget {
