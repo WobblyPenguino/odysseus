@@ -250,7 +250,8 @@ function Is-BadAiderOutput {
     $text = Get-Content $OutFile -Raw -ErrorAction SilentlyContinue
 
     if ($text -match "exceeds the .* token limit") { return "Aider context budget exceeded" }
-    if ($text -match "Add file to the chat") { return "Aider tried to expand chat with extra files; refused by scripted n-input" }
+    # Asking to add files is allowed only because scripted n-input refuses it.
+    # Actual protected additions and context-limit explosions are still fatal below.
     if ($text -match "Added app\.py|Added README\.md|Added CHANGELOG\.md|Added start_.*|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
         return "Aider added protected/broad files to chat"
     }
@@ -436,6 +437,11 @@ for ($i = 1; $i -le $Cycles; $i++) {
     # from being added to the chat after the first model response.
     $denyInput = ((1..200 | ForEach-Object { "n" }) -join "`n") + "`n"
     $denyInput | & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
+
+    if ((Select-String -Path $out -Pattern "Add file to the chat" -Quiet -ErrorAction SilentlyContinue) -and
+        !(Select-String -Path $out -Pattern "exceeds the .* token limit|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added start_.*|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py" -Quiet -ErrorAction SilentlyContinue)) {
+        Write-Host "Aider asked to add files, but scripted n-input should have refused them. Continuing to diff/test checks."
+    }
 
     $badOutput = Is-BadAiderOutput -OutFile $out
     if ($badOutput) {
