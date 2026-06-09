@@ -28,6 +28,8 @@ def test_command_verifier_detects_success_and_missing_markers() -> None:
     bad_result = next((r for r in report['results'] if r['command'] == '/bad'), None)
     if bad_result:
         assert len(bad_result['missing_markers']) > 0
+        # Verify that the expected marker 'expected' is in the missing markers
+        assert 'expected' in bad_result['missing_markers']
 
 
 def test_command_verifier_flags_command_error_and_unknown_command() -> None:
