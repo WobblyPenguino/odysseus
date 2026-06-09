@@ -44,6 +44,8 @@ function Is-RiskyDiff {
     if ($status -match "\.venv/|\.venv\\") { return "Touched .venv" }
     if ($status -match "^ D ") { return "Deleted file" }
     if ($status -match "docs/NOVA_.*_LATEST|logs/release_readiness|code_quality_gates|code_reviews|codebase_integrity_reports") { return "Generated report/log noise" }
+    if ($status -match "NOVA_GUARDED_LOCAL_IMPROVEMENT_RULES.md") { return "Touched guardrail rules; requires manual review" }
+    if ($status -match "^\?\? test_") { return "Created non-standard test_*.py file; use existing tests_*.py or manual review" }
     if ($status -match "app.py") { return "Touched app.py; requires manual review" }
     if ($status -match "start_.*\.ps1|start_.*\.bat|START_NOVA_HERE\.bat") { return "Touched startup script; requires manual review" }
 
@@ -59,6 +61,16 @@ function Is-RiskyDiff {
     if ($stat -match "(\d+) deletions") {
         $deletions = [int]$Matches[1]
         if ($deletions -gt 80) { return "Too many deletions: $deletions" }
+    }
+
+    $changedTestFiles = git diff --name-only | Where-Object { $_ -match "^(tests_.*\.py|test_.*\.py)$" }
+    foreach ($f in $changedTestFiles) {
+        if (Test-Path $f) {
+            $placeholder = Select-String -Path $f -Pattern "^\s*pass\s*$|TODO|placeholder|would be implemented|This would|not implemented" -ErrorAction SilentlyContinue
+            if ($placeholder) {
+                return "Placeholder/fake test content detected in $f"
+            }
+        }
     }
 
     return $null
@@ -100,6 +112,10 @@ Hard rules:
 - Do not edit app.py unless explicitly necessary; prefer tests or focused modules.
 - Do not edit startup scripts.
 - Do not hand-edit generated LATEST reports.
+- Do not edit NOVA_GUARDED_LOCAL_IMPROVEMENT_RULES.md.
+- Do not create placeholder tests.
+- Tests must import real Nova code and assert real behaviour.
+- Prefer adding to existing tests_*.py files instead of creating new top-level test_*.py files.
 - Do not add flashy new feature categories.
 - Do not broad-refactor.
 - Do not claim success without validation.
@@ -203,6 +219,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
         git clean -fd
         exit 1
     }
+
+    Restore-GeneratedNoise
 
     $remainingRisk = Is-RiskyDiff
     if ($remainingRisk) {
