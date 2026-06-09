@@ -8,7 +8,9 @@ param(
     [int]$SourceExcerptLines = 80,
     [int]$LogTailLines = 25,
     [int]$RadarMaxKB = 120,
-    [int]$SearchHintLimit = 80
+    [int]$SearchHintLimit = 80,
+    [int]$AiderMapTokens = 0,
+    [string]$AiderMapRefresh = "manual"
 )
 
 $ErrorActionPreference = "Stop"
@@ -99,6 +101,42 @@ Needs Daniel approval: yes, if the loop needs broader file access or a larger mo
     Write-Host "STOP: context budget exceeded. Wrote manual-review note: $note"
 }
 
+function Write-AiderContextStopNote {
+    param(
+        [string]$Target,
+        [string]$OutputPath,
+        [string]$ContextPath,
+        [string]$Reason
+    )
+    $note = Join-Path $LogDir ("NEEDS_MANUAL_REVIEW_AIDER_CONTEXT_{0}.md" -f (Get-Date -Format "yyyyMMdd_HHmmss"))
+@"
+# Nova Guarded Loop Aider Context Stop
+
+Question:
+How should the local loop prevent Aider from expanding the chat beyond the safe model window for `$Target`?
+
+Why it matters:
+$Reason
+
+Files involved:
+$Target
+$ContextPath
+$OutputPath
+
+Risk:
+Aider can auto-add files after the preflight if the model names more files, causing truncation, irrelevant edits, or a failed cycle that looks like a normal no-change run.
+
+Validation plan:
+- Keep repo-map disabled or tightly capped for guarded cycles.
+- Reduce read-only context if the warning repeats.
+- Re-run `powershell -NoProfile -ExecutionPolicy Bypass -File .\run_nova_guarded_context_loop.ps1 -Cycles 1`.
+- Confirm Aider does not report an oversized chat and the loop still validates before commit.
+
+Needs Daniel approval: yes, if the loop needs broader file access, a larger model/context window, or manual review of additional files.
+"@ | Set-Content $note
+    Write-Host "STOP: Aider context budget exceeded. Wrote manual-review note: $note"
+}
+
 function Test-ContextBudget {
     param([string]$ContextPath, [string]$PromptPath, [string]$Target)
     $files = @(
@@ -125,6 +163,29 @@ function Test-ContextBudget {
         return $false
     }
     return $true
+}
+
+function Get-AiderContextStopReason {
+    param([string]$OutputPath)
+    if (!(Test-Path $OutputPath)) { return "" }
+    $raw = Get-Content $OutputPath -Raw -ErrorAction SilentlyContinue
+    $esc = [char]27
+    $plain = $raw -replace "$esc\[[0-9;?]*[ -/]*[@-~]", ""
+
+    if ($plain -match "estimated chat context of\s+([\d,]+)\s+tokens exceeds the\s+([\d,]+)\s+token limit") {
+        return "Aider reported an estimated chat context of $($Matches[1]) tokens, above the $($Matches[2]) token model limit."
+    }
+
+    $sentMatches = [regex]::Matches($plain, "Tokens:\s+([0-9.,]+)\s*k\s+sent")
+    foreach ($match in $sentMatches) {
+        $sentK = [double]::Parse($match.Groups[1].Value.Replace(",", ""), [Globalization.CultureInfo]::InvariantCulture)
+        $sentTokens = [int][Math]::Round($sentK * 1000)
+        if ($sentTokens -gt $ContextMaxEstimatedTokens) {
+            return "Aider sent approximately $sentTokens tokens, above the configured safe budget of $ContextMaxEstimatedTokens estimated tokens."
+        }
+    }
+
+    return ""
 }
 
 function Run-Cmd {
@@ -451,6 +512,9 @@ Hard rules:
 - If the useful next step is a feature, it must match NOVA_APPROVED_FEATURE_BACKLOG.md and be source+test or test-only. Otherwise make no changes.
 - If the useful next step needs outside knowledge, a new dependency, or an unfamiliar architecture change, do not edit code.
 - If unsure, make no changes.
+- Do not ask Aider to add more files to the chat.
+- Do not name unrelated files as files to inspect. If the provided context is insufficient, make no changes.
+- Do not print or request full file contents.
 - Do not claim success; the PowerShell loop will validate.
 
 Use the read-only context files to remember past mistakes, logs, architecture, previous versions, and test results.
@@ -492,6 +556,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
     & $Aider `
         --model $Model `
         --message-file $prompt `
+        --map-tokens $AiderMapTokens `
+        --map-refresh $AiderMapRefresh `
         --read $context `
         --read NOVA_AGENT_MEMORY.md `
         --read NOVA_ARCHITECTURE_CONTEXT.md `
@@ -507,6 +573,15 @@ for ($i = 1; $i -le $Cycles; $i++) {
         --yes `
         $target `
         2>&1 | Tee-Object -FilePath $out
+
+    $aiderContextStopReason = Get-AiderContextStopReason -OutputPath $out
+    if ($aiderContextStopReason) {
+        Write-AiderContextStopNote -Target $target -OutputPath $out -ContextPath $context -Reason $aiderContextStopReason
+        Append-Mistake -Target $target -Reason $aiderContextStopReason -OutputPath $out -WhatNotToRepeat "Do not accept an Aider cycle after it reports an oversized chat context; reduce repo-map/read files or stop for manual review first."
+        git reset --hard
+        git clean -fd
+        exit 0
+    }
 
     if ($LASTEXITCODE -ne 0) {
         Append-Mistake -Target $target -Reason "Aider failed in cycle $i" -OutputPath $out -WhatNotToRepeat "Do not retry this target without using the aider output to identify a concrete smaller fix."
