@@ -226,7 +226,7 @@ function Get-TaskOutcomeCategory {
     if (($Result -eq "committed") -or ($lower -match "recent-success-cooldown|source/test task passed")) { return "success-cooldown" }
     if ($lower -match "no source diff after cleanup|generated-noise|dirty git state") { return "generated-noise-dirty-state" }
     if ($lower -match "no-change|no change") { return "no-change" }
-    if ($lower -match "dead error-body|unreachable error-body|no-op") { return "low-significance" }
+    if ($lower -match "dead error-body|dead added variable|unreachable error-body|no-op") { return "low-significance" }
     if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
     if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
     if ($lower -match "aider failed|aider exited") { return "aider-failed" }
@@ -459,6 +459,46 @@ function Get-ChangedLineCount {
     return $total
 }
 
+function Get-AddedDiffLines {
+    param([string]$DiffText)
+
+    return @($DiffText -split "`r?`n" |
+        Where-Object { $_ -match "^\+" -and $_ -notmatch "^\+\+\+" } |
+        ForEach-Object { $_.Substring(1) })
+}
+
+function Get-DeadAddedVariableName {
+    param([string[]]$AddedLines)
+
+    $assignments = @{}
+    foreach ($line in $AddedLines) {
+        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)') {
+            $name = $Matches[1]
+            if ($name -notmatch '^_' -and $name -cnotmatch '^[A-Z0-9_]+$') {
+                if (!$assignments.ContainsKey($name)) {
+                    $assignments[$name] = 0
+                }
+                $assignments[$name] += 1
+            }
+        }
+    }
+
+    foreach ($name in $assignments.Keys) {
+        $escaped = [regex]::Escape($name)
+        $readCount = 0
+        foreach ($line in $AddedLines) {
+            if (($line -match "\b$escaped\b") -and ($line -notmatch "^\s*$escaped\s*=(?!=)")) {
+                $readCount += 1
+            }
+        }
+        if ($readCount -eq 0) {
+            return $name
+        }
+    }
+
+    return ""
+}
+
 function Validate-Diff {
     param([hashtable]$Task)
 
@@ -504,6 +544,12 @@ function Validate-Diff {
     }
 
     $bad = git diff
+    $addedLines = Get-AddedDiffLines -DiffText $bad
+    $deadAddedVariable = Get-DeadAddedVariableName -AddedLines $addedLines
+    if ($deadAddedVariable) {
+        throw "Rejected dead added variable '$deadAddedVariable' with no read in the added diff."
+    }
+
     if ($bad -match "TODO|placeholder|would be implemented|assert True|MagicMock|Mock|should be present|should be included") {
         throw "Rejected placeholder/speculative patch language."
     }
