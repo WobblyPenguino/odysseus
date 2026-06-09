@@ -4,6 +4,9 @@ param(
     [string]$Mode = "fast",
     [switch]$AllowTestOnly,
     [int]$MinChangedLines = 6,
+    [int]$MaxRecentTaskFailures = 2,
+    [Alias("DryRun")]
+    [switch]$PreflightOnly,
     [switch]$Monitor
 )
 
@@ -34,10 +37,15 @@ $loopParams = @{
     Cycles = $Cycles
     Mode = $Mode
     MinChangedLines = $MinChangedLines
+    MaxRecentTaskFailures = $MaxRecentTaskFailures
 }
 
 if ($AllowTestOnly) {
     $loopParams.AllowTestOnly = $true
+}
+
+if ($PreflightOnly) {
+    $loopParams.PreflightOnly = $true
 }
 
 # Run the real task loop in this terminal. The monitor is only an optional viewer.
