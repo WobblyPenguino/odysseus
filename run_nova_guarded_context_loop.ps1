@@ -227,7 +227,10 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $prompt = Join-Path $LogDir "prompt_$stamp.md"
     $out = Join-Path $LogDir "aider_$stamp.out.txt"
 
+    $radarPath = powershell -NoProfile -ExecutionPolicy Bypass -File .\build_nova_agent_context.ps1
     Write-ContextPack -Path $context -Target $target
+    Add-Content $context "`n## Code radar"
+    Get-Content $radarPath -Raw | Add-Content $context
     Write-Prompt -Path $prompt -Target $target
 
     Write-Host "Editable target: $target"
@@ -239,6 +242,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
         --read $context `
         --read NOVA_AGENT_MEMORY.md `
         --read NOVA_ARCHITECTURE_CONTEXT.md `
+        --read NOVA_APPROVED_FEATURE_BACKLOG.md `
+        --read NOVA_RESEARCH_QUEUE.md `
         --read winlocalassistant/command_verifier.py `
         --read winlocalassistant/main.py `
         --read winlocalassistant/command_suggestions.py `
