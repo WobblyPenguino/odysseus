@@ -27,7 +27,7 @@ def test_self_improve_text_does_not_suggest_automatic_self_improve() -> None:
     cmds = [item.command.lower() for item in suggestions]
     
     # Check that no dangerous commands are suggested
-    disallowed_commands = ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe", "/reset-project"]
+    disallowed_commands = ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe", "/reset-project", "/idle start"]
     for cmd in cmds:
         assert cmd not in disallowed_commands, f"Found disallowed command: {cmd}"
     
