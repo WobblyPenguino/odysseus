@@ -182,73 +182,168 @@ $Tasks = @(
 
 $RunTaskCooldown = New-Object "System.Collections.Generic.HashSet[string]"
 
-function Get-RecentTaskFailureCount {
+function Add-TaskSignal {
+    param([hashtable]$Signals, [string]$Reason)
+
+    $lower = ($Reason -as [string]).ToLowerInvariant()
+    if (!$lower) { return }
+
+    if ($lower -match "recent-success-cooldown|result:\s*committed|source/test task passed") {
+        $Signals.RecentSuccess += 1
+        $Signals.Reasons += "recent success cooldown"
+        return
+    }
+
+    if ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines") {
+        $Signals.LowValue += 1
+        $Signals.Reasons += "recent low-value/no-change outcome"
+    }
+
+    if ($lower -match "aider failed|command failed|validation-or-significance-failed|validation failed|rejected|context-token|protected-file|speculative|placeholder|failed") {
+        $Signals.Failures += 1
+        $Signals.Reasons += $Reason
+    }
+}
+
+function Get-RecentTaskSignals {
     param([string]$TaskId)
 
-    $count = 0
+    $signals = @{
+        Failures = 0
+        LowValue = 0
+        RecentSuccess = 0
+        Reasons = @()
+    }
     $sources = @($NoChangeTargets, $MistakeMemory)
     foreach ($src in $sources) {
         if (Test-Path $src) {
-            $lines = Get-Content $src -Tail 120 -ErrorAction SilentlyContinue
+            $lines = Get-Content $src -Tail 240 -ErrorAction SilentlyContinue
+            $currentTask = ""
             foreach ($line in $lines) {
-                if (($line -match "task=$TaskId") -or ($line -match "Task: $TaskId")) {
-                    if ($line -match "Reason:|reason=|rejected|failed|Command failed|low-significance|Aider failed|validation") {
-                        $count += 1
-                    }
+                $lineTask = ""
+                $reason = ""
+                if ($line -match "(^|\s)task=([^\s|]+)") {
+                    $lineTask = $Matches[2].Trim()
+                    if ($line -match "reason=(.+)$") { $reason = $Matches[1].Trim() }
+                } elseif ($line -match "^Task:\s*([^\s]+)") {
+                    $currentTask = $Matches[1].Trim()
+                    continue
+                } elseif (($currentTask -eq $TaskId) -and ($line -match "^Reason:\s*(.+)$")) {
+                    $lineTask = $currentTask
+                    $reason = $Matches[1].Trim()
+                }
+
+                if ($lineTask -eq $TaskId) {
+                    if (!$reason) { $reason = $line }
+                    Add-TaskSignal -Signals $signals -Reason $reason
                 }
             }
         }
     }
-    return $count
+    return [pscustomobject]@{
+        Failures = [int]$signals.Failures
+        LowValue = [int]$signals.LowValue
+        RecentSuccess = [int]$signals.RecentSuccess
+        Reasons = (($signals.Reasons | Select-Object -Unique -First 3) -join "; ")
+    }
+}
+
+function Get-RecentTaskFailureCount {
+    param([string]$TaskId)
+    return (Get-RecentTaskSignals -TaskId $TaskId).Failures
+}
+
+function Test-TaskFilesExist {
+    param($Task)
+    foreach ($f in $Task.Editable) {
+        if (!(Test-Path $f)) {
+            return $false
+        }
+    }
+    return $true
 }
 
 function Pick-Task {
-    $recent = @()
-    if (Test-Path $NoChangeTargets) {
-        $recent = Get-Content $NoChangeTargets -Tail 80 | ForEach-Object {
-            if ($_ -match "task=([^\s|]+)") { $Matches[1].Trim() }
-        }
-    }
-
-    function Task-Files-Exist($Task) {
-        foreach ($f in $Task.Editable) {
-            if (!(Test-Path $f)) {
-                return $false
-            }
-        }
-        return $true
-    }
-
-    $healthyTasks = @()
+    $rows = @()
     foreach ($task in $Tasks) {
-        if (Task-Files-Exist $task) {
-            $failures = Get-RecentTaskFailureCount -TaskId $task.Id
-            if ($failures -lt $MaxRecentTaskFailures) {
-                $healthyTasks += $task
-            } else {
-                Add-Summary "Skipping task $($task.Id): quarantined after $failures recent failures."
-            }
+        if (!(Test-TaskFilesExist $task)) {
+            Add-Summary "Skipping task $($task.Id): editable/test file missing."
+            continue
+        }
+
+        $signals = Get-RecentTaskSignals -TaskId $task.Id
+        $hasSource = @($task.Editable | Where-Object { $_ -notmatch "(^|\\|/)tests_.*\.py$" }).Count -gt 0
+        $hasTests = @($task.Tests | Where-Object { Test-Path $_ }).Count -gt 0
+        $usedThisRun = $RunTaskCooldown.Contains([string]$task.Id)
+        $score = 50
+        $reasons = @()
+
+        if ($hasSource -and $hasTests) {
+            $score += 20
+            $reasons += "source+test candidate"
+        }
+        if ($signals.Failures -gt 0) {
+            $score -= 25 * $signals.Failures
+            $reasons += "$($signals.Failures) recent failure(s)"
+        }
+        if ($signals.LowValue -gt 0) {
+            $score -= 15 * $signals.LowValue
+            $reasons += "$($signals.LowValue) recent low-value/no-change outcome(s)"
+        }
+        if ($signals.RecentSuccess -gt 0) {
+            $score -= 12 * $signals.RecentSuccess
+            $reasons += "$($signals.RecentSuccess) recent success cooldown(s)"
+        }
+        if ($usedThisRun) {
+            $score -= 100
+            $reasons += "already tried this run"
+        }
+
+        $quarantined = $false
+        $quarantineReason = ""
+        if ($signals.Failures -ge $MaxRecentTaskFailures) {
+            $quarantined = $true
+            $quarantineReason = "quarantined after $($signals.Failures) recent failure(s)"
+        } elseif ($signals.LowValue -ge ($MaxRecentTaskFailures + 1)) {
+            $quarantined = $true
+            $quarantineReason = "quarantined after $($signals.LowValue) recent low-value/no-change outcome(s)"
+        }
+
+        if ($signals.Reasons) { $reasons += $signals.Reasons }
+
+        $rows += [pscustomobject]@{
+            Task = $task
+            Id = [string]$task.Id
+            Score = $score
+            Quarantined = $quarantined
+            QuarantineReason = $quarantineReason
+            UsedThisRun = $usedThisRun
+            Reasons = (($reasons | Select-Object -Unique) -join "; ")
         }
     }
 
-    foreach ($task in $healthyTasks) {
-        if (($recent -notcontains $task.Id) -and
-            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
-            return $task
-        }
+    foreach ($row in $rows | Where-Object { $_.Quarantined }) {
+        Add-Summary "Skipping task $($row.Id): $($row.QuarantineReason)."
     }
 
-    foreach ($task in $healthyTasks) {
-        if (-not $RunTaskCooldown.Contains([string]$task.Id)) {
-            return $task
-        }
+    $eligible = @($rows | Where-Object { -not $_.Quarantined })
+    if (!$eligible) {
+        throw "No healthy task available. All tasks are missing files or quarantined by recent failures/low-value outcomes."
     }
 
-    foreach ($task in $healthyTasks) {
-        return $task
+    $available = @($eligible | Where-Object { -not $_.UsedThisRun })
+    if (!$available) { $available = $eligible }
+
+    Add-Summary "Task selection candidates:"
+    foreach ($row in ($rows | Sort-Object Score -Descending)) {
+        $state = if ($row.Quarantined) { "quarantined" } elseif ($row.UsedThisRun) { "cooldown" } else { "eligible" }
+        Add-Summary "- $($row.Id): score=$($row.Score), state=$state, reasons=$($row.Reasons)"
     }
 
-    throw "No healthy task available. All tasks are missing files or quarantined by recent failures."
+    $choice = $available | Sort-Object Score -Descending | Select-Object -First 1
+    Add-Summary "Selected task $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)"
+    Write-Host "Selected task $($choice.Id): score=$($choice.Score); $($choice.Reasons)"
+    return $choice.Task
 }
 
 function Get-ChangedLineCount {
