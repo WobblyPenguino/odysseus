@@ -1,0 +1,87 @@
+{
+  "project_id": "v55_3_156_video_proof",
+  "title": "Nova v55.3.156 autonomous continuous mission proof: Nova plans, validates, repai",
+  "logline": "Nova v55.3.156 autonomous continuous mission proof: Nova plans, validates, repairs and keeps improving safely with subagents.",
+  "style": {
+    "aspect_ratio": "16:9",
+    "fps": 24,
+    "size": "1280x704",
+    "pipeline": "script -> scenes -> shots -> storyboards -> visual jobs -> audio -> edit -> final mp4",
+    "primary_backend": "comfyui",
+    "optional_sidecar": "wangp",
+    "fallback_backends": [
+      "stock",
+      "remotion",
+      "ffmpeg"
+    ],
+    "workflow_policy": "generate still/storyboard anchors first, then animate where possible"
+  },
+  "shots": [
+    {
+      "id": "scene_1_shot_1",
+      "scene_id": "scene_1",
+      "backend": "comfyui",
+      "workflow_id": "wan22_ti2v_5b_i2v",
+      "mode": "i2v",
+      "prompt": "cinematic video shot, coherent subject continuity, Nova v55",
+      "negative_prompt": "blurry, low quality, text artefacts, extra limbs",
+      "duration_s": 4.0,
+      "fps": 24,
+      "size": "1280x704",
+      "seed": 43,
+      "storyboard_image": "assets/storyboards/scene_1_shot_1.png",
+      "start_frame": null,
+      "end_frame": null,
+      "output_path": "renders/scene_1_shot_1.mp4"
+    },
+    {
+      "id": "scene_2_shot_1",
+      "scene_id": "scene_2",
+      "backend": "comfyui",
+      "workflow_id": "wan22_ti2v_5b_i2v",
+      "mode": "i2v",
+      "prompt": "cinematic video shot, coherent subject continuity, 3",
+      "negative_prompt": "blurry, low quality, text artefacts, extra limbs",
+      "duration_s": 4.0,
+      "fps": 24,
+      "size": "1280x704",
+      "seed": 44,
+      "storyboard_image": "assets/storyboards/scene_2_shot_1.png",
+      "start_frame": null,
+      "end_frame": null,
+      "output_path": "renders/scene_2_shot_1.mp4"
+    },
+    {
+      "id": "scene_3_shot_1",
+      "scene_id": "scene_3",
+      "backend": "comfyui",
+      "workflow_id": "wan22_ti2v_5b_i2v",
+      "mode": "i2v",
+      "prompt": "cinematic video shot, coherent subject continuity, 156 autonomous continuous mission proof: Nova plans, validates, repairs and keeps improving safely with subagents",
+      "negative_prompt": "blurry, low quality, text artefacts, extra limbs",
+      "duration_s": 4.0,
+      "fps": 24,
+      "size": "1280x704",
+      "seed": 45,
+      "storyboard_image": "assets/storyboards/scene_3_shot_1.png",
+      "start_frame": null,
+      "end_frame": null,
+      "output_path": "renders/scene_3_shot_1.mp4"
+    }
+  ],
+  "audio": {
+    "narration_script": "Nova v55.3.156 autonomous continuous mission proof: Nova plans, validates, repairs and keeps improving safely with subagents.",
+    "voice_provider": "piper",
+    "music_mode": "library",
+    "sfx_mode": "library"
+  },
+  "edit": {
+    "clips": [
+      "renders/scene_1_shot_1.mp4",
+      "renders/scene_2_shot_1.mp4",
+      "renders/scene_3_shot_1.mp4"
+    ],
+    "subtitles": "outputs/subtitles.srt",
+    "output": "outputs/final.mp4"
+  }
+}

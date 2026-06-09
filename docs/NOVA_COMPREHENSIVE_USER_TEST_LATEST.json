@@ -1,0 +1,404 @@
+{
+  "ok": true,
+  "summary": "Comprehensive user testing passed",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "checks": [
+    {
+      "name": "python_syntax",
+      "ok": true,
+      "summary": "Python source parses",
+      "severity": "info",
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "command_routes",
+      "ok": true,
+      "summary": "Major QA/build/autonomy commands are routed",
+      "severity": "info",
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "name": "release_hygiene",
+      "ok": true,
+      "summary": "Release hygiene passed",
+      "severity": "info",
+      "detail": {
+        "warning_count": 0
+      }
+    },
+    {
+      "name": "weakspot_audit",
+      "ok": true,
+      "summary": "Weakspot audit found 490 issue(s)",
+      "severity": "info",
+      "detail": {
+        "blockers": 0,
+        "issues": [
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_code/code.py:1508",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_code/code.py:186",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_code/code.py:328",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_code/source.py:140",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_code/source.py:215",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_io/terminalwriter.py:81",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_py/path.py:1213",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_py/path.py:1235",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_py/path.py:1295",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          },
+          {
+            "severity": "medium",
+            "category": "observability",
+            "path": ".venv/Lib/site-packages/_pytest/_py/path.py:1326",
+            "detail": "Silent `except: pass` hides root causes from idle/autonomous repair memory.",
+            "recommendation": "Log the exception at debug level or return a structured warning."
+          }
+        ]
+      }
+    },
+    {
+      "name": "feature_audit",
+      "ok": true,
+      "summary": "Requested-feature audit passed",
+      "severity": "info",
+      "detail": {
+        "implemented": 15,
+        "missing": 0
+      }
+    },
+    {
+      "name": "gui_feature_map",
+      "ok": true,
+      "summary": "GUI feature map has no missing required features",
+      "severity": "info",
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "name": "gui_regression",
+      "ok": true,
+      "summary": "GUI regression check completed",
+      "severity": "info",
+      "detail": {
+        "ok": true,
+        "feature_map": {
+          "ok": true,
+          "features": [
+            {
+              "name": "Chat composer",
+              "ok": true,
+              "hits": [
+                "Ask Nova",
+                "Send",
+                "attach"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Voice controls",
+              "ok": true,
+              "hits": [
+                "Mic test",
+                "Refresh mics",
+                "voice"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Projects/files",
+              "ok": true,
+              "hits": [
+                "Projects",
+                "Files",
+                "Zip project"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Live Activity",
+              "ok": true,
+              "hits": [
+                "Live activity",
+                "Current task"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Model status",
+              "ok": true,
+              "hits": [
+                "Local LLM status",
+                "LLM status"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Sandbox/Docker",
+              "ok": true,
+              "hits": [
+                "Sandbox",
+                "Docker",
+                "sandbox-linux"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Idle/autonomous",
+              "ok": true,
+              "hits": [
+                "Idle Self-Improvement",
+                "autonomous"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Research/memory",
+              "ok": true,
+              "hits": [
+                "Research",
+                "Memory",
+                "Project memory"
+              ],
+              "missing": []
+            },
+            {
+              "name": "Release/testing",
+              "ok": true,
+              "hits": [
+                "Test all",
+                "Release gate"
+              ],
+              "missing": [
+                "Massive test"
+              ]
+            },
+            {
+              "name": "Architecture",
+              "ok": true,
+              "hits": [
+                "Architecture",
+                "Planner",
+                "Validate",
+                "Repair"
+              ],
+              "missing": []
+            }
+          ],
+          "mode_options": [
+            "classic",
+            "cockpit-preview"
+          ],
+          "recommendation": "Keep classic UI as default; add cockpit-preview behind /gui-mode cockpit until feature-map and visual tests pass."
+        },
+        "checks": [
+          "feature labels present",
+          "classic mode preserved",
+          "cockpit preview documented"
+        ],
+        "next": "Run Playwright visual tests when browser is available."
+      }
+    },
+    {
+      "name": "candidate_tournament",
+      "ok": true,
+      "summary": "Candidate tournament generated",
+      "severity": "info",
+      "detail": {
+        "winner": "robust"
+      }
+    },
+    {
+      "name": "trace_cockpit",
+      "ok": true,
+      "summary": "Trace cockpit loaded 80 event(s)",
+      "severity": "info",
+      "detail": {
+        "event_count": 80
+      }
+    },
+    {
+      "name": "mcp_security",
+      "ok": true,
+      "summary": "MCP security inspected",
+      "severity": "info",
+      "detail": {
+        "generated_at": "2026-06-09 23:42:15",
+        "policy": {
+          "default": "deny_execute_allow_readonly",
+          "read_only_tools": true,
+          "command_execution": "disabled_until_allowlisted",
+          "raw_model_parameters": "never_forward_without_schema_validation",
+          "sandbox_risky_tools": true,
+          "log_all_connector_calls": true
+        },
+        "tool_count": 0,
+        "risky_tools": [],
+        "recommendations": [
+          "keep connectors read-only by default",
+          "sandbox risky tool execution",
+          "deny external tool descriptions that request secrets or command execution",
+          "require explicit user approval for install/promote/delete actions"
+        ]
+      }
+    },
+    {
+      "name": "prompt_contract:make a tiny useful local notes app",
+      "ok": true,
+      "summary": "Prompt contract generated with prompt-specific checks",
+      "severity": "info",
+      "detail": {
+        "goal": "make a tiny useful local notes app with localStorage and JSON export",
+        "must_have": [
+          "JSON export",
+          "add notes",
+          "delete notes",
+          "display notes",
+          "export notes as JSON",
+          "list saved notes",
+          "localStorage persistence",
+          "persist notes in localStorage"
+        ],
+        "must_not_have": [
+          "Dodge Game",
+          "broken HTML/JS wiring",
+          "fake README claims",
+          "game controls or score unless requested",
+          "score/player/enemy/canvas game defaults",
+          "unrelated default template"
+        ],
+        "static_checks": [
+          "HTML references local CSS/JS files that exist",
+          "JS handlers referenced by HTML exist",
+          "README claims are implemented in code",
+          "all blueprint files exist or are intentionally omitted",
+          "app.js contains Blob or JSON.stringify download export",
+          "app.js contains localStorage and safe JSON parse fallback",
+          "app.js creates a JSON Blob/download or equivalent export",
+          "app.js uses localStorage with safe JSON parse fallback",
+          "must_not_have terms are absent unless explicitly requested",
+          "project can be opened or syntax-checked without obvious errors"
+        ]
+      }
+    },
+    {
+      "name": "prompt_contract:repair this project without rewrit",
+      "ok": true,
+      "summary": "Prompt contract generated with prompt-specific checks",
+      "severity": "info",
+      "detail": {
+        "goal": "repair this project without rewriting unrelated files",
+        "must_have": [
+          "clear run/open instructions",
+          "matches the user request",
+          "visible useful behaviour"
+        ],
+        "must_not_have": [
+          "Dodge Game",
+          "broken HTML/JS wiring",
+          "fake README claims",
+          "game controls or score unless requested",
+          "score/player/enemy/canvas game defaults",
+          "unrelated default template"
+        ],
+        "static_checks": [
+          "HTML references local CSS/JS files that exist",
+          "JS handlers referenced by HTML exist",
+          "README claims are implemented in code",
+          "all blueprint files exist or are intentionally omitted",
+          "must_not_have terms are absent unless explicitly requested",
+          "project can be opened or syntax-checked without obvious errors"
+        ]
+      }
+    },
+    {
+      "name": "prompt_contract:improve Nova validation and surgic",
+      "ok": true,
+      "summary": "Prompt contract generated with prompt-specific checks",
+      "severity": "info",
+      "detail": {
+        "goal": "improve Nova validation and surgical repair without regressing existing tools",
+        "must_have": [
+          "clear run/open instructions",
+          "matches the user request",
+          "visible useful behaviour"
+        ],
+        "must_not_have": [
+          "Dodge Game",
+          "broken HTML/JS wiring",
+          "fake README claims",
+          "game controls or score unless requested",
+          "score/player/enemy/canvas game defaults",
+          "unrelated default template"
+        ],
+        "static_checks": [
+          "HTML references local CSS/JS files that exist",
+          "JS handlers referenced by HTML exist",
+          "README claims are implemented in code",
+          "all blueprint files exist or are intentionally omitted",
+          "must_not_have terms are absent unless explicitly requested",
+          "project can be opened or syntax-checked without obvious errors"
+        ]
+      }
+    }
+  ],
+  "passed": 13,
+  "total": 13,
+  "blocking_count": 0,
+  "warning_count": 0
+}

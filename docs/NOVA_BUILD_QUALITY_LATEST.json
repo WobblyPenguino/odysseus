@@ -1,0 +1,53 @@
+{
+  "ok": false,
+  "score": 62.5,
+  "goal": "notes app",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "checks": [
+    {
+      "name": "has_entrypoint",
+      "ok": false,
+      "detail": "Project has index.html or another obvious entrypoint."
+    },
+    {
+      "name": "html_links_js",
+      "ok": false,
+      "detail": "HTML should reference app.js for browser apps."
+    },
+    {
+      "name": "button_handler_wiring",
+      "ok": false,
+      "detail": "Inline handlers and common button IDs should exist in JS."
+    },
+    {
+      "name": "localstorage_when_requested",
+      "ok": true,
+      "detail": "localStorage is implemented when requested."
+    },
+    {
+      "name": "json_export_when_requested",
+      "ok": true,
+      "detail": "JSON export uses JSON.stringify plus Blob/download evidence when requested."
+    },
+    {
+      "name": "readme_claims_true",
+      "ok": true,
+      "detail": "README claims should have matching implementation evidence."
+    },
+    {
+      "name": "no_unrelated_dodge_default",
+      "ok": true,
+      "detail": "Reject unrelated Dodge Game/default-game leakage."
+    },
+    {
+      "name": "manual_test_clarity",
+      "ok": true,
+      "detail": "README/TEST_REPORT explain how to run or verify."
+    }
+  ],
+  "recommendations": [
+    "Fix has_entrypoint: Project has index.html or another obvious entrypoint.",
+    "Fix html_links_js: HTML should reference app.js for browser apps.",
+    "Fix button_handler_wiring: Inline handlers and common button IDs should exist in JS."
+  ]
+}

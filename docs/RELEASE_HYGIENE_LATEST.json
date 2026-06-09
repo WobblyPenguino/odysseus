@@ -1,0 +1,1621 @@
+{
+  "ok": false,
+  "summary": "Release hygiene found 194 package artifact(s)",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "findings": [
+    {
+      "path": ".nova_runtime",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".pytest_cache",
+      "kind": "cache_directory",
+      "severity": "warning",
+      "fix": "Delete this runtime cache before packaging a release zip."
+    },
+    {
+      "path": "__pycache__",
+      "kind": "cache_directory",
+      "severity": "warning",
+      "fix": "Delete this runtime cache before packaging a release zip."
+    },
+    {
+      "path": ".nova_runtime/llm_lab_contract_sample",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": "winlocalassistant/__pycache__",
+      "kind": "cache_directory",
+      "severity": "warning",
+      "fix": "Delete this runtime cache before packaging a release zip."
+    },
+    {
+      "path": "__pycache__/app.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "__pycache__/tests_emergency_stability.cpython-312-pytest-9.0.3.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "__pycache__/tests_model_calibration.cpython-312-pytest-9.0.3.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "__pycache__/tests_model_health_timeout.cpython-312-pytest-9.0.3.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "__pycache__/tests_runtime_usability_release_gate.cpython-312-pytest-9.0.3.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": ".nova_runtime/llm_lab_contract_sample/notes.txt",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/activity.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/config.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/efficiency_metrics.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/traces.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/playwright/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/activity.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/efficiency_metrics.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/traces.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/activity.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/efficiency_metrics.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/traces.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/activity.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/config.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/efficiency_metrics.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/traces.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/activity.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/analytics",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/conversations.json",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/efficiency_metrics.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/KNOWLEDGE_BASE.md",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/performance",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/proposals",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/scheduler",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/traces.jsonl",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/webhooks",
+      "kind": "runtime_state",
+      "severity": "note",
+      "fix": "Runtime state should normally be excluded from shared release zips."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/action_watcher.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/adaptive_backlog.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/analytics_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/architecture_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/assistant_box.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/assistant_datastore.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_explain.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_failure.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_journal.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_loop_guard.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_mission_contract.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_sequence.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomy_capabilities.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomy_idle_intelligence.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/behavior_rules.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/benchmark_migration.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/blueprint_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/branding.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/browser_worker.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/bug_review.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/build_info.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/candidate_tournament.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_advisor.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_integrity_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_sanity_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_quality_gate.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_repair_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_review_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/cohesion_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_help.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_suggestions.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_verifier.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/completion_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/config.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/conversation_store.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/core.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/creation_intent.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/custom_tools.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/dependency_check.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/deterministic_generation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/development_governor.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/docker_manager.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/document_ingestion.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/efficiency_profiler.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/env_profiles.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/eventlog.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/feature_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/feature_continuity.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/file_context.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/flow_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/game_design.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_context_help.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_layout_diagnostics.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_redesign.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/high_spec_profile.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/idle_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/idle_policy.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/image_generation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_cycle.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_features_integration.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_roadmap.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/integration_radar.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/integration_review.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/intent_planning.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/interaction_learning.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/iterative_coding.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/jarvis_bridge.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/legacy_continuity.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/llm_training_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/local_model_optimizer.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/main.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/maintenance_validation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mcp_export.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mcp_security.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/memory_inventory.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mission_planner_v2.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_calibration.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_context.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_download_manager.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_health.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_output_coach.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_registry.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_router.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/next_feature_suite.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_agent_upgrade_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_api.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_arcade.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_capability_drift_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_coding_capabilities.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_deep_research_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_efficiency_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_eval_packs.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_improvement_assurance_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_improvement_research.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_inspiration_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_odysseus_suite.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_operating_context.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_reliability_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_route_resilience_lab.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_system_test.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_verified_changes.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_video.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/ollama.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/optional_upgrade_installer.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/orchestration_foundation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/performance_profiler.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/performance_tuning.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/persona_profile.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/pipeline_manifests.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/pipeline_router.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/planner.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/planning_dashboard.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/projects.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_acceptance.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_brief.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_iteration.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_memory.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_request_contract.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_runtime_probe.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_state.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_state_db.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_type_registry.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/prompt_test_compiler.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/proposal_ledger.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/provider_runtime.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/quality_dashboard.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/quality_progress.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/receipt_history.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/regression_memory.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/regression_sweep.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_checklist.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_hygiene.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_packager.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_readiness.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/remote_access.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repair_engine_v2.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repo_intelligence.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repo_upgrade_assurance.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/request_intent.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/research_engine.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/response_quality.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/role_router.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/safety.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/safe_io.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/sandbox_manager.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/sandbox_permissions.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/scheduler_foundation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/security_status.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/security_watch.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_awareness.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_repair_guardian.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_test_generator.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/session_evidence.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/skill_profiles.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/startup_validation.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/subagent_orchestrator.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/surgical_fallback.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/surgical_recipes.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/system_test.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_decomposition.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_execution.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_scheduler.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tools.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_catalog.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_guides.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_orchestrator.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/trace_cockpit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/upgrade_planner.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/user_testing.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/validate.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/validation_matrix.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/visual_regression.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/watchdog.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/weakspot_audit.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webhook_system.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_ai_help_overlay.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_arcade.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_cyberpunk_theme.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_emergency_stability.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_interaction_overhaul.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_layout_overhaul.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/whole_codebase_review.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/wla_doctor.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/wla_mega_test.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    },
+    {
+      "path": "winlocalassistant/__pycache__/__init__.cpython-312.pyc",
+      "kind": "compiled_python",
+      "severity": "warning",
+      "fix": "Delete compiled Python bytecode before packaging."
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "ok": true,
+  "summary": "Requested-feature audit passed",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "implemented": 15,
+  "partial_or_environment_dependent": 1,
+  "missing": 0,
+  "checks": [
+    {
+      "name": "spoken_audio_and_controls",
+      "status": "implemented",
+      "summary": "Browser speech, microphone voice input, microphone diagnostic preflight, long-response summarisation, mute/unmute and tutorial controls are wired in the GUI.",
+      "evidence": [
+        "speechSynthesis",
+        "SpeechRecognition",
+        "toggleVoiceInput",
+        "diagnoseVoiceInput",
+        "refreshVoiceDeviceSelect",
+        "voiceDeviceSelect",
+        "getUserMedia",
+        "enumerateDevices",
+        "summariseForSpeech",
+        "toggleAudioMute",
+        "showTutorial"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "thin_left_rail_popups",
+      "status": "implemented",
+      "summary": "Left rail contains settings/audio/tutorial/changelog/release/chat shortcuts with popup panels.",
+      "evidence": [
+        "releaseChecklistPopup",
+        "chatsPopup",
+        "showChangelog"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "custom_quick_commands",
+      "status": "implemented",
+      "summary": "Quick commands are flat, customisable, persistent and can execute sequential command lists.",
+      "evidence": [
+        "renderQuickControls",
+        "runQuickCommand",
+        "wlaQuickCommands"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "live_activity_clarity",
+      "status": "implemented",
+      "summary": "Live Activity is taller/resizable, keeps previous runs, shows hover metadata and indented/subtask context.",
+      "evidence": [
+        "renderRuns",
+        "since=0",
+        "title=",
+        "resize:vertical"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "backend_conversations",
+      "status": "implemented",
+      "summary": "Persistent backend conversations support create/list/switch/search/rename/delete.",
+      "evidence": [
+        "conversation_store.py",
+        "/chat-rename",
+        "/chat-delete"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "project_memory_and_targeting",
+      "status": "implemented",
+      "summary": "Project memory is retrieved for build/edit prompts and project targeting can diagnose new-vs-current project intent.",
+      "evidence": [
+        "project_memory.py",
+        "_enrich_goal_with_project_memory",
+        "/project-target"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "file_cards_and_llm_context",
+      "status": "implemented",
+      "summary": "Generated/openable files appear as cards and the LLM status panel preserves compact recent prompt/reply context.",
+      "evidence": [
+        "renderFileCards",
+        "Recent local model call",
+        "model_io.jsonl"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "research_synthesis",
+      "status": "implemented",
+      "summary": "Research reports include a short synthesis plus source/excerpt/bias sections.",
+      "evidence": [
+        "Short synthesis",
+        "Source and bias analysis"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "docker_validation_patch_promotion",
+      "status": "implemented",
+      "summary": "Docker copied-workspace validation, patch validation, hash locking and promotion rollback logic are present.",
+      "evidence": [
+        "patch_sha256",
+        "docker_promote_validated_patch",
+        "--ignore-whitespace"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "release_gate_and_doctor",
+      "status": "implemented",
+      "summary": "Nova Doctor, release gate and release checklist commands are present.",
+      "evidence": [
+        "wla_doctor.py",
+        "/release-gate",
+        "/release-checklist"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "playwright_scaffold",
+      "status": "implemented",
+      "summary": "Playwright GUI smoke scaffold exists and release gate runs/skips it depending on environment readiness.",
+      "evidence": [
+        "playwright/nova_gui_smoke.spec.js",
+        "playwright_smoke"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "security_defensive_watch",
+      "status": "implemented",
+      "summary": "Defensive-only security status and watch commands are wired; direct vendor remediation remains intentionally manual/user-approved.",
+      "evidence": [
+        "security_status.py",
+        "/security-watch"
+      ],
+      "remaining": "Direct AVG quarantine/remediation requires documented vendor CLI/API and explicit approval."
+    },
+    {
+      "name": "image_generation_status",
+      "status": "environment_dependent",
+      "summary": "Image generation refuses to fake real generation and provides setup guidance for SD WebUI/Diffusers/ComfyUI.",
+      "evidence": [
+        "/image-generate",
+        "/image-draft",
+        "/image-setup-help"
+      ],
+      "remaining": "Actual generation depends on a reachable/configured local image backend."
+    },
+    {
+      "name": "browser_console_hygiene",
+      "status": "implemented",
+      "summary": "The web UI avoids favicon 404 noise, avoids Web Audio before a user gesture, preserves LLM context text while refreshing, and supports multi-command quick buttons.",
+      "evidence": [
+        "/favicon.ico",
+        "avatarAudioActivated",
+        "llmCtxSpinner",
+        "runSequentialCommands"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "dependency_and_massive_system_test",
+      "status": "implemented",
+      "summary": "Startup dependency checks, optional pip install prompts, and one-click confirmed massive system tests are wired.",
+      "evidence": [
+        "dependency_check.py",
+        "system_test.py",
+        "/dependency-check",
+        "/massive-test",
+        "start_windows_assistant.bat"
+      ],
+      "remaining": ""
+    },
+    {
+      "name": "linux_sandbox_python_ready",
+      "status": "implemented",
+      "summary": "General Linux sandbox defaults to a Python-ready image and aliases python3 where possible.",
+      "evidence": [
+        "python:3.12-slim",
+        "python3"
+      ],
+      "remaining": ""
+    }
+  ],
+  "remaining_safe_todo": [
+    "Direct AVG quarantine/remediation requires documented vendor CLI/API and explicit approval.",
+    "Actual generation depends on a reachable/configured local image backend."
+  ]
+}

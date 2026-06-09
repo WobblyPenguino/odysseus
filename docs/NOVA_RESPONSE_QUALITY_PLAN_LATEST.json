@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-08 17:07:47",
+  "goal": "improve Nova AI response potency, efficiency, evidence discipline and communication",
+  "intent_tags": [
+    "communication",
+    "file_context"
+  ],
+  "response_contract": [
+    "Start from the user's exact goal and answer that goal before adjacent ideas.",
+    "Separate instructions, evidence, assumptions, and final answer; do not blend quoted/context text into instructions.",
+    "Use concrete checks, commands, file paths, or dates when the answer depends on verification.",
+    "Do not claim success, installation, network access, tests, or file edits unless tool output or provided evidence proves it.",
+    "Prefer short, direct answers for simple chat; use sections only when they improve scanning.",
+    "When using retrieved/file context, cite or identify the specific context item that supports the answer.",
+    "Match tone to the recipient and preserve the user's intent instead of over-polishing away meaning."
+  ],
+  "actions": [
+    {
+      "name": "Context discipline",
+      "impact": "higher factuality and fewer off-course replies",
+      "implementation": "Keep a bounded context pack with labeled sections and explicit operating rules before the user prompt."
+    },
+    {
+      "name": "Response contract",
+      "impact": "clearer, more trustworthy communication",
+      "implementation": "Inject compact rules for evidence, assumptions, verification and concise tone into model calls."
+    },
+    {
+      "name": "Structured subtasks",
+      "impact": "more reliable tool/project planning",
+      "implementation": "Use JSON/schema-shaped intermediate plans for routing, extraction and repair before rendering user prose."
+    },
+    {
+      "name": "Evidence loop",
+      "impact": "less hallucinated progress",
+      "implementation": "Prefer observe-fix-verify loops; report only validated actions and keep dry-runs separate from live actions."
+    },
+    {
+      "name": "Retrieval before recall",
+      "impact": "better answers on repo/current-state questions",
+      "implementation": "Search local docs/code/activity first, then browse current primary sources only when the fact may have changed."
+    }
+  ],
+  "research_sources": [
+    {
+      "name": "OpenAI prompt engineering guidance",
+      "url": "https://help.openai.com/en/articles/6654000-best-practices-for-prompting",
+      "finding": "Put clear instructions before context, separate context with delimiters, prefer specific constraints, and say what to do instead of only what not to do."
+    },
+    {
+      "name": "OpenAI reasoning best practices",
+      "url": "https://platform.openai.com/docs/guides/reasoning-best-practices",
+      "finding": "Use straightforward prompts with clear end goals, delimiters, and explicit constraints; avoid forcing chain-of-thought style prompts."
+    },
+    {
+      "name": "OpenAI structured outputs guidance",
+      "url": "https://platform.openai.com/docs/guides/structured-outputs",
+      "finding": "Use structured outputs or function calling for machine-readable subtasks instead of parsing free-form prose."
+    },
+    {
+      "name": "Ollama structured outputs",
+      "url": "https://docs.ollama.com/capabilities/structured-outputs",
+      "finding": "Local Ollama calls can use JSON/schema-style formats for reliable extraction and consistent response shapes."
+    },
+    {
+      "name": "ReAct paper",
+      "url": "https://arxiv.org/abs/2210.03629",
+      "finding": "Interleaving reasoning with actions helps agents update plans, handle exceptions, and gather external evidence."
+    },
+    {
+      "name": "Retrieval-Augmented Generation paper",
+      "url": "https://arxiv.org/abs/2005.11401",
+      "finding": "Retrieval plus generation improves factual specificity and allows knowledge to be updated outside model weights."
+    }
+  ],
+  "validation": [
+    "Context preview contains response_quality_contract.",
+    "ToolRegistry exposes response_quality_plan.",
+    "Slash commands render the plan without calling a model.",
+    "Targeted tests and Nova validation pass."
+  ]
+}

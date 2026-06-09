@@ -1,0 +1,107 @@
+# Nova Release Hygiene
+
+Overall: **ATTENTION**
+Root: `C:\Users\Daniel\Documents\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530`
+Summary: Release hygiene found 194 package artifact(s)
+
+## Findings
+- **note** `.nova_runtime` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **warning** `.pytest_cache` — cache_directory: Delete this runtime cache before packaging a release zip.
+- **warning** `__pycache__` — cache_directory: Delete this runtime cache before packaging a release zip.
+- **note** `.nova_runtime/llm_lab_contract_sample` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **warning** `winlocalassistant/__pycache__` — cache_directory: Delete this runtime cache before packaging a release zip.
+- **warning** `__pycache__/app.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `__pycache__/tests_emergency_stability.cpython-312-pytest-9.0.3.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `__pycache__/tests_model_calibration.cpython-312-pytest-9.0.3.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `__pycache__/tests_model_health_timeout.cpython-312-pytest-9.0.3.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `__pycache__/tests_runtime_usability_release_gate.cpython-312-pytest-9.0.3.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **note** `.nova_runtime/llm_lab_contract_sample/notes.txt` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/activity.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/config.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/efficiency_metrics.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/traces.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/playwright/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/activity.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/efficiency_metrics.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/traces.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/chat_fallback_status/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/command_help_status/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/host_ollama_gpu_probe_evidence/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/activity.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/efficiency_metrics.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/traces.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/model_health_and_host_calibration_status/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/activity.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/config.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/efficiency_metrics.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/traces.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/real_browser_gui_runtime_test/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/activity.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/analytics` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/conversations.json` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/efficiency_metrics.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/KNOWLEDGE_BASE.md` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/performance` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/proposals` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/scheduler` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/traces.jsonl` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **note** `.nova_runtime/release_readiness/write_read_verify_code_do_status/webhooks` — runtime_state: Runtime state should normally be excluded from shared release zips.
+- **warning** `winlocalassistant/__pycache__/action_watcher.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/adaptive_backlog.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/analytics_engine.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/architecture_audit.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/assistant_box.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/assistant_datastore.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_explain.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_failure.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_journal.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_loop_guard.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_mission_contract.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomous_sequence.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomy_capabilities.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/autonomy_idle_intelligence.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/behavior_rules.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/benchmark_migration.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.
+- **warning** `winlocalassistant/__pycache__/blueprint_engine.cpython-312.pyc` — compiled_python: Delete compiled Python bytecode before packaging.

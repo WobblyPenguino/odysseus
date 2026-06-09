@@ -1,0 +1,4673 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-06-09 12:35:31",
+  "source_root": "/mnt/data/nova_fix_168",
+  "version": "55.3.168",
+  "release_name": "Nova_v55_3_168_startup_release_gate_hotfix_20260609",
+  "package_path": "/mnt/data/Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530.zip",
+  "file_count": 599,
+  "skipped_count": 340,
+  "total_size_bytes": 16076409,
+  "include_reports": false,
+  "readiness_gate": {
+    "schema_version": 2,
+    "ok": true,
+    "status": "PASS",
+    "summary": "PASS: safe to package",
+    "full": true,
+    "root": "/mnt/data/nova_fix_168",
+    "created_at": "2026-06-09 12:33:20",
+    "checks": [
+      {
+        "name": "compileall",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "compileall",
+          "-q",
+          "winlocalassistant",
+          "app.py"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 2.268,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "compile"
+      },
+      {
+        "name": "chat fallback status",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests_runtime_usability_release_gate.py::test_normal_chat_has_deterministic_fast_fallback",
+          "tests_runtime_usability_release_gate.py::test_common_plain_prompts_return_useful_answers"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 3.054,
+        "stdout_tail": "..                                                                       [100%]\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "chat"
+      },
+      {
+        "name": "model health and host calibration status",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests_model_health_timeout.py",
+          "tests_model_calibration.py"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 3.1,
+        "stdout_tail": ".........                                                                [100%]\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "model"
+      },
+      {
+        "name": "LLM training lab status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.333,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "LLM training lab plan, dataset inspection, budget estimate, report writing and command route passed.",
+        "category": "llm_lab"
+      },
+      {
+        "name": "host Ollama/GPU probe evidence",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "winlocalassistant.model_calibration",
+          "--root",
+          "."
+        ],
+        "required": false,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 2.561,
+        "stdout_tail": "# Nova Model Calibration\n\nStatus: **HOST_CHECK_NEEDED**\nSummary: Host model calibration was recorded, but Ollama is not visible in this environment. Run this on the Windows Nova PC for real timings.\nRoot: `/mnt/data/nova_fix_168`\n\n## Host probes\n- **MISSING** `ollama_list`: `ollama list` (0.0s)\n  - ollama not found on PATH\n- **MISSING** `ollama_ps`: `ollama ps` (0.0s)\n  - ollama not found on PATH\n- **MISSING** `nvidia_smi`: `nvidia-smi` (0.0s)\n  - nvidia-smi not found on PATH\n\n## Chat benchmark evidence\n- Live benchmark rows were not run during release-readiness. Run `python -m winlocalassistant.model_calibration --root . --bench` on the Windows Nova PC for real timings.\n\n## Recommended local tuning flow\n- `ollama list`\n- `ollama ps`\n- `nvidia-smi`\n- `python -m winlocalassistant.model_calibration --root . --bench`\n- `python -m winlocalassistant.release_readiness --root . --full`\n\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "model"
+      },
+      {
+        "name": "command help status",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests_runtime_usability_release_gate.py::test_help_is_concise_full_preserved_and_searchable",
+          "tests_emergency_stability.py::test_grouped_help_covers_chat_code_files_run_gui_model"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 3.269,
+        "stdout_tail": "..                                                                       [100%]\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "help"
+      },
+      {
+        "name": "write/read/verify/code/do status",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests_runtime_usability_release_gate.py::test_write_read_verify_code_do_routes_remain_useful",
+          "tests_emergency_stability.py::test_shell_and_verify_work_in_non_windows_test_environment"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 3.286,
+        "stdout_tail": "..                                                                       [100%]\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "tools"
+      },
+      {
+        "name": "project generation request contracts",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.002,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Strict generation contracts passed for one-file Python, browser game, PowerShell script, and Nova source-edit prompts.",
+        "category": "project_contracts"
+      },
+      {
+        "name": "scheduler status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.02,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Scheduler sanitizer, risk classifier, store, and status route passed.",
+        "category": "scheduler"
+      },
+      {
+        "name": "task contract/evidence/repeated-failure status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.006,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Task contract, decomposition, evidence logging, repeated-failure guard and autonomous safety snapshot contracts passed.",
+        "category": "task_execution"
+      },
+      {
+        "name": "project-state snapshot and continue-readiness status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.028,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Project-state snapshot written to /mnt/data/nova_fix_168/docs/NOVA_PROJECT_STATE_LATEST.json with continue readiness PASS.",
+        "category": "project_state"
+      },
+      {
+        "name": "autonomous safety status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.01,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Autonomous status, stop, and guide routes responded without starting a long run.",
+        "category": "autonomous"
+      },
+      {
+        "name": "remote/API sanity status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.894,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Remote WOL, remote preflight, and API route classifier passed without network mutation.",
+        "category": "remote"
+      },
+      {
+        "name": "legacy continuity audit status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.185,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Legacy continuity audit passed with 8 anchors and current build identity.",
+        "category": "legacy"
+      },
+      {
+        "name": "package hygiene status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 0.148,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "Release file set is hygienic with 600 candidate files and all required files present.",
+        "category": "packaging"
+      },
+      {
+        "name": "real browser GUI runtime test",
+        "command": [
+          "/opt/pyvenv/bin/python",
+          "scripts/run_gui_runtime_test.py"
+        ],
+        "required": true,
+        "ok": true,
+        "returncode": 0,
+        "duration_sec": 11.029,
+        "stdout_tail": "{\n  \"ok\": true,\n  \"base_url\": \"http://localhost:58881\",\n  \"server_cmd\": [\n    \"/opt/pyvenv/bin/python\",\n    \"app.py\",\n    \"--web\",\n    \"--host\",\n    \"127.0.0.1\",\n    \"--port\",\n    \"58881\"\n  ],\n  \"browser_test_returncode\": 0,\n  \"steps\": [\n    \"fetched server HTML\",\n    \"server chat returned useful reply\",\n    \"browser rendered Nova HTML\",\n    \"composer editable before drawers\",\n    \"searchable command help works\",\n    \"drawer/activity geometry does not cover composer\"\n  ],\n  \"server_stdout_path\": \"/mnt/data/nova_fix_168/logs/gui_runtime_server.stdout.txt\",\n  \"server_stderr_path\": \"/mnt/data/nova_fix_168/logs/gui_runtime_server.stderr.txt\",\n  \"screenshot_path\": \"/mnt/data/nova_fix_168/docs/runtime_evidence/nova_runtime_usability_playwright.png\",\n  \"geometry\": {\n    \"inputRect\": {\n      \"x\": 293,\n      \"y\": 821,\n      \"width\": 910,\n      \"height\": 54\n    },\n    \"panels\": [\n      {\n        \"id\": \"liveActivityPanel\",\n        \"visible\": false,\n        \"x\": 0,\n        \"y\": 0,\n        \"width\": 0,\n        \"height\": 0,\n        \"overlaps\": false\n      },\n      {\n        \"id\": \"orbitDrawer\",\n        \"visible\": true,\n        \"x\": -440,\n        \"y\": 16,\n        \"width\": 430,\n        \"height\": 868,\n        \"overlaps\": false\n      },\n      {\n        \"id\": \"orbitRightDrawer\",\n        \"visible\": false,\n        \"x\": 1384,\n        \"y\": 36,\n        \"width\": 320,\n        \"height\": 856,\n        \"overlaps\": false\n      },\n      {\n        \"id\": \"orbitRightDrawer\",\n        \"visible\": false,\n        \"x\": 1384,\n        \"y\": 36,\n        \"width\": 320,\n        \"height\": 856,\n        \"overlaps\": false\n      }\n    ]\n  }\n}\n",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "",
+        "category": "gui"
+      },
+      {
+        "name": "packaging permission status",
+        "command": [],
+        "required": true,
+        "ok": true,
+        "returncode": null,
+        "duration_sec": 0.0,
+        "stdout_tail": "",
+        "stderr_tail": "",
+        "skipped": false,
+        "reason": "/release-package is allowed only when every required release-readiness check passes.",
+        "category": "packaging"
+      }
+    ],
+    "category_status": {
+      "compile": "PASS",
+      "chat": "PASS",
+      "model": "PASS",
+      "llm_lab": "PASS",
+      "help": "PASS",
+      "tools": "PASS",
+      "project_contracts": "PASS",
+      "scheduler": "PASS",
+      "task_execution": "PASS",
+      "project_state": "PASS",
+      "autonomous": "PASS",
+      "remote": "PASS",
+      "legacy": "PASS",
+      "packaging": "PASS",
+      "gui": "PASS"
+    },
+    "required_failed": [],
+    "optional_failed": [],
+    "latest_json": "/mnt/data/nova_fix_168/docs/NOVA_RELEASE_READINESS_LATEST.json",
+    "latest_markdown": "/mnt/data/nova_fix_168/docs/NOVA_RELEASE_READINESS_LATEST.md"
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 133,
+      "sha256": "b99df485c1f1c167708affbae7efa7ea039c983bb3c5005457b647e60af5fa82"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "size": 609,
+      "sha256": "04838c7b51f667b4b9e5da2922098f1e368ab3240bce0beefd6ab9b45bb631fb"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 4508,
+      "sha256": "84b13a07a9194604788aa21149bf55e991db5915adec33bf3a51c4e0fb1474c5"
+    },
+    {
+      "path": "AUTONOMOUS_IMPROVEMENTS.md",
+      "size": 66747,
+      "sha256": "80daf87d7190063fea46978251dfccee7a63dd98cd8d94aeea06d9c63f1c5dcc"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 71757,
+      "sha256": "01cd97f27fc85b1ef0908364c6c655971450b695bac64a039c6e5f0c0a486eca"
+    },
+    {
+      "path": "CODEBASE_OVERVIEW.md",
+      "size": 6153,
+      "sha256": "cd3c906cfeaffa6ebc0767e8e4b90d5f42947bd3cce13d8a3f301d31921350de"
+    },
+    {
+      "path": "ERROR_INVESTIGATION.md",
+      "size": 34638,
+      "sha256": "feb42026ba648ec53913d3f471a80ab3bce3e6c81b751214ab4d275fcf03c200"
+    },
+    {
+      "path": "IMPROVEMENTS_SESSION_3.md",
+      "size": 9052,
+      "sha256": "12ab6b5f42cc06bcf697bcde692dcc5b9c62ef9ed1e5bebba86bdc4b18b438b8"
+    },
+    {
+      "path": "IMPROVEMENT_PROPOSALS.md",
+      "size": 6367,
+      "sha256": "3466511576635f94aa067e501b4a0447c76a4eb90284e0b8117c27ac72a765dc"
+    },
+    {
+      "path": "README.md",
+      "size": 41179,
+      "sha256": "2be865e2fce1fe47e8817e1673497af89d4392aaee092aad92a65a78eb18f48e"
+    },
+    {
+      "path": "README_START_HERE.txt",
+      "size": 817,
+      "sha256": "e319096bf1bba615df6735f0f35971c307e5c761c646f5c06412bcb79046f0c8"
+    },
+    {
+      "path": "SETUP_NOVA_FIRST.bat",
+      "size": 481,
+      "sha256": "377049202e101c65b1e953828ccf60957de4fd554b474c49b7940d6fefb08af7"
+    },
+    {
+      "path": "START_NOVA_HERE.bat",
+      "size": 676,
+      "sha256": "1af4599ca9f3845021244ebff7e9a1dc0890a0a4e3a4e7978c524347b5d17572"
+    },
+    {
+      "path": "VALIDATION_BETTER_MODELS_VIDEO_PATCH.md",
+      "size": 3389,
+      "sha256": "0e5d46853c504c3b7584edae03d151151d7f9d6e32e355a14c3ef09e355b2093"
+    },
+    {
+      "path": "VALIDATION_V55_3_151_BUGFIX_VIDEO.md",
+      "size": 565,
+      "sha256": "9e3f0208c3c8a50f35b04d57abf24a93c9ca53fd2e5161e57ae080cf9db20443"
+    },
+    {
+      "path": "VALIDATION_V55_3_152_INTEGRATION_FOUNDATION.md",
+      "size": 1223,
+      "sha256": "850a79aabed7552e60808622fe5aa86f2b61bbc8c6840caedaa47d1dbc1c62dc"
+    },
+    {
+      "path": "VALIDATION_V55_3_153_COMPREHENSIVE_INTEGRATION.md",
+      "size": 1464,
+      "sha256": "55ba24d82e025aafc9c42f5d173809b3d5756c7544d8c356f431ec2212f0af4f"
+    },
+    {
+      "path": "VALIDATION_V55_3_154_REGRESSION_HARDENING.md",
+      "size": 944,
+      "sha256": "d74561d0f168e02579d2e419ff47b45a7696660b927a177dfc36744c60719e48"
+    },
+    {
+      "path": "VALIDATION_V55_3_155_START_HERE_HARDENING.md",
+      "size": 586,
+      "sha256": "eb69c1f1bfc797b065f27bed5041f735c44c4d6a4a7dde5c9bb2cb50ff12b1f2"
+    },
+    {
+      "path": "VALIDATION_V55_3_156_AUTONOMOUS_MEDIA_SUBAGENTS.md",
+      "size": 3428,
+      "sha256": "1b439ebcecb3a111e9390522d6eb1f6b3e8f06bc8c49ed3333b9a9277fbc7c06"
+    },
+    {
+      "path": "VALIDATION_V55_3_157_RESEARCH_VOICE_HARDENING.md",
+      "size": 1505,
+      "sha256": "f207315f6df6fc0b4177abea4216907563ae9ee8775f89e0814addbb6547a196"
+    },
+    {
+      "path": "VALIDATION_V55_3_158_SELF_REPAIR_OLLAMA_QUEUE.md",
+      "size": 847,
+      "sha256": "e18ff992d2fb7e89c8814b817368804c19da0bfc723004a87faa2dc4c0c38211"
+    },
+    {
+      "path": "VALIDATION_V55_3_159_CLEAN_GUI_DOCKER_HARDENING.md",
+      "size": 2186,
+      "sha256": "6f685873b08d04b6643244ed9657d3b482b0e8a184dec847745db49f0f724152"
+    },
+    {
+      "path": "VALIDATION_V55_3_160_MEDIA_REFINEMENT.md",
+      "size": 498,
+      "sha256": "a08d8b6b477cae404ddfcff9554b94e354793e0ca424da6184399db3869ab171"
+    },
+    {
+      "path": "VALIDATION_V55_3_161_GUI_STARTUP_MEDIA_ROUTE_HARDENING.md",
+      "size": 1858,
+      "sha256": "1856836d82b4b670c1800d7dcfab33e48498ea27f329446bf2c601dbaeabaebd"
+    },
+    {
+      "path": "app.py",
+      "size": 1275,
+      "sha256": "43c92eb9352606391d3425ea1f5ec89b92e3296108a0d9d2c2f8a67f48d643d6"
+    },
+    {
+      "path": "docs/AGENT_TOOL_USE_GUIDE.md",
+      "size": 613,
+      "sha256": "b6e086a486dc403a179f44d32208ad95476cea81367bfb930ed52322622fcb7e"
+    },
+    {
+      "path": "docs/AI_CONTEXT_START_HERE.md",
+      "size": 2186,
+      "sha256": "557807f537f726702d62f219c932270aadef878c3ab09d5be2510869ef5b6b13"
+    },
+    {
+      "path": "docs/CODEX_REPAIR_PROMPT_V55_3_48.md",
+      "size": 1437,
+      "sha256": "06e3145681968aacebbf2d8cdf77283344dfab8dc691a3889d3ca76f95802009"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS_V55_3_41.md",
+      "size": 2121,
+      "sha256": "6aebc035ead7b6aba6890e1f630b24c40ee7fbfe19870bb7a36bbc24daf31ff2"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V53_4.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V53_5.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V53_6.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V53_7.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V53_8.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/IMPROVEMENT_REPORT_V54_2.md",
+      "size": 444,
+      "sha256": "aeff6da929ff4de561e86ac78e1470e17b7c826b96c5e937f6b5110c86a1d05b"
+    },
+    {
+      "path": "docs/INTEGRATION_BLUEPRINT_ADAPTATION_V55_3_152.md",
+      "size": 1750,
+      "sha256": "0be7a29fa28170c69d9d97a8ff491182f93bf4d43e26f1ab2869ce8f604698f7"
+    },
+    {
+      "path": "docs/INTEGRATION_RADAR_LATEST.json",
+      "size": 8759,
+      "sha256": "966ff08368df49158b3b0013a6080aa04a34703d2a2357a4707883e5a0ee9a66"
+    },
+    {
+      "path": "docs/INTEGRATION_RADAR_LATEST.md",
+      "size": 3291,
+      "sha256": "4a13aa969722f5908c97300407e4c0e74131f79bcc33dd30f6ae16e9f09c6cae"
+    },
+    {
+      "path": "docs/INTEGRATION_REVIEW_V55_3_153.md",
+      "size": 712,
+      "sha256": "7b6e192893728c52fdaf8723f09b00b827cc37cc89bc8700ceb6bef48a9efc7a"
+    },
+    {
+      "path": "docs/INTENT_AND_VOICE_MODE_UPDATE_20260527.md",
+      "size": 2292,
+      "sha256": "b29e014975e321d3ba482f30ba3548931757b1d668c8f0ccca02c1bcddf4f689"
+    },
+    {
+      "path": "docs/LOCAL_AI_RESEARCH_NOTES_V55_3_162.md",
+      "size": 857,
+      "sha256": "3a14ddaf1c6692834df3135c1a033c1a3db80f07e6c2d2f9ed2054d9c8f9511d"
+    },
+    {
+      "path": "docs/NOVA_ARCADE_AND_HELP_COMPLETION.md",
+      "size": 1807,
+      "sha256": "7aa9f28080399322a274d1f5eabb9414dc4994820e39f1fbdadeab1bf99289b0"
+    },
+    {
+      "path": "docs/NOVA_ARCADE_HELP_RUNTIME_VISUAL_20260609.png",
+      "size": 205907,
+      "sha256": "7fa7efaca88770127be6641d0257e447df6990c67267d70910618a7c4ffa5d87"
+    },
+    {
+      "path": "docs/NOVA_AUTONOMOUS_TOOL_USE_GUIDE.md",
+      "size": 2552,
+      "sha256": "30a6a0e72182a16142e850fabb0540a6a84791ba24a0742f2d6ecdf1d4cb634c"
+    },
+    {
+      "path": "docs/NOVA_BROWSER_RUNTIME_TEST_LATEST.json",
+      "size": 1616,
+      "sha256": "975288ae05cf6147378637ea5d57a511093dc5b237ef32fdb4337d54f64f0eb9"
+    },
+    {
+      "path": "docs/NOVA_BROWSER_RUNTIME_TEST_LATEST.md",
+      "size": 394,
+      "sha256": "fb6187d855f1682bb614e339637d4599247c8eefce31fbbc2759a3822d167191"
+    },
+    {
+      "path": "docs/NOVA_BUILD_IDENTITY_AND_CACHE_RECOVERY.md",
+      "size": 791,
+      "sha256": "49daf7a95414e812da6e252d7f2fb9d64cb102e65494fc2c07adee9b2f8815e6"
+    },
+    {
+      "path": "docs/NOVA_BUILD_QUALITY_LATEST.json",
+      "size": 1695,
+      "sha256": "361c1cd17b10358acb4b21c93a48997fa5e730719563cf6b91c4ece65f7e0fa3"
+    },
+    {
+      "path": "docs/NOVA_BUILD_QUALITY_LATEST.md",
+      "size": 1232,
+      "sha256": "9f69d5127ead1d2e13524bd35cf6e521e620f5a9da2aafc41d10d65440fbccc8"
+    },
+    {
+      "path": "docs/NOVA_COMPREHENSIVE_USER_TEST_LATEST.json",
+      "size": 13970,
+      "sha256": "3763b55e09962f5944ab21a6c0f0c1a083127f851ae8e609b8b41ea1959aa930"
+    },
+    {
+      "path": "docs/NOVA_COMPREHENSIVE_USER_TEST_LATEST.md",
+      "size": 1630,
+      "sha256": "9f0b580189bc7abcbd2ab4d289c8c1b48fb466a1a174eee5c7de0d24a0a09ffc"
+    },
+    {
+      "path": "docs/NOVA_CONTINUITY_AND_PROJECT_STATE.md",
+      "size": 2204,
+      "sha256": "46263fc9ccabcc4abb646087c708ee6eb14a7d07a908d31d1a1d0ad5f56ed230"
+    },
+    {
+      "path": "docs/NOVA_CYBERPUNK_THEME.md",
+      "size": 1263,
+      "sha256": "0c40682304e13bc650fd657c438d113ea8e55344a81a43c33418b35355ecd775"
+    },
+    {
+      "path": "docs/NOVA_CYBERPUNK_THEME_VISUAL_20260608.png",
+      "size": 414120,
+      "sha256": "eeb538d4fb8127c023829bafdf8c6ec62514988989e2d1717327edb7ab7dc91a"
+    },
+    {
+      "path": "docs/NOVA_DOCTOR_LATEST.json",
+      "size": 3779,
+      "sha256": "c0a0384ef6583ad2622b1a11f96ff4bbec3694390403fb8d7c58a79178164f82"
+    },
+    {
+      "path": "docs/NOVA_DOCTOR_LATEST.md",
+      "size": 1546,
+      "sha256": "e7c29c003b8d64e1e194dea5d658c80f811678a8bd8d1c6508945bba417fb862"
+    },
+    {
+      "path": "docs/NOVA_EFFICIENCY_AUDIT_LATEST.json",
+      "size": 3788,
+      "sha256": "04f5c8135062adb1ff5375a9d7375ea4d2859cb07e6ba3aae1eaeaad00680838"
+    },
+    {
+      "path": "docs/NOVA_EFFICIENCY_AUDIT_LATEST.md",
+      "size": 3081,
+      "sha256": "6b752d43375b6c2737a43774e134d919d95a71c86c078685c00a3934c6ddd7fc"
+    },
+    {
+      "path": "docs/NOVA_EMERGENCY_STABILITY_FIX.md",
+      "size": 1357,
+      "sha256": "cbf2d86f1d69157f32521ab877130159ec100a9985c2b03683b5f9a7cf4d9815"
+    },
+    {
+      "path": "docs/NOVA_EMERGENCY_STABILITY_VISUAL_20260609.png",
+      "size": 364542,
+      "sha256": "af4830194d39035773b2e81a8cb2e8a5c7c548f8ec89ea66d6041c17f6bd9170"
+    },
+    {
+      "path": "docs/NOVA_FASTAPI_API_BRIDGE.md",
+      "size": 1018,
+      "sha256": "2130f64d63b2580966a58e26e02c973360445b4da543b78c6f5ba97fd46acf65"
+    },
+    {
+      "path": "docs/NOVA_FASTAPI_MIGRATION_PLAN.md",
+      "size": 2254,
+      "sha256": "1028a7213d4201ac19a39c8caf4d4affa7fd3bd1a23212b122199cde6d82969a"
+    },
+    {
+      "path": "docs/NOVA_FEATURE_AUDIT_LATEST.json",
+      "size": 6712,
+      "sha256": "5354ae289d507f39c4ac6a6724ca7e13110f7e71083d389f13e24931f1be6494"
+    },
+    {
+      "path": "docs/NOVA_FEATURE_AUDIT_LATEST.md",
+      "size": 3204,
+      "sha256": "5622bcb907049eafc9db738f4b913d20a64cb74d8a0b1a8fae676a706fd2b9d9"
+    },
+    {
+      "path": "docs/NOVA_FEATURE_CONTINUITY_LATEST.json",
+      "size": 5694,
+      "sha256": "f63bd46de21caa281ac0a6d0ac7e82002161bf12e96089e433a40342db41d8ff"
+    },
+    {
+      "path": "docs/NOVA_FEATURE_CONTINUITY_LATEST.md",
+      "size": 3159,
+      "sha256": "79afa7df3867e3844186d94ec2f1666250a2c0cd2723f28d66125a8ec2a04af3"
+    },
+    {
+      "path": "docs/NOVA_GUI_AI_HELP_OVERLAY.md",
+      "size": 2074,
+      "sha256": "59b96d6fc9bc6b605b544bc5fd86d623003ba77f2d2bdc95f1f47630afaad38a"
+    },
+    {
+      "path": "docs/NOVA_GUI_AI_HELP_OVERLAY_VISUAL_20260608.png",
+      "size": 463478,
+      "sha256": "e3faf2c8a77b97932f5802668e72761c097499c5e565baf07195bdb340781e72"
+    },
+    {
+      "path": "docs/NOVA_GUI_ARCHITECTURE.md",
+      "size": 1759,
+      "sha256": "498d6f15c15f4444149efb3bbaea755adeccd15266c9bf9865b5abff7fbef089"
+    },
+    {
+      "path": "docs/NOVA_GUI_BUILD_IDENTITY_VISUAL_20260608.png",
+      "size": 366866,
+      "sha256": "fc913b8792459560802f1e39e37ed12e83001cbe329414291ad792d13e4199d9"
+    },
+    {
+      "path": "docs/NOVA_GUI_COCKPIT_V2_LATEST.json",
+      "size": 1230,
+      "sha256": "db290d7ef57f007c1bc2c04fb1d1336952e978a4e29f6476d15277b788ea2ebb"
+    },
+    {
+      "path": "docs/NOVA_GUI_COCKPIT_V2_LATEST.md",
+      "size": 600,
+      "sha256": "46763cb14395ebca27395f96d7d9e07faaa3ccebf88b9c32bb98c01a0e2998f2"
+    },
+    {
+      "path": "docs/NOVA_GUI_INTERACTION_OVERHAUL.md",
+      "size": 1747,
+      "sha256": "78c841754690ab80e6d1ef00e1f3e968a36c48bdaedef4fc5f6c5da9ce88a72a"
+    },
+    {
+      "path": "docs/NOVA_GUI_INTERACTION_OVERHAUL_VISUAL_20260609.png",
+      "size": 371503,
+      "sha256": "6594c7d4319cbd571a7d6002e347c3999772e61ea7c9bd206c4c8d07070fb1d1"
+    },
+    {
+      "path": "docs/NOVA_GUI_LAYOUT_STATUS.md",
+      "size": 1877,
+      "sha256": "20c206ef3f086f6d3646bdf4026111d00d17f6c66b70191c7b1a64f1ca3b60aa"
+    },
+    {
+      "path": "docs/NOVA_GUI_LAYOUT_STATUS_VISUAL_20260608.png",
+      "size": 371886,
+      "sha256": "c8f7c6a1b2e1549449a37bcf62c8cd5ca638943acbea38b27f93502ccbdac49e"
+    },
+    {
+      "path": "docs/NOVA_GUI_RESET_AND_ROUTE_DIAGNOSTICS.md",
+      "size": 2094,
+      "sha256": "48e2a6a2afab18582565ba12ff2b7740dd6beaa7b197e5cd8a0efcc5a5b44d9a"
+    },
+    {
+      "path": "docs/NOVA_GUI_RESET_VISUAL_20260608.png",
+      "size": 366163,
+      "sha256": "deee11133f5ad1d3f0e2c69d07d6018b1f8a2d8fe1c1db7ad05a45159650611e"
+    },
+    {
+      "path": "docs/NOVA_GUI_VISUAL_VERIFICATION.md",
+      "size": 1196,
+      "sha256": "8951c09e554202004d43eab27ea00ab0bd552247afed071127b9ac8cef3793bb"
+    },
+    {
+      "path": "docs/NOVA_GUI_VISUAL_VERIFICATION_20260608.png",
+      "size": 370627,
+      "sha256": "9a0a248fd54f2fa2e0de664c8e3e69e0c7a36658eca57784d2b6666ccc119988"
+    },
+    {
+      "path": "docs/NOVA_INSTALL_AND_TEST_ALL.md",
+      "size": 1912,
+      "sha256": "d7d7c63c9b8b86285e4bfafd2dab3b1b9074fc9a5004f8fbba095c485f8d9920"
+    },
+    {
+      "path": "docs/NOVA_INTERACTION_FLOW_AUDIT_LATEST.json",
+      "size": 10645,
+      "sha256": "ec302e88693214237bb47a5e934f690c50be8fb55f40b6537bd24c0cb2bffd2e"
+    },
+    {
+      "path": "docs/NOVA_INTERACTION_FLOW_AUDIT_LATEST.md",
+      "size": 6079,
+      "sha256": "3a53074addc6f2de1c0f7227209fdbd1e29a3c7d7ebf243af5151af8b230695c"
+    },
+    {
+      "path": "docs/NOVA_LEGACY_CONTINUITY_CONTRACT.json",
+      "size": 12459,
+      "sha256": "661e42cc568ed886603656d286fa5cd247cd5559cfe04fd6121ee9c5b8f116ca"
+    },
+    {
+      "path": "docs/NOVA_LEGACY_CONTINUITY_GUARD.md",
+      "size": 1425,
+      "sha256": "72cfac4e929135bf3a0e2d04caac80e394223950272d0075584576a1b2d7affd"
+    },
+    {
+      "path": "docs/NOVA_LEGACY_CONTINUITY_VISUAL_20260609.png",
+      "size": 378607,
+      "sha256": "7ea3c781ceac03313e83f1e17d6d363e14daf819f270d47fea2ae0ff385f6212"
+    },
+    {
+      "path": "docs/NOVA_LLM_FROM_SCRATCH_TRAINING_LAB.md",
+      "size": 2044,
+      "sha256": "319fe4d8ab0f394ab0fdd7059ce15bbd17f554ffa70507686ec83a24a25438d5"
+    },
+    {
+      "path": "docs/NOVA_LLM_TRAINING_LAB_LATEST.json",
+      "size": 3439,
+      "sha256": "4d0c076ce5ab4ac0c08e97605fa64f8bd8022468ecd8ebdf999aabf1ba245fd9"
+    },
+    {
+      "path": "docs/NOVA_LLM_TRAINING_LAB_LATEST.md",
+      "size": 2699,
+      "sha256": "a00996005e7df31075bd586d172de4083f9baddd1768eb04c49ba74994b634f6"
+    },
+    {
+      "path": "docs/NOVA_LOCAL_AI_PERFORMANCE_TUNING.md",
+      "size": 1077,
+      "sha256": "a91223d6937ad99147d439a78a54f423502285698a2a6154b3bea55a63803777"
+    },
+    {
+      "path": "docs/NOVA_LOCAL_MODEL_TOOL_USE_GUIDE.md",
+      "size": 1504,
+      "sha256": "e3180432a64a5d53a56de474ad0dea985218f3ebe0e0465c5eb768bbc4017fbd"
+    },
+    {
+      "path": "docs/NOVA_MAINTENANCE_VALIDATION_LATEST.json",
+      "size": 5461,
+      "sha256": "a6667c58ec16cf33bb38021ab48900ffb313a1ce67ce21ec8c13a02471153691"
+    },
+    {
+      "path": "docs/NOVA_MAINTENANCE_VALIDATION_LATEST.md",
+      "size": 1796,
+      "sha256": "8e045685ca6f23fea89df296ca601f9d52de95152e82b6952037f0e50065a5b4"
+    },
+    {
+      "path": "docs/NOVA_MASSIVE_SYSTEM_TEST_LATEST.json",
+      "size": 4680,
+      "sha256": "809373690512855e348c1a8ffab294e956a5df47ff742c8fc76a4989e044a640"
+    },
+    {
+      "path": "docs/NOVA_MASSIVE_SYSTEM_TEST_LATEST.md",
+      "size": 895,
+      "sha256": "68cd894b3820d57755a530976c3baf34e2c42bafd538418d861098205f026eb3"
+    },
+    {
+      "path": "docs/NOVA_MCP_STYLE_MANIFEST_LATEST.json",
+      "size": 50976,
+      "sha256": "5587d5b9327b65f8aa330e9dfc5301405d05f85c08f342a17c4d260acb722404"
+    },
+    {
+      "path": "docs/NOVA_MEGA_TEST_LATEST.md",
+      "size": 47093,
+      "sha256": "d2b21df92f67fbb7befd2bfa452717d4afdd6777549e7837eaab2858abab0159"
+    },
+    {
+      "path": "docs/NOVA_MODEL_CALIBRATION_LATEST.json",
+      "size": 1528,
+      "sha256": "8f86ea207112f5bca185c774bf878814c6ed60cd8a1ac851147e0f16d537a239"
+    },
+    {
+      "path": "docs/NOVA_MODEL_CALIBRATION_LATEST.md",
+      "size": 892,
+      "sha256": "09005fe1944bbfe5b506a9cea73cb2d3ebcf7bc49c7cb15cbeb6f5e780376d52"
+    },
+    {
+      "path": "docs/NOVA_MODEL_RELIABILITY_LATEST.json",
+      "size": 412,
+      "sha256": "f7250c66793f60aea2e7724ea1e79e6d19726771df0ddb4079d31d4e72004f6e"
+    },
+    {
+      "path": "docs/NOVA_MODEL_RELIABILITY_LATEST.md",
+      "size": 375,
+      "sha256": "89779d5ef6af3e01286a1ea82034dcf44d8cea45ce3c6eaa8bfb20f44b5fb07c"
+    },
+    {
+      "path": "docs/NOVA_ODYSSEUS_ADAPTATION_PLAN.md",
+      "size": 2618,
+      "sha256": "d1e6af8840276ace486fa1de2ab050d11048d930b3aeaae6148dabbfa621c9c7"
+    },
+    {
+      "path": "docs/NOVA_ODYSSEUS_FULL_FEATURE_PORT.json",
+      "size": 6446,
+      "sha256": "9b2d909840fb516e3c6a34f6fb3ff858a8a1bffaf0a8ebb17c4f7b4455af83d9"
+    },
+    {
+      "path": "docs/NOVA_ODYSSEUS_FULL_FEATURE_PORT.md",
+      "size": 3665,
+      "sha256": "cdfe831585abff6a1201703c29c36c371c1d6db22d518d8ca0e1bcd80d010c6d"
+    },
+    {
+      "path": "docs/NOVA_ODYSSEUS_GUI_WORKBENCH_PLAN.md",
+      "size": 1540,
+      "sha256": "cac11b1dfcf174ad716b9286243d313fdeddab025acf112ff2a853e312f2c3c4"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_139.md",
+      "size": 1925,
+      "sha256": "ed05c8fc16d3b23de051c2633ea02b562c9e5f614d7e3b8dbb60ee6bd08511cd"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_140.md",
+      "size": 1469,
+      "sha256": "8a5fd7ce53ce7fff796ae3ef6f6a2367ca0e5ce95241e77ac35c92fc75e4157e"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_141.md",
+      "size": 1610,
+      "sha256": "136e92937132cc586921e790b3cb77b550a264b25200b5f24510f906bb308cfc"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_141_STARTUP_HOTFIX.md",
+      "size": 1478,
+      "sha256": "ae63b3ef892474fcce73ac1c6c27e4f3407e8809b539d45e86a29e935575d098"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_141_clean_studio_gui.md",
+      "size": 851,
+      "sha256": "4095dceef87eb3a8afecb64aa7fdb47b71ae23f93de41b3cfa2f55a02263b578"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_142.md",
+      "size": 1271,
+      "sha256": "bf4b5d61a49db9db654d0b8245ffd3608b512365fe43764ddaaeaf4b2786b054"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_143.md",
+      "size": 1161,
+      "sha256": "fddb7698d915de7709107139cbc380494cd9428d248c801f5297ec8fac565eda"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_144.md",
+      "size": 1188,
+      "sha256": "2f8c2582b323288dcefb509b1c8172e3aff9615668dc1b2fceee8bb08203269b"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_145.md",
+      "size": 882,
+      "sha256": "c15f7698c36da7d0863338555499a7e21ef5c17c1e9ace68dd772e4f90d43713"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_146.md",
+      "size": 1702,
+      "sha256": "00c4958066d674ce9917a0ae4833e786e076cb70d52fc410ff9421d785e0efd9"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_147.md",
+      "size": 1220,
+      "sha256": "e029131118832c2b17f02e636608012178b4f22436f64e5c0bfc6beadd3cfe25"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_148.md",
+      "size": 2403,
+      "sha256": "cfa0d9ca3ed3dbcc872d43ae80a8b84d57b4021cab94ae222aef21823477ea3f"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_149.md",
+      "size": 787,
+      "sha256": "edaecd4e822040878dcd21c33e26c262459e2f8b3ab104fa9427894b7f1dd83c"
+    },
+    {
+      "path": "docs/NOVA_PATCH_SUMMARY_v55_3_150.md",
+      "size": 609,
+      "sha256": "b3ee92a6f0e54aae623e4177905f8adea38745e87f5b7cdd8f519d21350eb090"
+    },
+    {
+      "path": "docs/NOVA_PROJECT_STATE_LATEST.json",
+      "size": 14973,
+      "sha256": "f2e486fb5b02b8d6515e19b63058d0853d97be8234111c2bef6df97d1474b819"
+    },
+    {
+      "path": "docs/NOVA_PROJECT_STATE_LATEST.md",
+      "size": 1740,
+      "sha256": "63fa3272a39b5f502fd1d1449122c3ad3716e67674d04846a8d4d9647e672544"
+    },
+    {
+      "path": "docs/NOVA_PROPOSED_CHANGES_AND_VALIDATION_V55_3_41.pdf",
+      "size": 5392,
+      "sha256": "60239e3d94b6d5f1cf5576bfbee53a9be642b37a33f8969673235f6a92136b16"
+    },
+    {
+      "path": "docs/NOVA_REBRAND_IMPROVEMENT_REPORT_20260602.md",
+      "size": 3160,
+      "sha256": "82090e32d73c8709ba90441f35783f4dedc4c67337fa609b46b481cc8582bc95"
+    },
+    {
+      "path": "docs/NOVA_RELEASE_GATE_LATEST.json",
+      "size": 6716,
+      "sha256": "289aada15601da86990797d63e5b71dadcd8fbab7083312453f78e9e1f95a79f"
+    },
+    {
+      "path": "docs/NOVA_RELEASE_GATE_LATEST.md",
+      "size": 664,
+      "sha256": "7d81c3d1aab18719f5e152144fd9cdecab5f6c6b2c4872748edeb90d33d681d1"
+    },
+    {
+      "path": "docs/NOVA_RELEASE_READINESS_LATEST.json",
+      "size": 11232,
+      "sha256": "499b74d388f2825137f6f7c4cf03be561ac3bd31ef58d24e8958a357009dee89"
+    },
+    {
+      "path": "docs/NOVA_RELEASE_READINESS_LATEST.md",
+      "size": 3164,
+      "sha256": "90f5ce2a075599cf4fbc54c6d61c9ecb859b7ccd61e7b2b57175fd66e5ff2c54"
+    },
+    {
+      "path": "docs/NOVA_REMOTE_ACCESS_SETUP.md",
+      "size": 2647,
+      "sha256": "f8e18ed3387c9a6ba5dbf6d54062203b4a0670339f46ed59b6556aec91910434"
+    },
+    {
+      "path": "docs/NOVA_RESPONSE_QUALITY_PLAN_LATEST.json",
+      "size": 4182,
+      "sha256": "4b92fe21d5136d194d393dbb3a7c6beb53dc047b85a34c70b56ba042a1fe14d9"
+    },
+    {
+      "path": "docs/NOVA_RESPONSE_QUALITY_PLAN_LATEST.md",
+      "size": 3407,
+      "sha256": "c27f113c81d50bbb33bde34f2997ccfa6f365a42b650a2c4d021142ea7b94bdd"
+    },
+    {
+      "path": "docs/NOVA_SUPPORT_REPORT_LATEST.json",
+      "size": 6951,
+      "sha256": "0cb7b63162e58defe4ebada842c3c32ce2220d269a5004a8823cf3fff08b1ed2"
+    },
+    {
+      "path": "docs/NOVA_SUPPORT_REPORT_LATEST.md",
+      "size": 1201,
+      "sha256": "1c54e4c607bb03803ccd45bcd62fec6a93bdb6e75d5240b6b6515c12225406f5"
+    },
+    {
+      "path": "docs/NOVA_TASK_EXECUTION_FLOW_V55_3_167.md",
+      "size": 2422,
+      "sha256": "2baec95e7cc9b9715f2b7e79ffdd1c2068c8ba71721fbe6027ae653841e6e231"
+    },
+    {
+      "path": "docs/NOVA_TOOL_CATALOG.md",
+      "size": 694,
+      "sha256": "6f66e386f1c1a5099667dc50cef0b5c9319c8d6e54d150eb53aa3206b7952dd7"
+    },
+    {
+      "path": "docs/NOVA_VERIFIED_CHANGE_RECEIPT_LATEST.json",
+      "size": 5337,
+      "sha256": "aaff42a36d099a9fd0b71e29219bfcf5c37ec309b4a46d38facecae9248b5f0e"
+    },
+    {
+      "path": "docs/NOVA_VERIFIED_SELF_CHANGE_FLOW.md",
+      "size": 1038,
+      "sha256": "11fa498ca7109f0c7352b393e4a60a3014bcdd93079a3fe21029ca6589a2e337"
+    },
+    {
+      "path": "docs/NOVA_WHOLE_CODEBASE_REVIEW_LATEST.json",
+      "size": 37430,
+      "sha256": "185c709b3202572b3f7730e654dd8b20ae998da112bc21e93992a6c9914630b6"
+    },
+    {
+      "path": "docs/NOVA_WHOLE_CODEBASE_REVIEW_LATEST.md",
+      "size": 1784,
+      "sha256": "db1866ed882aa843bdc77babcd9c1b3881430b5ee4af5e3ccfed58cc037254b0"
+    },
+    {
+      "path": "docs/NOVA_WIDE_LEFT_RAIL.md",
+      "size": 1172,
+      "sha256": "d538baf20fe4daa7fddf90de46eba3c72b2ced73fd11a08cb7b1dd145eece792"
+    },
+    {
+      "path": "docs/NOVA_WIDE_LEFT_RAIL_VISUAL_20260608.png",
+      "size": 390939,
+      "sha256": "16959770d9299e82693d83cddbe25b604a8e7fabe84c8c392a5c269b088b3014"
+    },
+    {
+      "path": "docs/NOVA_v55_3_39_proposed_changes_and_validation_plan.pdf",
+      "size": 6014,
+      "sha256": "8459b7c0e2e5f92a88c8bad51a615e6d77e464d6a44fcc681a19043b822a6bf0"
+    },
+    {
+      "path": "docs/PDF_REVIEW_IMPLEMENTATION.md",
+      "size": 1148,
+      "sha256": "5c16857b3fbea62eb221bfaec5360a4b91e095c3e84801afcbe62236ac7fa2fc"
+    },
+    {
+      "path": "docs/PHONE_ACCESS_TAILSCALE.md",
+      "size": 2089,
+      "sha256": "dc84b86cf8f0a786b0d3e00b8dc5ea0ff6b7b5c2490b31fc667c28b819cf3625"
+    },
+    {
+      "path": "docs/QUALITY_PROGRESS_LEDGER.md",
+      "size": 964,
+      "sha256": "565b3ddba2a83ea87d1bf8484f6198a83afc36e5eaad57d0d65b2b780b5b8274"
+    },
+    {
+      "path": "docs/RELEASE_HYGIENE_LATEST.json",
+      "size": 74784,
+      "sha256": "90b59491a3b0a311ad42dce5037953ccbdf35ecca206913a9626fbc45ab010c6"
+    },
+    {
+      "path": "docs/RELEASE_HYGIENE_LATEST.md",
+      "size": 15620,
+      "sha256": "3ee32bc5eb934a490e1bf81161b6e536b3af1211c247e65e0edf3514900f4021"
+    },
+    {
+      "path": "docs/SCHEDULING_CONTROL_PLANE_V55_3_164.md",
+      "size": 981,
+      "sha256": "f057ca40d04229725e99032531d5ff60489f312ee72f428d24165731c23bfaf3"
+    },
+    {
+      "path": "docs/SUBQ_NVIDIA_PROVIDER_INTEGRATION_V55_3_163.md",
+      "size": 2626,
+      "sha256": "53f73c43c0c42e8adb4efff649bcc4d47811865a7c292bd8ae793bee9d39a8af"
+    },
+    {
+      "path": "docs/runtime_evidence/nova_runtime_usability_playwright.png",
+      "size": 302757,
+      "sha256": "c569ecb626031c71754520287481bc417f0e497bf7b7b7a4cd74f5d635b0bb7e"
+    },
+    {
+      "path": "install_nova_remote_startup_task.ps1",
+      "size": 1270,
+      "sha256": "d7c823a1a0fff77a6d6a2571383d407fcbd6745a11acb8ad75be79a2d1ae12b4"
+    },
+    {
+      "path": "install_optional_ollama_models.bat",
+      "size": 347,
+      "sha256": "9542e991cba16e422a53a61a5a687bc45c5d6d6f5ba9e1172e917a99cd01e71f"
+    },
+    {
+      "path": "nova/__init__.py",
+      "size": 212,
+      "sha256": "7405237b199e3601c83d3a261b9807a05c373178c0c162e6e4b31f621068f382"
+    },
+    {
+      "path": "nova/validate.py",
+      "size": 101,
+      "sha256": "2833913a8fd14f42ef3c8618ac97f2da3b6009983d9d277f4e7479734d2964a8"
+    },
+    {
+      "path": "nova_vision_verify.png",
+      "size": 362,
+      "sha256": "ed2524e5f250e3aa9195651acb44b1cf88e88d99ece2cb3f391ac459aa650453"
+    },
+    {
+      "path": "package-lock.json",
+      "size": 2202,
+      "sha256": "0670c84a685a28c30cdf12135ccad868177f9e9cf1b336db32fd1260f2da65b8"
+    },
+    {
+      "path": "package.json",
+      "size": 65,
+      "sha256": "1dd1bbdb2f38b143489becaf791eb34781fdaf08f42e9a261af09b0425a432f2"
+    },
+    {
+      "path": "playwright/nova_gui_smoke.spec.js",
+      "size": 1008,
+      "sha256": "f37fe3182758ac2c07f04ec89ccbe15a886d2e6de8c34500163db530a2cf64f3"
+    },
+    {
+      "path": "playwright/nova_runtime_usability.spec.js",
+      "size": 3552,
+      "sha256": "9c42561d7eefb232753f4fe4843a9ea9ff5e6de8fa29919b261aad290931df4e"
+    },
+    {
+      "path": "playwright/nova_runtime_usability_runner.js",
+      "size": 5012,
+      "sha256": "b67aa2d13fa7f5257b098d1641a6480b6031df6720829877917eb393954ea5ff"
+    },
+    {
+      "path": "playwright.config.js",
+      "size": 575,
+      "sha256": "02430c7fb94bc397e7e8d99acf5af4edc08e6002c142a69e25d9d6cab4774199"
+    },
+    {
+      "path": "proof_media/v55_3_156_images/image_draft_20260606_144102_569.svg",
+      "size": 971,
+      "sha256": "8df2d05cec2f16245833cef21d7f535fd698dce2a2fda7427d2aaf394115a8aa"
+    },
+    {
+      "path": "proof_media/v55_3_156_video/VIDEO_VALIDATION.md",
+      "size": 191,
+      "sha256": "f7f82c3ef9b98b8972b725e70aa20165855b2e72a54c46ab898f24f930598b70"
+    },
+    {
+      "path": "proof_media/v55_3_156_video/manifest.json",
+      "size": 3029,
+      "sha256": "5828a3e43f60b413a3aa1ed40e04b06853d4c1c15253d4b38d0d334cfe74b92c"
+    },
+    {
+      "path": "proof_media/v55_3_156_video/nova_v55_3_156_preview.avi",
+      "size": 6221904,
+      "sha256": "2350ef190778d21a2f3fedabc90dcc4e4add5a9a8bf6bc66098354da7d9fd9bc"
+    },
+    {
+      "path": "proof_media/v55_3_156_video/preview.html",
+      "size": 1184,
+      "sha256": "eca1922a1c498afbf152ec3a0059e8a30e77cd735a4d5893f58e027ffb11fa7a"
+    },
+    {
+      "path": "pyproject.toml",
+      "size": 613,
+      "sha256": "f49f98c4debf97ae5bc883aebd8abb63832f389c0e9bc0f282a4f5d92554f9fa"
+    },
+    {
+      "path": "pytest.ini",
+      "size": 48,
+      "sha256": "149fcdf3ec5192dd7d4d000638d19c8eea0259e470080421c72839d2eebfa580"
+    },
+    {
+      "path": "requirements-api.txt",
+      "size": 16,
+      "sha256": "e9af2913de609d1de45b2fbab270c5a77281543c4dab6d1dd182f221fd04f683"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "size": 46,
+      "sha256": "9c110730d4a267af11c4f3030fbd89b1d3cfd6bde178f8608f631ef16c1dd012"
+    },
+    {
+      "path": "scripts/nova_perf_collect.ps1",
+      "size": 1656,
+      "sha256": "8e6a585b7f7ffa7f0841168570762108ee7c8d7887afb16b2db824017531d13b"
+    },
+    {
+      "path": "scripts/nova_perf_probe.py",
+      "size": 2225,
+      "sha256": "e60f6073f4c8a11b1890e5bc3d8dbbd2b1d2d315e1f3412d5a0167208b9aca98"
+    },
+    {
+      "path": "scripts/run_gui_runtime_test.py",
+      "size": 10988,
+      "sha256": "20434b879245f1528d3df4c6dc7ad299ce072969674a5c6e9f62380a339e883a"
+    },
+    {
+      "path": "start_better_models_env.ps1",
+      "size": 850,
+      "sha256": "36e81224e9b7ab3a00ab9cb72de5a8621a02da2e97a9efc1fcd5448b9d31d480"
+    },
+    {
+      "path": "start_nova_best_models.bat",
+      "size": 324,
+      "sha256": "6ae1329743d48dad5d5ff8247b72bf40aa02e11beafa531dbe187eb8935bbe62"
+    },
+    {
+      "path": "start_nova_best_models.ps1",
+      "size": 7193,
+      "sha256": "8ec6ef2c71c69de4af43074beff11c2054093bdff55434a72cffbdba66c854ab"
+    },
+    {
+      "path": "start_nova_desktop_voice_listener.bat",
+      "size": 170,
+      "sha256": "7bdad75ab309688d368f2bbe0c23cb733c4280303744a07f7213a5bcd9168480"
+    },
+    {
+      "path": "start_nova_desktop_voice_listener.ps1",
+      "size": 3103,
+      "sha256": "eee08ed8fe9aa13db37db1600dfc6e1495f0c92b8ceea3e8c249580ce2330e5d"
+    },
+    {
+      "path": "start_nova_fastapi_api.bat",
+      "size": 222,
+      "sha256": "66fce43105333b69bb9d8b559ea128d0c8110c802f1b08b693c658f02804a841"
+    },
+    {
+      "path": "start_nova_remote_api.bat",
+      "size": 330,
+      "sha256": "f0414915724d404d25facf973fc0e749466a41dccc52760c81f87c1f2f94ee97"
+    },
+    {
+      "path": "start_nova_remote_api.ps1",
+      "size": 1203,
+      "sha256": "18581531e82ae05ac6a491c7b644fa7cf8712f14187e4a348bbcabe3e61a1db6"
+    },
+    {
+      "path": "start_windows_assistant.bat",
+      "size": 1760,
+      "sha256": "9a82f7b48f5f5aeebfa6f59d6a94698183e129fcf6d5181b27292c86a52177eb"
+    },
+    {
+      "path": "test-results/playwright-nova_runtime_us-980b0-ivity-cannot-cover-composer/error-context.md",
+      "size": 22261,
+      "sha256": "1fe2eb3d83e51c9998318a76342fe8335f1324f51d0d7505efb0176f9eaf5e1f"
+    },
+    {
+      "path": "tests_action_watcher.py",
+      "size": 2477,
+      "sha256": "4a9a28e16991bcae24d6e4365849eb92b9c191a83fd1469bd39148c321021083"
+    },
+    {
+      "path": "tests_architecture_audit.py",
+      "size": 1872,
+      "sha256": "442af47c0ebfb658a7dc3741a4d6cbb24f793b7cdb03314e9d0a309a802f512b"
+    },
+    {
+      "path": "tests_assistant_box.py",
+      "size": 2383,
+      "sha256": "c572051d4fad118ab2345cf31e01504178a7ae7ff4ae6623b99303419c50e74f"
+    },
+    {
+      "path": "tests_autonomous_controls_v55_2_2.py",
+      "size": 3794,
+      "sha256": "04dc5a16a03db65165c888013a4bb2365f012246952c77f4eb1706288bef40a2"
+    },
+    {
+      "path": "tests_autonomous_explain.py",
+      "size": 2260,
+      "sha256": "b437e1731513db0eca225c15c0956e0b1c85b0361986ebccd1c59930b10f7e43"
+    },
+    {
+      "path": "tests_autonomous_failure.py",
+      "size": 11159,
+      "sha256": "3eb04360866525fec9df34f57e2abf4e0b15ce86427eafd6ae99953b6fbad1e2"
+    },
+    {
+      "path": "tests_autonomous_journal.py",
+      "size": 4384,
+      "sha256": "09c2fc0e4919c371a5ff573fb83c0e8fbfae852c591e768c8960b24a714c578d"
+    },
+    {
+      "path": "tests_autonomous_loop_guard.py",
+      "size": 2991,
+      "sha256": "a98a75d370372f6fc51c0347edf7693c6d45b4eeee944154836776c087d69315"
+    },
+    {
+      "path": "tests_autonomous_memory_robustness.py",
+      "size": 3077,
+      "sha256": "e0253d39ba7314115f2a79e29f6ec8d4d04735c4fcf887b78df695f70aa7b730"
+    },
+    {
+      "path": "tests_autonomous_release_gate.py",
+      "size": 722,
+      "sha256": "f9888b4e8a9dbd4100215b5cf31620ac1526a7c20495edd7c246c71725950616"
+    },
+    {
+      "path": "tests_autonomous_sequence.py",
+      "size": 7464,
+      "sha256": "3618c6bb152e40c20084b2cc2bbae340007e4c8a0ae85991d1e63f9888b3a3e3"
+    },
+    {
+      "path": "tests_cli_user_mode.py",
+      "size": 5185,
+      "sha256": "8846f7e4c3c6300b43a8d4d1706dbe9274132a02a487a22f8c29769de38b2efb"
+    },
+    {
+      "path": "tests_code_quality_gate.py",
+      "size": 4649,
+      "sha256": "032d2ad24c84cbdeaf653472822676f7d828521946ca4c29bc5802da4a93b58c"
+    },
+    {
+      "path": "tests_code_repair_audit.py",
+      "size": 3169,
+      "sha256": "8791c70e6b832c9bdae33e41faa860ad91626039dc7a0aeffb405a8b69282213"
+    },
+    {
+      "path": "tests_code_review_audit.py",
+      "size": 2497,
+      "sha256": "6f6746b39cf37da4fd7976c13371f00841b403f1c7e8b339812aa63d0aba5f7f"
+    },
+    {
+      "path": "tests_codebase_integrity_audit.py",
+      "size": 4165,
+      "sha256": "000f555e7d7f9703b4eb21a15d3784b3e6914aa54f1661f45e278108632c6496"
+    },
+    {
+      "path": "tests_command_contract_download.py",
+      "size": 1449,
+      "sha256": "365af5e856e724d515f68773651a73de9314d1f499fe3a599f5053c60502614d"
+    },
+    {
+      "path": "tests_command_suggestions.py",
+      "size": 3777,
+      "sha256": "140ee82d04f5699ac933d42bb1fe27c1c6d1832a42d45b497e30819630d8073c"
+    },
+    {
+      "path": "tests_command_verifier.py",
+      "size": 2475,
+      "sha256": "34b688eec20ec48ee71314df46348045d3df1d04cce3393574790a34267e821a"
+    },
+    {
+      "path": "tests_creation_intent.py",
+      "size": 6376,
+      "sha256": "965983accdb6ce2bf383ea3671a3a2f7f6b2acbd777d1ae74f8f870ab9aade2a"
+    },
+    {
+      "path": "tests_document_ingestion_pdf.py",
+      "size": 955,
+      "sha256": "e35fec7fe12d2e27c7d2445110aa6c6f2260d26db811b8f96b51d8304bcb2a1e"
+    },
+    {
+      "path": "tests_efficiency_profiler.py",
+      "size": 3922,
+      "sha256": "75a54d4a75528878992c49b5b7d9b27ed211101d6a29bb26e48de077f1d94588"
+    },
+    {
+      "path": "tests_emergency_stability.py",
+      "size": 3005,
+      "sha256": "ac4f5a9c6712f18fb50a4a48864a8540615c959004bb570a9b157fb8e3162899"
+    },
+    {
+      "path": "tests_eventlog_resilience.py",
+      "size": 2726,
+      "sha256": "2364a6da1b86f14f267cde602099ad3720f235eb04c19ef4bc1b0283b302b70e"
+    },
+    {
+      "path": "tests_feature_continuity.py",
+      "size": 3069,
+      "sha256": "e1155daf1267052cde9e60917a90e6159d6c9a2229745233e95d8b13586ac734"
+    },
+    {
+      "path": "tests_file_context.py",
+      "size": 9379,
+      "sha256": "cea4b3b48c5c8ca92a8ea17b181a95cd613c76e83d411a8399a8be1ec5e8a081"
+    },
+    {
+      "path": "tests_format_result.py",
+      "size": 3565,
+      "sha256": "342a1135839f99f683e36188268508eae0bc4005949f5f04924fbac262340d97"
+    },
+    {
+      "path": "tests_full_codebase_append_integrity_v55_3_12.py",
+      "size": 2288,
+      "sha256": "3823aa4a6411a756203ec419b6fce642fe712c64bfd12cbd88436731c42e287f"
+    },
+    {
+      "path": "tests_full_codebase_bug_sweep_v55_3_9.py",
+      "size": 4126,
+      "sha256": "26103e7f4359b96061107e07aac7534d06774e93d9cd15b727da48bf797abb62"
+    },
+    {
+      "path": "tests_full_codebase_json_recovery_v55_3_13.py",
+      "size": 1868,
+      "sha256": "508e984dee6c418000d59a226bfd9f361c7e7e0414ed357f06ab86048ec93458"
+    },
+    {
+      "path": "tests_full_codebase_log_tail_v55_3_15.py",
+      "size": 2273,
+      "sha256": "3ffd9209956bf47f0ae3c6aaf4876020c09ae9282be93f5ebd63fc3b4edd3047"
+    },
+    {
+      "path": "tests_full_codebase_research_db_v55_3_14.py",
+      "size": 2519,
+      "sha256": "4fb30e70743ded639076c150a2f232fd731b06464d50df86a24d4dff67300ce9"
+    },
+    {
+      "path": "tests_full_codebase_safe_io_v55_3_10.py",
+      "size": 4790,
+      "sha256": "9629308c6b3d5253cf40068573ff9d0305258a371b223a2164d5fdcbbbef05a9"
+    },
+    {
+      "path": "tests_full_codebase_safe_write_v55_3_11.py",
+      "size": 2814,
+      "sha256": "8c821facb7bb18a9f0274376a868ed19c84bd878b75ef75ccabeb0f9eb3e5227"
+    },
+    {
+      "path": "tests_game_design.py",
+      "size": 3921,
+      "sha256": "47c01399dc4a0dd0da2a7300a3d4ad0cb77e64a314673f3b9191e1117f21a699"
+    },
+    {
+      "path": "tests_gui_activity_autonomous_sandbox_v55_3_19.py",
+      "size": 2524,
+      "sha256": "5d01c1471e9a3e71262b0fd6dcbcfeb44f8b5ab4d4ed5dc123abf61c3bc45895"
+    },
+    {
+      "path": "tests_gui_ai_help_overlay.py",
+      "size": 2174,
+      "sha256": "f67627ebad08ea36b89259e9b4c00d9e373551c11f22d7a4996c00bf2f2fce8c"
+    },
+    {
+      "path": "tests_gui_cyberpunk_theme.py",
+      "size": 1500,
+      "sha256": "f7dad82ba546d6d037c1f37e365db9e28c67074a8b44fc7bc61f973b4ca04058"
+    },
+    {
+      "path": "tests_gui_interaction_overhaul.py",
+      "size": 3565,
+      "sha256": "ce0bb62a43a79fd5cc626ba138e30c446f5ebac4fc3af2dc3adbc1c3d2e2cdb4"
+    },
+    {
+      "path": "tests_gui_layout_v55_3_18.py",
+      "size": 1727,
+      "sha256": "51602d8c0917934802b2326997be85f17202656e078fa80efe1b1e9bbfbf6633"
+    },
+    {
+      "path": "tests_idle_engine.py",
+      "size": 12398,
+      "sha256": "5b32cd2defa31a336c9c465b806b5be4aeb42dac511edeebce004bef5227fc81"
+    },
+    {
+      "path": "tests_idle_events.py",
+      "size": 6693,
+      "sha256": "f3b31bf8927e3b74ce90f5c608a643f977639cd0a8e9fff4b7026f3852e6f38f"
+    },
+    {
+      "path": "tests_image_generation_backend.py",
+      "size": 6669,
+      "sha256": "74e594f58c5f5cb61e0a5537b5e51e887488a12107f088e20132930f63c17ba0"
+    },
+    {
+      "path": "tests_improvement_features_v55_3_124.py",
+      "size": 2305,
+      "sha256": "9d204fd195bb80d0275d76a2f5aae2c5fcd1b1be6b84087ba73b99fc9d0e0dde"
+    },
+    {
+      "path": "tests_intent_planning.py",
+      "size": 7170,
+      "sha256": "af4cea27d784e24ea2a4519db3288d9921368b20be409bcb5b11d09d528fdef4"
+    },
+    {
+      "path": "tests_legacy_continuity_guard.py",
+      "size": 2241,
+      "sha256": "3240c9b5b6f0c651685c944d4a2d2e129803fd756adfd6fba5a2d31e4b0beca4"
+    },
+    {
+      "path": "tests_llm_training_lab.py",
+      "size": 2105,
+      "sha256": "51157efde5197cd5f7deec9ff944a9f99c5daa6074c356dcc27cd58d4f22ef29"
+    },
+    {
+      "path": "tests_maintenance_validation.py",
+      "size": 2183,
+      "sha256": "d5d4f430d16e264367055539c59c7675f8718fd3cb7efa04e3b57c5b9247a7fb"
+    },
+    {
+      "path": "tests_model_calibration.py",
+      "size": 991,
+      "sha256": "da2563726ea6eff3a15163e167cec89f848980e39aeea8a400dd6c5a0b13b039"
+    },
+    {
+      "path": "tests_model_context_pack.py",
+      "size": 5599,
+      "sha256": "1552a0c53b4a7067899c3bb8165d4069bc06d3c900890e7c1e2e97d8cb31f987"
+    },
+    {
+      "path": "tests_model_health_timeout.py",
+      "size": 4533,
+      "sha256": "386c67934a32856ce3ce0940b1fdcb72396326234a58d25cc22277932715cb3a"
+    },
+    {
+      "path": "tests_model_json_recovery.py",
+      "size": 1707,
+      "sha256": "346d49182eeedb68bb9a3c4b136fd12102c7cefda298f7e534ac67e38a4409a7"
+    },
+    {
+      "path": "tests_nova_agent_upgrade_v55_3_127.py",
+      "size": 4692,
+      "sha256": "be240d3c501e1b4068d789a4dc64f080bbd0f133d6dcd7eaae771faac4622c6a"
+    },
+    {
+      "path": "tests_nova_arcade_help_completion.py",
+      "size": 2682,
+      "sha256": "6e9cda9852ac4f09bc85e9f5c39af83e9817d8a9e6fc4613015df24c6ef3004b"
+    },
+    {
+      "path": "tests_nova_autonomous_continuous_v55_3_156.py",
+      "size": 1815,
+      "sha256": "5d16d78d9e761e03c41098b61fb13a1f24657b0e4d9a9aa549a871c48ac7a203"
+    },
+    {
+      "path": "tests_nova_better_model_env.py",
+      "size": 811,
+      "sha256": "70df2e741a4778fee7152050a5f094d5154b904692f63eb2da0f49f71250749e"
+    },
+    {
+      "path": "tests_nova_capability_drift_v55_3_132.py",
+      "size": 4752,
+      "sha256": "e591b497b6dc80c0b946b34b15ad0f8be4593908bce4cf802f127cd246ac1600"
+    },
+    {
+      "path": "tests_nova_clean_gui_docker_v55_3_159.py",
+      "size": 3378,
+      "sha256": "87a51bb2b667f3889f92d985e17d288cc86e93992d596996da436f07e427283d"
+    },
+    {
+      "path": "tests_nova_coding_v55_3_126.py",
+      "size": 4062,
+      "sha256": "7e68b45641429d2c0d661d655eed383097b135e3c763db0e18717f2c91cb65a7"
+    },
+    {
+      "path": "tests_nova_comprehensive_integration_v55_3_153.py",
+      "size": 4033,
+      "sha256": "2aa3059462c7bb97da0defd6b567d9ec37c501bfbb848415efa72ff546a39eb3"
+    },
+    {
+      "path": "tests_nova_deep_research_v55_3_129.py",
+      "size": 5825,
+      "sha256": "9b8fd95a6b39c0052cd52209a7e4b38679450febcd62fd089eecc03caaefe3eb"
+    },
+    {
+      "path": "tests_nova_efficiency_focus_v55_3_162.py",
+      "size": 1638,
+      "sha256": "a61e924d7f31f79007ab8c27f0427fb4e54ea456801c8eb29ffbd42e2289f1d3"
+    },
+    {
+      "path": "tests_nova_eval_packs_v55_3_134.py",
+      "size": 1519,
+      "sha256": "63f5021baf9dba65106eabfeb0da44e813489507046afa7d54396549d79afd6f"
+    },
+    {
+      "path": "tests_nova_fastapi_api_bridge_v55_3_138.py",
+      "size": 4083,
+      "sha256": "0302a0bcb7146648ff9889c8353344e1d17ccf3035d33f4a59fa360427986d51"
+    },
+    {
+      "path": "tests_nova_fastapi_gui_adaptation_v55_3_137.py",
+      "size": 10038,
+      "sha256": "25e89cd1c32a8c6ef5e1d6f141e0a52d9a82196c59205fe5b6ea0d2f71196ce3"
+    },
+    {
+      "path": "tests_nova_gui_startup_routes_v55_3_161.py",
+      "size": 10008,
+      "sha256": "c467dacfba9096f2b810f2c36e177f60d554c217f1c58788037a730d22a7f79f"
+    },
+    {
+      "path": "tests_nova_high_spec_subagents_v55_3_156.py",
+      "size": 1848,
+      "sha256": "dca457609bd69de9b61d5e531f2eb197188202ee0c1bf8569de0f5f587f0c4eb"
+    },
+    {
+      "path": "tests_nova_improvement_assurance_v55_3_131.py",
+      "size": 5522,
+      "sha256": "e07b7faf68fc2be9b32f2ce5454e0cdfe22212590c371030138715eb57200ed4"
+    },
+    {
+      "path": "tests_nova_inspiration_v55_3_125.py",
+      "size": 4043,
+      "sha256": "31688c760da703f260d8f8c9222d270b37fdcf65d95852f194183f5189ff991c"
+    },
+    {
+      "path": "tests_nova_launchers_v55_3_154.py",
+      "size": 836,
+      "sha256": "5e01f5319a0f6177bd83aca1fdc4e157d2afa6d34b73b4ecac07d339e43bbdb6"
+    },
+    {
+      "path": "tests_nova_media_and_gui_v55_3_156.py",
+      "size": 1543,
+      "sha256": "2bb6bc56add60dceb1cc16310608c87520a2bd0f1939456bfda2e3b49d4560ae"
+    },
+    {
+      "path": "tests_nova_media_refinement_v55_3_160.py",
+      "size": 2810,
+      "sha256": "0f6b46a595604b83c816b99c37d59d987ec9bea85a72d93336592c9a70e65ddf"
+    },
+    {
+      "path": "tests_nova_odysseus_suite_v55_3_136.py",
+      "size": 3556,
+      "sha256": "196c658830ee3dbc9a280234a09a2a89b32c46f226c52a3562f91a00c496e3a7"
+    },
+    {
+      "path": "tests_nova_orchestration_foundation_v55_3_152.py",
+      "size": 2961,
+      "sha256": "5525cd3a2653a698e131efd998973e7636c3cfc8dbbf4f631cfcbba9d31bf629"
+    },
+    {
+      "path": "tests_nova_provider_runtime_v55_3_163.py",
+      "size": 4165,
+      "sha256": "7afa8a2a754648e051b8a79d4860143cb7a3fdb1fc4bc870408bdf3f185335c3"
+    },
+    {
+      "path": "tests_nova_rebrand_improvement_research_v55_3_138.py",
+      "size": 1513,
+      "sha256": "025a9ca96cef95b7a2f6ee3e61b48f93cae730fdee99e86afc59edc10ee10530"
+    },
+    {
+      "path": "tests_nova_release_sync_v55_3_154.py",
+      "size": 1114,
+      "sha256": "b065c8a7dc7d0b60ead55c67f3ffdae81c945098ab190c06cddcc158fc3b690b"
+    },
+    {
+      "path": "tests_nova_reliability_v55_3_128.py",
+      "size": 4348,
+      "sha256": "bf9910e2c8e35662f93239219ef647950bb6ae73358f2073dbc4e54733b1fb86"
+    },
+    {
+      "path": "tests_nova_remote_access_v55_3_164.py",
+      "size": 23212,
+      "sha256": "6bd2f64c2203283776f5f7588b260313eaf7ef1739466bac2923710efe76102f"
+    },
+    {
+      "path": "tests_nova_research_voice_v55_3_157.py",
+      "size": 2244,
+      "sha256": "32a262b8a2da07db85b85322a590cc03eb6c70b16259ee8b6d9ff8ea962b9314"
+    },
+    {
+      "path": "tests_nova_route_resilience_v55_3_130.py",
+      "size": 5208,
+      "sha256": "b4eada8a945c0615bd1bfcce9a8d8329015008269bc3f72983504e2ffa1a2e3b"
+    },
+    {
+      "path": "tests_nova_scheduler_v55_3_164.py",
+      "size": 6521,
+      "sha256": "b2b6d64905468d3dd47ae7de069f47b46f2e4b8d32b4a85e5c168b5f1c045d50"
+    },
+    {
+      "path": "tests_nova_self_repair_ollama_queue_v55_3_158.py",
+      "size": 3459,
+      "sha256": "2dec2710c6d91823734716adaf96bcb4170684cb28016a772308282091278a12"
+    },
+    {
+      "path": "tests_nova_start_here_v55_3_155.py",
+      "size": 1325,
+      "sha256": "098f21c64fa919e996aec7fd8a39ea5a230898798fa9148e9755c2c5f3ba5dd0"
+    },
+    {
+      "path": "tests_nova_verified_self_apply_v55_3_135.py",
+      "size": 1939,
+      "sha256": "1064415902377458076625a69cdefebadb0555cad415ae70eac0a69829ab46c3"
+    },
+    {
+      "path": "tests_nova_video_manifest.py",
+      "size": 2278,
+      "sha256": "71d53a6b859dfbee98bd8cf7ae46e908f7d7b06d6ad997b2e7469c2157be3e86"
+    },
+    {
+      "path": "tests_nova_video_validation_v55_3_151.py",
+      "size": 1908,
+      "sha256": "06d52959d2661d7c9ee259d957a088dc1926a8de79192ef34639b08524e41a6f"
+    },
+    {
+      "path": "tests_nova_webui_startup_guard_v55_3_151.py",
+      "size": 683,
+      "sha256": "525762da6adf529e5ac20ac70a72a60d75dbcc31a9378530a850f09fd63f6ba5"
+    },
+    {
+      "path": "tests_performance_tuning.py",
+      "size": 3184,
+      "sha256": "b5d7efd352fa755af62abd08b22f6b6db3aaf842e59dfa708b56b47b1a7f6f33"
+    },
+    {
+      "path": "tests_planning_dashboard.py",
+      "size": 2699,
+      "sha256": "287bae22bbe013adad8879fbce9dcfd4b74acbe34f354313dc8bcdd60e69dfb5"
+    },
+    {
+      "path": "tests_project_acceptance.py",
+      "size": 2371,
+      "sha256": "50e4e021aca8c9cd62db3b600b5dace2e49bc1466402fee782acda6fd5f268d1"
+    },
+    {
+      "path": "tests_project_behaviour_contract.py",
+      "size": 3235,
+      "sha256": "cf3026da97347975d29db1199a57a90d0584e40512ece4f1c314f50a825dc6ea"
+    },
+    {
+      "path": "tests_project_brief.py",
+      "size": 2334,
+      "sha256": "235909df465c2c37057a3869d22316109c4536fae4c23d3a9d61beb589bec970"
+    },
+    {
+      "path": "tests_project_iteration.py",
+      "size": 2509,
+      "sha256": "f74decc9c40bd8498b9d34b8bdbea7b36108f925fd89c6046febaafa24eeebc8"
+    },
+    {
+      "path": "tests_project_quality_score.py",
+      "size": 1569,
+      "sha256": "dbfe3f19675bdf1a313f0d22a3c54888b9667482c7d3ede9698bd2b18d9055ce"
+    },
+    {
+      "path": "tests_project_quality_ui.py",
+      "size": 5164,
+      "sha256": "16459eecc39cc9eed7d8f2441074b76a0db659427267315e61f8cab16421b2ca"
+    },
+    {
+      "path": "tests_project_runtime_probe.py",
+      "size": 3882,
+      "sha256": "24b624e61788a0cf28242e29c14da5d1f6b62223aa7bffa6539fae430f0398c4"
+    },
+    {
+      "path": "tests_project_state_continuity.py",
+      "size": 5308,
+      "sha256": "cb0795380c3dea2976dd90caca7f9f67eab820255dcee7ea915820b2ddcd0ea0"
+    },
+    {
+      "path": "tests_quality_dashboard.py",
+      "size": 1423,
+      "sha256": "09aeda22dd47cc1e6f7aab9cfb3dfb82e409c93926bc8fe54d91bc036f1bccdb"
+    },
+    {
+      "path": "tests_release_hygiene.py",
+      "size": 3156,
+      "sha256": "f6b6369cbecfd083567dcf36d22e40e063d74d5dab35c2e9a00ef1774c302074"
+    },
+    {
+      "path": "tests_report_hygiene.py",
+      "size": 1657,
+      "sha256": "43649344f8b2c9b7599ea77f1a9cb2117669441c8f6f0c2275a2d859d6f19a39"
+    },
+    {
+      "path": "tests_request_intent.py",
+      "size": 7007,
+      "sha256": "72a865101b83bae6fc6a1f7130decbc0673fde6386c7fd214621b54e639de24a"
+    },
+    {
+      "path": "tests_research_db_panel_v55_3_2.py",
+      "size": 2285,
+      "sha256": "6156a883dbeed519ee0db2ac2d647a345836cf9bcf51977373239b7526f16d0b"
+    },
+    {
+      "path": "tests_research_db_v55_3_3.py",
+      "size": 2082,
+      "sha256": "e7ec7ee73557929e3579fef0c4537df9978e2c01b614f4962b66e96536a8b41c"
+    },
+    {
+      "path": "tests_runtime_usability_release_gate.py",
+      "size": 6216,
+      "sha256": "41962ca08c1afdfc27a1ddf3833b3ba1322f4fae26ceeff320093063bcefcede"
+    },
+    {
+      "path": "tests_sandbox_integration_v55_3_16.py",
+      "size": 2456,
+      "sha256": "45ab84b48c71a1017e8872465fee5b59d2e2e8817463881c4f0ba62c012c7499"
+    },
+    {
+      "path": "tests_sandbox_ui_v55_3_17.py",
+      "size": 2136,
+      "sha256": "e9fcd318d6a82ea18a9a359ba5e5c154dfa6082ef770bb510b47444fb97af546"
+    },
+    {
+      "path": "tests_scheduler_release_gate.py",
+      "size": 1096,
+      "sha256": "1e33f85036fc658616fd99d2724e4dbe09142928bef84064c86c3071c0781e17"
+    },
+    {
+      "path": "tests_self_awareness.py",
+      "size": 3205,
+      "sha256": "ced8b01de40c2d9f0b0edea5fce3195a9c6205f9e8f6b0f978c72be217154232"
+    },
+    {
+      "path": "tests_self_improve_guardrails.py",
+      "size": 5446,
+      "sha256": "513936247d4be53be7e45a0ed4b17b95e6c56d2fe27e538326034dc9cc26963b"
+    },
+    {
+      "path": "tests_skill_profiles.py",
+      "size": 2734,
+      "sha256": "47dc762afe26144f4404fbeeb92e03ad3dddbd325856e3449cc4e64d16fa2652"
+    },
+    {
+      "path": "tests_smoke.py",
+      "size": 27640,
+      "sha256": "9faec0ade55bfdf472bdaa466821fd309b8b9bfd1976293f05ab26c4396b6ba6"
+    },
+    {
+      "path": "tests_surgical_fallback.py",
+      "size": 2512,
+      "sha256": "8ef766c625496536b6f7a70b5dfa325e70e56cd689d81f73ca7319f59e9723b9"
+    },
+    {
+      "path": "tests_task_decomposition.py",
+      "size": 1653,
+      "sha256": "16791f017d51679a1760cc16a4d289601f34dad6215792f1cae0e39e584493f7"
+    },
+    {
+      "path": "tests_task_execution_hardening.py",
+      "size": 6248,
+      "sha256": "a6d0236002201837f3876f67183eaf1ebee719cfc9c5365be85b48bfc4241a40"
+    },
+    {
+      "path": "tests_timeout_resilience.py",
+      "size": 1983,
+      "sha256": "376b0387a19068ec7a85d77976b78d1a151f61739624798f68db2aadb0be572d"
+    },
+    {
+      "path": "tests_tool_catalog_interaction_learning.py",
+      "size": 2007,
+      "sha256": "c231b80e4ea0dbdf9c4ff0ad71544a3e821423278a837942afdbb6a3bf09be43"
+    },
+    {
+      "path": "tests_tool_guides.py",
+      "size": 2272,
+      "sha256": "6b45b1368270edcfaf45e73e0150d5fdd023766cabf6e6fa0adaf21052f0968c"
+    },
+    {
+      "path": "tests_v52_5_roadmap.py",
+      "size": 2376,
+      "sha256": "f6abf690782fccda26b8d8995cde68b3936f1aa05f23db5950dca2ef74377fa6"
+    },
+    {
+      "path": "tests_v52_7_iteration.py",
+      "size": 3777,
+      "sha256": "2015fb3457b3ead53df2138045789d8f5079d9761d2ada2ba2bc46e3a974a24f"
+    },
+    {
+      "path": "tests_v52_roadmap.py",
+      "size": 3379,
+      "sha256": "b02f6825bdf246e7bc673d763119387d8fa058ddf1de5edf8b1352cd08a1c121"
+    },
+    {
+      "path": "tests_v55_3_100_gui_revert_game_generation.py",
+      "size": 3267,
+      "sha256": "57c5e0433f8fe0cfa96debb3d460ba5b42e95f5df920a667dc8a1b0e4e8e7d54"
+    },
+    {
+      "path": "tests_v55_3_101_context_aware_repair.py",
+      "size": 2512,
+      "sha256": "08eea546f3850d8c4a97825dc326cda7069717f9ed6e3bf97d771891c6656e01"
+    },
+    {
+      "path": "tests_v55_3_102_feature_continuity.py",
+      "size": 2122,
+      "sha256": "06927ecd51a0bc23bace1c7d82f0a9c59cca6fc8a78c423e5cba8735371450bd"
+    },
+    {
+      "path": "tests_v55_3_103_nova_operating_context.py",
+      "size": 2808,
+      "sha256": "8ab7ca95945cda70382af76d5c59e0ded77aca81752eda476e23fee6a027e58c"
+    },
+    {
+      "path": "tests_v55_3_104_mission_contract_iterative_repair.py",
+      "size": 3434,
+      "sha256": "60ebf38a7405e1610b6beb0919be9840b81f737acfe2f37c824be030d7c3afa7"
+    },
+    {
+      "path": "tests_v55_3_105_development_governor.py",
+      "size": 3183,
+      "sha256": "f093476a155fcb413ac92aa944ab530acff98a85594b97db0aba6af9fd4a8425"
+    },
+    {
+      "path": "tests_v55_3_106_adaptive_validation_matrix.py",
+      "size": 2888,
+      "sha256": "1a2240dbba2d7b5bfe2b661f11c232ad8d86319b9865131eb29c204b314e0237"
+    },
+    {
+      "path": "tests_v55_3_107_idle_policy_receipts.py",
+      "size": 2631,
+      "sha256": "8b1eafdc4a490933396770871a9d9f9f45c897b49eb88fb8594264b37f45331e"
+    },
+    {
+      "path": "tests_v55_3_108_role_router_template_strategy.py",
+      "size": 2674,
+      "sha256": "6e7b9fff636fd833fecfef2cf0293d9dd8f1b1ca1f84b6547a27df8efcd78679"
+    },
+    {
+      "path": "tests_v55_3_109_self_routing_repair.py",
+      "size": 3296,
+      "sha256": "74a04443e92591d82cf5f903bffa8b578ee9b574aa5f10b8f4c13cd723e1112f"
+    },
+    {
+      "path": "tests_v55_3_110_jarvis_bridge.py",
+      "size": 2918,
+      "sha256": "bef1221792ad596542a3665ecf9cb0545390f96a00c43dc115f7aa2bc54d332c"
+    },
+    {
+      "path": "tests_v55_3_111_jarvis_source_inspired_bridge.py",
+      "size": 3135,
+      "sha256": "6dc92a814f31cbea37072aabb91ffefa6c0ca6623c0d01124da870b410960da8"
+    },
+    {
+      "path": "tests_v55_3_112_left_action_jarvis_ui.py",
+      "size": 3094,
+      "sha256": "9d10d1a22922cd9be5ea2c5a56b048d03b1a7df7b44fd775b2b8986454c18147"
+    },
+    {
+      "path": "tests_v55_3_113_voice_wake_chat_mute.py",
+      "size": 1735,
+      "sha256": "94df91a37e5ef7241f3f709cf5bf764170ad3458c1496047e4ce4e9b887a4e8a"
+    },
+    {
+      "path": "tests_v55_3_114_persona_local_model_harness.py",
+      "size": 4178,
+      "sha256": "273aa089b7aab5c91383ac3333ffd39f6acdb71dd8c091b2b27e54066d671701"
+    },
+    {
+      "path": "tests_v55_3_115_startup_workflow_audit.py",
+      "size": 2269,
+      "sha256": "8bd06593a2a43890fb46cb7202ddf8f466058e71b9de889375a0ff3d9e37f0d6"
+    },
+    {
+      "path": "tests_v55_3_116_nova_full_system_test.py",
+      "size": 1951,
+      "sha256": "857677d3848e91a9d5b865cfb9d386c8e303713511462650167f72b37a197507"
+    },
+    {
+      "path": "tests_v55_3_117_completion_hardening.py",
+      "size": 3993,
+      "sha256": "6ae1fed690d656dfbc0db896ee4b464c88be051b14eb2d18408d4197f32541d8"
+    },
+    {
+      "path": "tests_v55_3_118_unified_voice_ux.py",
+      "size": 2927,
+      "sha256": "56436898a8e8d133ff494a99987d654dabe47a419ab692b8721fefac4ca6316a"
+    },
+    {
+      "path": "tests_v55_3_119_autonomous_cockpit_reasoning.py",
+      "size": 2564,
+      "sha256": "dcf0117543638a778dac5bd57b275937fb55ff5cddd3cdb60f2dff138a691b96"
+    },
+    {
+      "path": "tests_v55_3_120_voice_reliability_security.py",
+      "size": 2583,
+      "sha256": "23a3083e2c2a17f829870e52fac202e1389f0b008eaee15b6a595a566bce6e7b"
+    },
+    {
+      "path": "tests_v55_3_121_codebase_packaging_advisor.py",
+      "size": 4299,
+      "sha256": "a47c35e7692ce8ccea8f421cf489d9b0bd74ed41a92c32c447ddeae4fe017205"
+    },
+    {
+      "path": "tests_v55_3_122_voice_profile_comm_activity.py",
+      "size": 2326,
+      "sha256": "96cd9706b224260fcfbb3e74df7eb7d9829d7281cf43b435a9b768580f8e824f"
+    },
+    {
+      "path": "tests_v55_3_123_wake_handoff_build_loop.py",
+      "size": 5421,
+      "sha256": "bfa7271f620007f7e3a866b8a290903072afd6b935ee46c3f34827e0360343d8"
+    },
+    {
+      "path": "tests_v55_3_133_gui_tabs_resize_theme.py",
+      "size": 1383,
+      "sha256": "31d3d903b2e9365fa8c4d2cb9f2d092e3b7b0cd5ddef8ef1d3ee6fafde1eb32e"
+    },
+    {
+      "path": "tests_v55_3_134_coding_runtime_expansion.py",
+      "size": 3903,
+      "sha256": "b63ee2f4c4630bd347728f6e5103a2dac75d59e7bec1f60d367aa5a39abeeba2"
+    },
+    {
+      "path": "tests_v55_3_135_voice_pipeline_priority.py",
+      "size": 1651,
+      "sha256": "7e256df293fcd0c183ce2e7ca128f4472c69bc47392ee6e001fb5b180208781d"
+    },
+    {
+      "path": "tests_v55_3_136_webui_path_protection.py",
+      "size": 1741,
+      "sha256": "9520e646b4c33fbd5739bd1bb1396a14dde92223ce55391db2b3a23c047ec4d4"
+    },
+    {
+      "path": "tests_v55_3_137_model_task_classifier.py",
+      "size": 1214,
+      "sha256": "2c732404b3d725d2cdf0aa781b0e21347030c5012df0d553fe19e948a4459491"
+    },
+    {
+      "path": "tests_v55_3_139_odysseus_layout_sanity.py",
+      "size": 2049,
+      "sha256": "7f4693c05a0616f8d170d108316d8d4a6368d7fbeaf1f0445bbab698b4688e75"
+    },
+    {
+      "path": "tests_v55_3_140_safety_validation_dock.py",
+      "size": 1540,
+      "sha256": "2d4ac3b8118b187d509f8129ac8ad3e857d4426680f8c9a0d591e915d28f20c0"
+    },
+    {
+      "path": "tests_v55_3_141_clean_studio_gui.py",
+      "size": 1892,
+      "sha256": "156884bed9e873f142474ac21fe02adc0e80d399a31ba6be1ccbc9377600847e"
+    },
+    {
+      "path": "tests_v55_3_141_orbit_gui_shell.py",
+      "size": 1465,
+      "sha256": "d3d080299bdf44cb7c00f4f2eb614ac42e8d84180836367ba62b4afa9c24fbaf"
+    },
+    {
+      "path": "tests_v55_3_141_voice_resize_coding_flow.py",
+      "size": 3557,
+      "sha256": "1cddfb8923889d90a399947018d14c9c76a840e0b51b936646d290245de590f6"
+    },
+    {
+      "path": "tests_v55_3_142_orbit_workspace_drawer.py",
+      "size": 1985,
+      "sha256": "d17756ed2df3c61701a078faf9f9362b718bc78d4cb9ad6e6862a3f6029f1a2b"
+    },
+    {
+      "path": "tests_v55_3_143_orbit_voice_file_workspace.py",
+      "size": 3709,
+      "sha256": "c8bfd39d4eac6572d5a3bc3223a887e05a76aa8c249f1b64c33f7fb30e21ab6c"
+    },
+    {
+      "path": "tests_v55_3_144_orbit_live_activity_voice_project_routing.py",
+      "size": 2535,
+      "sha256": "b0c5bc142de7cd922d77f68b3b5506aadf9a61db8ad9b720468d6ec43df1bdac"
+    },
+    {
+      "path": "tests_v55_3_145_database_integrity_review.py",
+      "size": 3951,
+      "sha256": "d4bf0ad9f58245c9e5685207f5abcb3e8a2d12262214e3917db61f9ee7d6c31d"
+    },
+    {
+      "path": "tests_v55_3_146_pipeline_observability.py",
+      "size": 3213,
+      "sha256": "8377efd6bc9a90ac8b85eac581d37ef0f238a5bc887da61ed249f032f7c40f6e"
+    },
+    {
+      "path": "tests_v55_3_147_repo_manifest_session_memory.py",
+      "size": 4495,
+      "sha256": "f8e6a12ddf4f23a33e35282fdb4f8032dda7a6c4f7d8a655b9d3c5df062ff376"
+    },
+    {
+      "path": "tests_v55_3_148_tool_awareness_orchestration.py",
+      "size": 3767,
+      "sha256": "d16007086392cab99fdb65c44d231fc8ab516975a4c1f2b3719818a387511350"
+    },
+    {
+      "path": "tests_v55_3_149_repo_upgrade_readiness.py",
+      "size": 3047,
+      "sha256": "b674b37e6ec2bb8b4dd3362dea018d73433068ec3c502f3465093221fc954a5f"
+    },
+    {
+      "path": "tests_v55_3_150_repo_research_codebase_audit.py",
+      "size": 3172,
+      "sha256": "1c14f9cd39fc4eb0993e31ec0bcbd1f1428bf8fc56a11b060fda4f833f24031c"
+    },
+    {
+      "path": "tests_v55_3_20_startup_sandbox_autonomy.py",
+      "size": 1858,
+      "sha256": "afff4566e9dbbcd0bcc3a451fc0e14b3f1da8ceacfe42ab8e521f849f406187f"
+    },
+    {
+      "path": "tests_v55_3_21_chat_gui_policy.py",
+      "size": 2136,
+      "sha256": "c05f0f887f2157982ca01cbcbb201eba2ca568df68828bb92d4a72e64267fd09"
+    },
+    {
+      "path": "tests_v55_3_23_sandbox_permission_ui.py",
+      "size": 5063,
+      "sha256": "f648549297f7e0ed039ed6a8867361c99b5af764ef86ab80faeaa411fda0f5af"
+    },
+    {
+      "path": "tests_v55_3_24_webui_js_syntax.py",
+      "size": 1206,
+      "sha256": "8665fef7341249812583e53cf5cfbc69f2ee70f1a12b115e142401189ac62d88"
+    },
+    {
+      "path": "tests_v55_3_25_docker_diagnostics.py",
+      "size": 2963,
+      "sha256": "9d3202b524d6b2a95a30a6d2651330b001b0670668dc047097d85126a33f3830"
+    },
+    {
+      "path": "tests_v55_3_26_docker_validation_backend.py",
+      "size": 3285,
+      "sha256": "b7b860210c8be5e3fdebc790be5190d550a6175d169995f4c9ef5636de31dc82"
+    },
+    {
+      "path": "tests_v55_3_27_autonomous_docker_integration.py",
+      "size": 3183,
+      "sha256": "0a91d924992d08ed8f02cb9d0919df4c08ead09af7298d6401cb99ae4fb32cab"
+    },
+    {
+      "path": "tests_v55_3_28_docker_history_cleanup.py",
+      "size": 3513,
+      "sha256": "a8eda6494fdec60af7c0b9ddcf601c0dd17bc3fc2b312aa7a6ea8dfe329ec590"
+    },
+    {
+      "path": "tests_v55_3_29_docker_patch_validation.py",
+      "size": 4470,
+      "sha256": "db55d0f39e02d8a05dc68aaa6b9acb157b65b61907add9891db94b9668cff57a"
+    },
+    {
+      "path": "tests_v55_3_30_cohesion_architecture.py",
+      "size": 2306,
+      "sha256": "a2793cdaf4d709bf6059a0f59fdfc323be891525e5442780f2f0df2c20630f83"
+    },
+    {
+      "path": "tests_v55_3_31_autonomous_patch_promotion.py",
+      "size": 4536,
+      "sha256": "9913325287dbab1af40ebe018ff2511e7e5b2383b065c45286ed13a8fb63a83c"
+    },
+    {
+      "path": "tests_v55_3_32_less_strict_sandbox_policy.py",
+      "size": 2839,
+      "sha256": "fa91bf88e969cd4aca00bb53605c92f91cbf2ad7945ede2b36ef254340f4204e"
+    },
+    {
+      "path": "tests_v55_3_33_wla_doctor_hardening.py",
+      "size": 1807,
+      "sha256": "fd502ba919e87ed457223295edeee6cfc367bd69d1b57ae5e12625552170bff3"
+    },
+    {
+      "path": "tests_v55_3_34_patch_integrity_release_gate.py",
+      "size": 1948,
+      "sha256": "c0b7b6167b7f81b0e956cf421f2ce6754d25cca5ecfa60b037b817963230b27d"
+    },
+    {
+      "path": "tests_v55_3_35_integration_radar.py",
+      "size": 1662,
+      "sha256": "d67ebdbb0c2dd10773aa53095dbf8f7362b962f0f45154b614de12a5d2375d1a"
+    },
+    {
+      "path": "tests_v55_3_35_release_gate_cwd.py",
+      "size": 455,
+      "sha256": "78c52bb2ac9daa41395eb8a2bfee5e79b9f8b50e0340fbcb4ef81c2bad92623b"
+    },
+    {
+      "path": "tests_v55_3_36_audio_gui_memory.py",
+      "size": 2754,
+      "sha256": "c9daaa802b14842092105610089a9326fc519f2f21ef63f409564dddac147785"
+    },
+    {
+      "path": "tests_v55_3_37_backend_chats_release_project_memory.py",
+      "size": 3368,
+      "sha256": "00c1126abe703443a2b9cd970fa666995cadcf7ca9e7467b5614b9fe7c1675c9"
+    },
+    {
+      "path": "tests_v55_3_39_gui_project_validation_polish.py",
+      "size": 2112,
+      "sha256": "81be0231d583f7c789eb9757c4fefa9af3a6fc5135f60eace44188170ed4eaef"
+    },
+    {
+      "path": "tests_v55_3_40_validation_cleanup.py",
+      "size": 2335,
+      "sha256": "7ffc3a453dfc542bf5ae9cf00ca23620ecc92f2037dfddd63bca7e3a39761db5"
+    },
+    {
+      "path": "tests_v55_3_41_defensive_validation_hardening.py",
+      "size": 2359,
+      "sha256": "903931450f5d6ed1a555760f9e5cd7cb7649e43ea82e3e7f74cc9f6e31e070ba"
+    },
+    {
+      "path": "tests_v55_3_42_remaining_features.py",
+      "size": 3351,
+      "sha256": "71de393f187b46d0a81e3136029f0b7853f0108b729e80f93bc6a70567425a37"
+    },
+    {
+      "path": "tests_v55_3_43_gui_chat_release_cleanup.py",
+      "size": 2930,
+      "sha256": "79a21d14a93d2d683ea44c2a9f3ad6fe2a10c596c9933cda639bffb7179a1b10"
+    },
+    {
+      "path": "tests_v55_3_44_validation_feature_audit.py",
+      "size": 2288,
+      "sha256": "0174ceb885a90b6773eac683470f86f53251e5e4534df5b2eb52b9c3852cb6b8"
+    },
+    {
+      "path": "tests_v55_3_45_console_feature_hardening.py",
+      "size": 1784,
+      "sha256": "759111059ad58a3d5a194830bd9c83d1fb9cfb1292fcef805264d72124403178"
+    },
+    {
+      "path": "tests_v55_3_46_full_validation_hardening.py",
+      "size": 2047,
+      "sha256": "61052ef011cd6fac505ef450807269e0840fb945d52abd52f163a25b65144c74"
+    },
+    {
+      "path": "tests_v55_3_47_dependency_system_test.py",
+      "size": 4013,
+      "sha256": "3d303af9b36ab8f66d7b8455c78faefaf2298e7df5639518955ff9f6349bf2fa"
+    },
+    {
+      "path": "tests_v55_3_48_sandbox_project_hardening.py",
+      "size": 10764,
+      "sha256": "9f0e92c4c5dfcfa561ed984721786743f907ca06001d4d933f0f32805cbd8ac6"
+    },
+    {
+      "path": "tests_v55_3_49_intent_voice_mode.py",
+      "size": 2847,
+      "sha256": "2ef53ca0a462461f65def7c24e833a21b7b6ca3bdff94e1cdbdca37f79633d42"
+    },
+    {
+      "path": "tests_v55_3_54_upgrade_voice_selector.py",
+      "size": 1251,
+      "sha256": "272a8f7b288bc4f7634ae6ed1168ee31e45179c0f9035852efcdda1adf78241c"
+    },
+    {
+      "path": "tests_v55_3_55_optional_upgrade_installer.py",
+      "size": 1911,
+      "sha256": "d1a51f5cadb08c32cd14d480892386eb373a65f194a5fd5130703b6baca74be0"
+    },
+    {
+      "path": "tests_v55_3_56_comprehensive_review.py",
+      "size": 1819,
+      "sha256": "cb802f20a8abf406dca905b015d300abb5dff0a9b1f25f7115ac7f3094ee1aa5"
+    },
+    {
+      "path": "tests_v55_3_57_sandbox_autonomy_validation.py",
+      "size": 2194,
+      "sha256": "23f006dfe107c7e58d0f3e8af3336177fce4dc50439671148d3257a3d9d67c01"
+    },
+    {
+      "path": "tests_v55_3_58_capability_mutable_plans.py",
+      "size": 2488,
+      "sha256": "d4a4ce9f1651d856e485b42d627d5f102a05051f70280cc39b9136b2eb2e883c"
+    },
+    {
+      "path": "tests_v55_3_63_blueprint_trace_gui_mcp.py",
+      "size": 3574,
+      "sha256": "a9ca8ace6160b739b5728ff8d8b0b6036743bdf288f3ef680b9c062e49d9b97e"
+    },
+    {
+      "path": "tests_v55_3_70_major_upgrade_layers.py",
+      "size": 4191,
+      "sha256": "6187027e5e7746a0ef400217bc95260264bbf7f6301bc008524d28186c01bd38"
+    },
+    {
+      "path": "tests_v55_3_71_autonomy_command_access.py",
+      "size": 3189,
+      "sha256": "38a66ece39bb50addbfda42daabf02f87b06b71cbb893296d4aedcc2502e44a7"
+    },
+    {
+      "path": "tests_v55_3_72_weakspot_hardening.py",
+      "size": 2572,
+      "sha256": "c92f7eb0ff2025516fe7e755e8300f8c5a8c0c12d5ccd378f066fa38c39704e6"
+    },
+    {
+      "path": "tests_v55_3_73_comprehensive_user_testing.py",
+      "size": 1667,
+      "sha256": "c8037e8293e161db6f494cf95aa2feb978294b6683e3b4a554f12158d99dfc12"
+    },
+    {
+      "path": "tests_v55_3_74_improvement_cycle.py",
+      "size": 3512,
+      "sha256": "c6c436f217cf1f3a6ce8ac7cff821d03ab6c4b5f4360483149896aeb58f94b04"
+    },
+    {
+      "path": "tests_v55_3_75_regression_sweep_hardening.py",
+      "size": 1765,
+      "sha256": "da688cdb3273b8368f797a0b622e52ee462efa7193e13c656516c4b21503e9cf"
+    },
+    {
+      "path": "tests_v55_3_76_improvement_roadmap.py",
+      "size": 2867,
+      "sha256": "4820017b95b1182924bfd145f57d909881c10983f3edff46aca9acf1075d3e6c"
+    },
+    {
+      "path": "tests_v55_3_77_whole_codebase_review.py",
+      "size": 2715,
+      "sha256": "e4081929945483acf6c34dc2cab26ad094810dbbdee0c9b39a74a90cb958ef13"
+    },
+    {
+      "path": "tests_v55_3_78_bug_review.py",
+      "size": 2547,
+      "sha256": "55914ec94e64b6d1e52bd0061e8a632fb423e50ec1fdc496389120bf27743094"
+    },
+    {
+      "path": "tests_v55_3_79_planning_panel_close.py",
+      "size": 917,
+      "sha256": "e711a2071b6080486c87198949a6ec9442df6db9b5293db63beee9d002e9ce48"
+    },
+    {
+      "path": "tests_v55_3_80_tool_request_routing.py",
+      "size": 1689,
+      "sha256": "d6734234fc097ea92943b78bd3a695c350c5a0a33cdf932c6819c2fbf5c1d733"
+    },
+    {
+      "path": "tests_v55_3_86_quality_runtime_learning.py",
+      "size": 3609,
+      "sha256": "db5364967fce7418bb3a7d058054119bae8c68da1b69152119b82bed814d2dcc"
+    },
+    {
+      "path": "tests_v55_3_89_autonomous_idle_intelligence.py",
+      "size": 3012,
+      "sha256": "fcdce20f96bce868dc8f44902537ad2df04fe1dcec92235cd32f4f12d9dc8554"
+    },
+    {
+      "path": "tests_v55_3_90_iterative_coding_autonomy.py",
+      "size": 3015,
+      "sha256": "f9534c1615ee3f702ea235f2eef1bd8635501b5b4f5eb0a45a3c1c077839251d"
+    },
+    {
+      "path": "tests_v55_3_91_model_download_manager.py",
+      "size": 2628,
+      "sha256": "d36e01bf066e6fc911526de1d630c6af5293516a80377a41c8a16cf10383d211"
+    },
+    {
+      "path": "tests_v55_3_92_flow_audit.py",
+      "size": 2405,
+      "sha256": "49cb240a8404bc3313a5f0dd78519795d38770e0ba18407d7b198738714187fc"
+    },
+    {
+      "path": "tests_v55_3_93_browser_runtime_reference_hardening.py",
+      "size": 2625,
+      "sha256": "ac37eede45ca2cdcf6566a5e2742b88e23225a5086cc3a412f4d68be92b1acb7"
+    },
+    {
+      "path": "tests_v55_3_94_codebase_flow_review.py",
+      "size": 1519,
+      "sha256": "152844d3f980cf424e73b03be2c50c06777a24c787d90187e47e7f8ffda45c52"
+    },
+    {
+      "path": "tests_v55_3_95_nova_gui_project_generation.py",
+      "size": 5940,
+      "sha256": "d38d33cb265d940aef78313bc235498b3e59cd47f99d7c8fca9c06f0fc577d1d"
+    },
+    {
+      "path": "tests_v55_3_96_proposal_tool_lock_routing.py",
+      "size": 3852,
+      "sha256": "6d56dc321edb394cf7432fae1a79885a4a81e17d01e2eebe5b17a8d7b01be77e"
+    },
+    {
+      "path": "tests_v55_3_97_gui_overhaul.py",
+      "size": 1615,
+      "sha256": "d845f5a8564d7ea1727cb18f3136ec23e0a25387c020644d9f7c0027587fe82c"
+    },
+    {
+      "path": "tests_v55_3_98_gui_cockpit_refine.py",
+      "size": 1530,
+      "sha256": "e0e54da7b040094c21cca7d52f5e2a9e097608976d1d45fd6d9c46ed380ccc00"
+    },
+    {
+      "path": "tests_v55_3_99_vscode_workbench_gui.py",
+      "size": 1727,
+      "sha256": "ae52dac6f1fc335a22514dd5abedd744dc67c08ea9358113653a00a170f5f066"
+    },
+    {
+      "path": "tests_v55_ux_game.py",
+      "size": 2841,
+      "sha256": "89b04f1671ef046875960653cc6697013400bc540646ea4ca5af9fb058f2037b"
+    },
+    {
+      "path": "tests_validation_chunked_full.py",
+      "size": 5358,
+      "sha256": "caea1d4ece30a01b1207f92f8fc5951d22e940bf056088c1402495d9c3f334f2"
+    },
+    {
+      "path": "tests_validation_reporting.py",
+      "size": 3650,
+      "sha256": "edcc88797f87e6117419df3e0a654bdfa60ac7e86b954030861565381b6d717d"
+    },
+    {
+      "path": "tests_validation_status_command.py",
+      "size": 4427,
+      "sha256": "216f7416676db136efef635276944ba637e1ed727aac553ec91612bdaea51876"
+    },
+    {
+      "path": "tests_webui_idle_status.py",
+      "size": 8424,
+      "sha256": "cd43752a5c44d33f99481f0a527c4b199e9da3557c9cde038d416758a0b792f4"
+    },
+    {
+      "path": "tests_webui_planning_visibility.py",
+      "size": 972,
+      "sha256": "95d86f044157a61ea157d3284efdc8bb9b00cec8be231bb2a0cf959fed7217c6"
+    },
+    {
+      "path": "tests_whole_codebase_real_bugfix_v55_3_8.py",
+      "size": 4028,
+      "sha256": "23270c5fad025928930b1d1a8160275fc3b4af92046ba1b0639a2c74745b8f82"
+    },
+    {
+      "path": "webui_extracted.js",
+      "size": 138430,
+      "sha256": "ec8319c31d4f3e53b29026c93b9363a5234661d7d095c91836eb2e7dfbfff25d"
+    },
+    {
+      "path": "winlocalassistant/__init__.py",
+      "size": 1832,
+      "sha256": "1062d1d253ea660359e4ea499538f1a5e4974f02c53561aeb3dc1d3dfef73176"
+    },
+    {
+      "path": "winlocalassistant/action_watcher.py",
+      "size": 5784,
+      "sha256": "131666079856c95dbec43c3e639706d44aa90a96997901998d95a2d286879cf4"
+    },
+    {
+      "path": "winlocalassistant/adaptive_backlog.py",
+      "size": 16205,
+      "sha256": "9dee9784f2ea1a709381e7ce052a7c1192298988bc05dfe379eb530d013f57e0"
+    },
+    {
+      "path": "winlocalassistant/analytics_engine.py",
+      "size": 14363,
+      "sha256": "7d313c872c6d1d79e9d69e0a7ea9e47c88b8110fc9845d2ebc7b7dd5b42bbe2c"
+    },
+    {
+      "path": "winlocalassistant/architecture_audit.py",
+      "size": 11415,
+      "sha256": "85e1876c8c0888009fe7febc1e842c26fb8998bf4ba6b1bda258f101273fd841"
+    },
+    {
+      "path": "winlocalassistant/assistant_box.py",
+      "size": 3429,
+      "sha256": "47fbe395943345099de6b5a533cd9e8f53c6b3c06e7d159818635d2c1cf5491a"
+    },
+    {
+      "path": "winlocalassistant/assistant_datastore.py",
+      "size": 18885,
+      "sha256": "0e2663fa7b8b325baf78aeea35ada08215eedc4f6e5092fb3efe64f68b86a47d"
+    },
+    {
+      "path": "winlocalassistant/autonomous_explain.py",
+      "size": 7067,
+      "sha256": "a37c94fdaef7e5d28597d37927f50b01ecbd7936cc961533b50ef4ca1f065c8f"
+    },
+    {
+      "path": "winlocalassistant/autonomous_failure.py",
+      "size": 20815,
+      "sha256": "f079e3de6fab6d34d331c5b00ff5c653b1dce1a60c366079d72048bbe7e12da1"
+    },
+    {
+      "path": "winlocalassistant/autonomous_journal.py",
+      "size": 8036,
+      "sha256": "2631a6f4680f4c47e57fb1df259a6a16620f2a9de9d85406a0aa30dc1960f591"
+    },
+    {
+      "path": "winlocalassistant/autonomous_loop_guard.py",
+      "size": 12030,
+      "sha256": "8acf8d68493d108632bd265a088a785d2b54859be2f0eaa93f26cdb88802dc7f"
+    },
+    {
+      "path": "winlocalassistant/autonomous_mission_contract.py",
+      "size": 6303,
+      "sha256": "93646927ea90724729c4e7eb08b326bf04578be7d5dbde266667211070e74bd9"
+    },
+    {
+      "path": "winlocalassistant/autonomous_sequence.py",
+      "size": 22200,
+      "sha256": "17a1068dde45639574278b4a1052e8df8ce16b9873f43c0a5b477ca084a228f2"
+    },
+    {
+      "path": "winlocalassistant/autonomy_capabilities.py",
+      "size": 40639,
+      "sha256": "79f204d562aefafb487676a42ecd94d869f17f2d91a579f15c86364c3efa1fb9"
+    },
+    {
+      "path": "winlocalassistant/autonomy_idle_intelligence.py",
+      "size": 12573,
+      "sha256": "8a0a9e79d5e3025996728e68a6bcecb5c5b960689e106e281ecf8434629d3ac6"
+    },
+    {
+      "path": "winlocalassistant/behavior_rules.py",
+      "size": 3322,
+      "sha256": "ac4edea33cc7aae424a186150e619ae0ace3e5b4b0a9b581b76a3e89e8fb425d"
+    },
+    {
+      "path": "winlocalassistant/benchmark_migration.py",
+      "size": 1511,
+      "sha256": "d31e18fd5ba0866bcae3f50823d1032b14eb13c8b03a2d66e844773f9eed286f"
+    },
+    {
+      "path": "winlocalassistant/blueprint_engine.py",
+      "size": 7185,
+      "sha256": "9a6b3a271752004515c017e5b8f903ab6a7f7663db866234b628f9041186c1b8"
+    },
+    {
+      "path": "winlocalassistant/branding.py",
+      "size": 6308,
+      "sha256": "f52ff3f1cf67d1ddcb1ed902ed978fd1ea66b622df80d4a09e3b8883ef777ace"
+    },
+    {
+      "path": "winlocalassistant/browser_worker.py",
+      "size": 3460,
+      "sha256": "2f829f9b1a6d5b57fe942c0ab4bbac2a0465c94b585e62fa2300248e2a9268cd"
+    },
+    {
+      "path": "winlocalassistant/bug_review.py",
+      "size": 14102,
+      "sha256": "40fe57f750edd17eeb742c9a20f6df25e5f78b2051430b5efe341c49bd67c88d"
+    },
+    {
+      "path": "winlocalassistant/build_info.py",
+      "size": 4397,
+      "sha256": "ca56cc7f753807cf502d08fa54d22a41e1530f47c69c0a1f9c61c836cb57ef86"
+    },
+    {
+      "path": "winlocalassistant/candidate_tournament.py",
+      "size": 3131,
+      "sha256": "c1b0c0acc409d9d403a9e5d32f5372ae0e92fe4b38a850aebfc442613b081c70"
+    },
+    {
+      "path": "winlocalassistant/code_quality_gate.py",
+      "size": 10417,
+      "sha256": "a633ae998d24fe0192b64be38dac6648bff3369c7bc4cffcf65a94305d178109"
+    },
+    {
+      "path": "winlocalassistant/code_repair_audit.py",
+      "size": 11407,
+      "sha256": "b6917f84f77876e3b3e747b5d31a91131414bc817a6cf119730d691a39842172"
+    },
+    {
+      "path": "winlocalassistant/code_review_audit.py",
+      "size": 16053,
+      "sha256": "8c6ce7b76f177adf6731aa0fb45a78c839391a8c57ba78b7f739d4bdfc10aa98"
+    },
+    {
+      "path": "winlocalassistant/codebase_advisor.py",
+      "size": 10685,
+      "sha256": "26e6522c9d09a99764c2db8eef6681791ce535bf7e225f58d32303b60855d619"
+    },
+    {
+      "path": "winlocalassistant/codebase_integrity_audit.py",
+      "size": 17038,
+      "sha256": "c66d23866bcc884b78198a8fe725b27581491c22aa3ae414573039b5480c73a8"
+    },
+    {
+      "path": "winlocalassistant/codebase_sanity_audit.py",
+      "size": 13282,
+      "sha256": "048f0f6d82a724d632e3ad25f95fb0ddd6d9250d78bd8369b0a405b5b3787de8"
+    },
+    {
+      "path": "winlocalassistant/cohesion_engine.py",
+      "size": 11603,
+      "sha256": "e5b7589d88baa72a6aada2054d562b81313ee6d39c8a3e900dbb726646f0ca3c"
+    },
+    {
+      "path": "winlocalassistant/command_help.py",
+      "size": 12245,
+      "sha256": "491edf84da4d2621dd49ec1622148c2b55a2b893c526951ed87b02f2664c4de8"
+    },
+    {
+      "path": "winlocalassistant/command_suggestions.py",
+      "size": 10729,
+      "sha256": "64875b7c10b33668cebd04eb34766f9042557abfb9793af525f090a73d209315"
+    },
+    {
+      "path": "winlocalassistant/command_verifier.py",
+      "size": 6626,
+      "sha256": "e2ca43a925a626c92f4199da69099d29517fc5184efc131415ca3fa6e0518fb6"
+    },
+    {
+      "path": "winlocalassistant/completion_audit.py",
+      "size": 11993,
+      "sha256": "975c078f242ab051666a85fde72a60aa8866f80e92fcacd79d2a9fb7359f3e96"
+    },
+    {
+      "path": "winlocalassistant/config.py",
+      "size": 9243,
+      "sha256": "64f03cd244938821bba2c1cd82207841eb041b4518ddccdf42cc78965b9f3e4f"
+    },
+    {
+      "path": "winlocalassistant/conversation_store.py",
+      "size": 7292,
+      "sha256": "4a9dcf768e28a935dbb0a91c7a51d98d5fd1df2080b66f493aca74f75d5eb8b3"
+    },
+    {
+      "path": "winlocalassistant/core.py",
+      "size": 496856,
+      "sha256": "239d76a0d81d0b9e42cbcd4f868e4c63a86a65c22b36aed09ab6c1d0e475aa00"
+    },
+    {
+      "path": "winlocalassistant/creation_intent.py",
+      "size": 17584,
+      "sha256": "f93ff6ec8eb73b9cb04b6e9546eb460b3f2b0fb0886469dbde6cb43faa9211f2"
+    },
+    {
+      "path": "winlocalassistant/custom_tools.py",
+      "size": 14977,
+      "sha256": "c8cab5f4864b0d4dc640ae27ae17548e704fecc470bd835d642ed7a11d5a725f"
+    },
+    {
+      "path": "winlocalassistant/dependency_check.py",
+      "size": 6348,
+      "sha256": "bb7e3d583039b7a2e2a90a3900ebb82fc3b291aa15a358b662b7a0657c9aa3e0"
+    },
+    {
+      "path": "winlocalassistant/deterministic_generation.py",
+      "size": 2404,
+      "sha256": "74b7dbd34084f23b9e0f6b19827c3698eb51ef89820a358b5c3551582ba39d5b"
+    },
+    {
+      "path": "winlocalassistant/development_governor.py",
+      "size": 9161,
+      "sha256": "94f6b74e9bb8178c82b8727b36137a338ce7ff4cd09715c1e3e031d5bfb0e6f3"
+    },
+    {
+      "path": "winlocalassistant/docker_manager.py",
+      "size": 40958,
+      "sha256": "ec55e6c693834e34149074bd3961667053641a8204170355d018930d8d07e1fb"
+    },
+    {
+      "path": "winlocalassistant/document_ingestion.py",
+      "size": 4690,
+      "sha256": "e92096154bf2c8f7a2042cf1a3020abbf7f04e8e8d0812a2bb86033268b023bf"
+    },
+    {
+      "path": "winlocalassistant/efficiency_profiler.py",
+      "size": 10436,
+      "sha256": "2b08e62c11b80936eed08feda211625b641a07c64b300cdd31259beb8ba54273"
+    },
+    {
+      "path": "winlocalassistant/env_profiles.py",
+      "size": 2726,
+      "sha256": "2d35def1fdcc58cd271166f3621ffcacb9c14f50fe4598e99712b75115f06bc0"
+    },
+    {
+      "path": "winlocalassistant/eventlog.py",
+      "size": 6246,
+      "sha256": "9f726f89f704afe3bdbcd0c2d92408bb8cbdf7349177ebeb94c77a7c8ef441a9"
+    },
+    {
+      "path": "winlocalassistant/feature_audit.py",
+      "size": 11649,
+      "sha256": "46df8666752a4c0fe1c6f141a81acc642f32dcf9e25d64a5856eeee88075cd16"
+    },
+    {
+      "path": "winlocalassistant/feature_continuity.py",
+      "size": 8253,
+      "sha256": "01d07e8b7a5e3396d8e5b5cea470cfb05164cb42fc5a1768efce6d67727850f5"
+    },
+    {
+      "path": "winlocalassistant/file_context.py",
+      "size": 12809,
+      "sha256": "847cad6fdb3d94cf3f6f3ba4a20d43d2307c8615a35ef9ac69021494b9b4c28e"
+    },
+    {
+      "path": "winlocalassistant/flow_audit.py",
+      "size": 10201,
+      "sha256": "83e0510de5670da9d92c65bd8a4a2fc6a88bb2473c0bed80db394041c5ca2904"
+    },
+    {
+      "path": "winlocalassistant/game_design.py",
+      "size": 23434,
+      "sha256": "ddfe77cabb52231c88c1e911e9cc20628cc64ddcc12bac52bb4563fd9d311de8"
+    },
+    {
+      "path": "winlocalassistant/gui_context_help.py",
+      "size": 10463,
+      "sha256": "f06cb3833cce29735c7e956cb5234488cfe131b9fe161ffa7a19e40ce4107231"
+    },
+    {
+      "path": "winlocalassistant/gui_layout_diagnostics.py",
+      "size": 13328,
+      "sha256": "4a9eb7dbe4324beda7cb366725e6cc9910d08848edc849aa6afaeccb2adc36f7"
+    },
+    {
+      "path": "winlocalassistant/gui_redesign.py",
+      "size": 3193,
+      "sha256": "682ca550c9de5ddb5a77e3e2577a1f590804496dd4bd8208d7dcef71497605ad"
+    },
+    {
+      "path": "winlocalassistant/high_spec_profile.py",
+      "size": 3347,
+      "sha256": "e98ae98260b9cd3322ec76b78d5903948678f4f400c3bebd9839e4699bc0140d"
+    },
+    {
+      "path": "winlocalassistant/idle_engine.py",
+      "size": 18268,
+      "sha256": "79f5ea76488a93612782fdb84f7b05246bcdf3224b6e3c5149478c7d5fdf5c09"
+    },
+    {
+      "path": "winlocalassistant/idle_policy.py",
+      "size": 4860,
+      "sha256": "db8499a1c7cd21e245b29d315b14e6a6e19094cc78ae652f9c954e2bd5502962"
+    },
+    {
+      "path": "winlocalassistant/image_generation.py",
+      "size": 29142,
+      "sha256": "d6035aee15333ca7938f6fbc7cba837715ec5ce5c01bc81d41a8f7a2b5cf3ec5"
+    },
+    {
+      "path": "winlocalassistant/improvement_cycle.py",
+      "size": 11777,
+      "sha256": "db7304f44820d82f820f0f0d347224ad39b4e22cf0b5b39928b0572b4ec2b105"
+    },
+    {
+      "path": "winlocalassistant/improvement_features_integration.py",
+      "size": 10350,
+      "sha256": "c7fb60b3f20f1716ee026c7314a0d90b538f6421669836485170f31c9917949c"
+    },
+    {
+      "path": "winlocalassistant/improvement_roadmap.py",
+      "size": 14022,
+      "sha256": "02508d8607b69c985f30cbb722bd93ba5dd1bbb9506e979d75b420b65ee76d3f"
+    },
+    {
+      "path": "winlocalassistant/integration_radar.py",
+      "size": 9332,
+      "sha256": "84751b286f213f9325eea7cdbf0f2d8cd98afe767d5472cf81d340cc4a9d39fa"
+    },
+    {
+      "path": "winlocalassistant/integration_review.py",
+      "size": 5311,
+      "sha256": "7dc55543603d226134e7a860b96a1fe1099952fdfb17f8dc166217ec6614a39d"
+    },
+    {
+      "path": "winlocalassistant/intent_planning.py",
+      "size": 11518,
+      "sha256": "9db3a28fe83ddd017ae07efc8ae7e1489394185f39cb8becc5a0410f9b9c6432"
+    },
+    {
+      "path": "winlocalassistant/interaction_learning.py",
+      "size": 3738,
+      "sha256": "a1cd77d983160af7406454d9fcfe4dd7a2824ab3836148d8ab42fab3ebdcd693"
+    },
+    {
+      "path": "winlocalassistant/iterative_coding.py",
+      "size": 11013,
+      "sha256": "9d803e3c9903786c8e7f8151a959ecdec95b2566c719b26d5ae2436bece46928"
+    },
+    {
+      "path": "winlocalassistant/jarvis_bridge.py",
+      "size": 42435,
+      "sha256": "7a40a9e1f9db1700256a030a0851791e0ecec98acee0ecf2305641e68dc9a982"
+    },
+    {
+      "path": "winlocalassistant/legacy_continuity.py",
+      "size": 13493,
+      "sha256": "737502bde207d789386616d52ee82de62df501a68ebb4338da2d6e96ee268dab"
+    },
+    {
+      "path": "winlocalassistant/llm_training_lab.py",
+      "size": 15850,
+      "sha256": "cd77c027424c4ce2aa7b27d39569c982e85cf6fe70368d925e7288de4bc82616"
+    },
+    {
+      "path": "winlocalassistant/local_model_optimizer.py",
+      "size": 6091,
+      "sha256": "6096abfae349f1cd52ba034d8a5f8533fff25145f52f64b4bff66893032f8cb1"
+    },
+    {
+      "path": "winlocalassistant/main.py",
+      "size": 2097,
+      "sha256": "531f6b83296ecb96119763ee7c2f1cd9c88f61e9c11ec2a7ce42328ed5576f24"
+    },
+    {
+      "path": "winlocalassistant/maintenance_validation.py",
+      "size": 11235,
+      "sha256": "2accf471a0afaf3f650c0a339d22d874226197e38f0b2a273a6c7e48ff17b7be"
+    },
+    {
+      "path": "winlocalassistant/mcp_export.py",
+      "size": 1669,
+      "sha256": "4cdb448b1b3a2b171816567423f1962148613a5d8582abe476b569321903cf93"
+    },
+    {
+      "path": "winlocalassistant/mcp_security.py",
+      "size": 2610,
+      "sha256": "6fb72cdfb45d11f46cb58b0593933312b6c5cff12e510f1037b2f3af9952bbea"
+    },
+    {
+      "path": "winlocalassistant/memory_inventory.py",
+      "size": 3297,
+      "sha256": "ae97c51a63fdcd315d780a8b2946bc4137a997d08f0a0bae964b40d4768f640c"
+    },
+    {
+      "path": "winlocalassistant/mission_planner_v2.py",
+      "size": 3321,
+      "sha256": "7eb293474185b3c01f462ca0413063911d6217ff908fdc14528a729e53e2d8ce"
+    },
+    {
+      "path": "winlocalassistant/model_calibration.py",
+      "size": 7876,
+      "sha256": "317198d92a383318164d958419ba4f631dc9e06caf1aefb7f22841191082c705"
+    },
+    {
+      "path": "winlocalassistant/model_context.py",
+      "size": 14258,
+      "sha256": "dd9b2b61d28ed00cf1bb5570e93d539b81194c52567a12674e36b4c3eddef896"
+    },
+    {
+      "path": "winlocalassistant/model_download_manager.py",
+      "size": 13294,
+      "sha256": "37c51275422691e004556fbf47c22ee9b1b34195f8e22fe6b0155d39747e18dc"
+    },
+    {
+      "path": "winlocalassistant/model_health.py",
+      "size": 6356,
+      "sha256": "8203c3ee6d8ee97d70212a91a16156f1214096e31b67d7e4546f483aa29ec8bf"
+    },
+    {
+      "path": "winlocalassistant/model_output_coach.py",
+      "size": 2421,
+      "sha256": "3b52ec4b2795f09fd3568f917cb3abd7665f764363ca66895482452ed45970c5"
+    },
+    {
+      "path": "winlocalassistant/model_registry.py",
+      "size": 3119,
+      "sha256": "8bcc7782bf5b8bacb6c8e307f0471f7deb57a16b70b8a800b95cfc8ca77311aa"
+    },
+    {
+      "path": "winlocalassistant/model_router.py",
+      "size": 6172,
+      "sha256": "95c0cf53f334f54ade5ccb4dfb2d250200a4659b66e2b4e63f76e3551f10b3f9"
+    },
+    {
+      "path": "winlocalassistant/next_feature_suite.py",
+      "size": 24409,
+      "sha256": "41b8b6d77379cf398e424d0a5da37ad87a95e6ae42e54760c54c682920ac2138"
+    },
+    {
+      "path": "winlocalassistant/nova_agent_upgrade_lab.py",
+      "size": 24592,
+      "sha256": "78e11b650a6c2cf0f13e744b943961ae3be46159be494a5599b3880c082d7e56"
+    },
+    {
+      "path": "winlocalassistant/nova_api.py",
+      "size": 17161,
+      "sha256": "189b25945b6a5407560391c9e2e84f6253b26155a95da63ca26070072570e796"
+    },
+    {
+      "path": "winlocalassistant/nova_arcade.py",
+      "size": 3952,
+      "sha256": "c7007fca999c021e9927e6c51c62a9bef75bed01a083524c7d3292966d6bc9bc"
+    },
+    {
+      "path": "winlocalassistant/nova_capability_drift_lab.py",
+      "size": 15034,
+      "sha256": "09eb5e04917bc3869b794b076c0943e6e1cb7c165b05975c7a4699172efc914a"
+    },
+    {
+      "path": "winlocalassistant/nova_coding_capabilities.py",
+      "size": 27848,
+      "sha256": "68173e98f75210ccd33712da2b019d41096416bc815f10309a28e0b1c4448c1e"
+    },
+    {
+      "path": "winlocalassistant/nova_deep_research_lab.py",
+      "size": 25720,
+      "sha256": "cfec2aa664b5953c008a77df4be3744084cc27b63d9674a65336ffb4dd7eedf3"
+    },
+    {
+      "path": "winlocalassistant/nova_efficiency_audit.py",
+      "size": 9839,
+      "sha256": "0a6ae5f5ab9acfc49b673f23d63154aa08f71357dee9bf888949e3531b325ce1"
+    },
+    {
+      "path": "winlocalassistant/nova_eval_packs.py",
+      "size": 9988,
+      "sha256": "e939e96358bd69971230b33bee9ac92ca1c21258cec8e1c3ef48b4341a70e33a"
+    },
+    {
+      "path": "winlocalassistant/nova_improvement_assurance_lab.py",
+      "size": 17886,
+      "sha256": "4def2d1eb2efcb399fa6c75ce4be18817cbb925d0f6929bfba3ab604d4e03119"
+    },
+    {
+      "path": "winlocalassistant/nova_improvement_research.py",
+      "size": 5905,
+      "sha256": "21ee6bfeadbc7103c23dca9f50c83d36f2ddc5c1c2a1b8be10596bfec5490e86"
+    },
+    {
+      "path": "winlocalassistant/nova_inspiration_engine.py",
+      "size": 22139,
+      "sha256": "93ee3f2322fb6fc86c1da54a6e5601cdb345071c4b08eb3bbae7d02ba08f71bc"
+    },
+    {
+      "path": "winlocalassistant/nova_odysseus_suite.py",
+      "size": 90375,
+      "sha256": "5a9d4f610ef39e036c1bf831140a40259b3078a7812449f292abe280d84574d0"
+    },
+    {
+      "path": "winlocalassistant/nova_operating_context.py",
+      "size": 11017,
+      "sha256": "4ec1eaf9a17605ac1d2b1fe307e5ebb287b12d1ed77b8b9a7cdf9d4dff506c1a"
+    },
+    {
+      "path": "winlocalassistant/nova_reliability_lab.py",
+      "size": 24745,
+      "sha256": "cb448b923e4cb381a1b505cd0f5668581f4449c89be7dbfe1fa4756b1779c0cd"
+    },
+    {
+      "path": "winlocalassistant/nova_route_resilience_lab.py",
+      "size": 21166,
+      "sha256": "93352da7663626134a430a16d772ba54e6992cea8edf1dbfdc09dce6cf616ae5"
+    },
+    {
+      "path": "winlocalassistant/nova_system_test.py",
+      "size": 19453,
+      "sha256": "f7553f30a544f0ca7cc2549239a9fd5cc9fa2790ce7fa3da5e9853e3428e18a1"
+    },
+    {
+      "path": "winlocalassistant/nova_verified_changes.py",
+      "size": 15818,
+      "sha256": "e73f921285a7567e9527b82e6731beaeb4b64af47b9f212c128cf00ee29cfe73"
+    },
+    {
+      "path": "winlocalassistant/nova_video.py",
+      "size": 27890,
+      "sha256": "c58d0872d22793016519c09324c62b4d3b8b37502a3de39ef450c6018336ac63"
+    },
+    {
+      "path": "winlocalassistant/ollama.py",
+      "size": 13606,
+      "sha256": "6bfcb4a237cd0b07afb4babb7b76fed154d32bdf4949f1e47648c5977d2f98b7"
+    },
+    {
+      "path": "winlocalassistant/optional_upgrade_installer.py",
+      "size": 8108,
+      "sha256": "9ca03dc82fab409b28f909dba59c0fb67af7a3d887fdc942f2ba05cad1e8f3b9"
+    },
+    {
+      "path": "winlocalassistant/orchestration_foundation.py",
+      "size": 15934,
+      "sha256": "afaf223e23646229d3787da04a0f986576937f4b46e1035eeb41846d9dc3273d"
+    },
+    {
+      "path": "winlocalassistant/performance_profiler.py",
+      "size": 11131,
+      "sha256": "5659216e2c720f403a097db77840727271730d1326238887e83e844eaddb3f1b"
+    },
+    {
+      "path": "winlocalassistant/performance_tuning.py",
+      "size": 17506,
+      "sha256": "5762fb6115154df4232b327d4ffaa8e6d1f5e066ba8354e00599a0e047aeb5c6"
+    },
+    {
+      "path": "winlocalassistant/persona_profile.py",
+      "size": 11053,
+      "sha256": "3098a94beabdccf70366577a19eaaed875feee84b6dfe3774fac53553646be49"
+    },
+    {
+      "path": "winlocalassistant/pipeline_manifests.py",
+      "size": 13865,
+      "sha256": "5890cefa9ea95857535f5c306f386eec9090baa497e9b5390c978f3af2f0face"
+    },
+    {
+      "path": "winlocalassistant/pipeline_router.py",
+      "size": 17969,
+      "sha256": "b9c9e4b37f360194acc80aa5c36dab7c1ada1a7ff97d0b1df84dd537e4c5ce4f"
+    },
+    {
+      "path": "winlocalassistant/planner.py",
+      "size": 17034,
+      "sha256": "c895c4c7da78baece3e75d62b8d404ca8ea40065a9d5caf717533ebe587480b1"
+    },
+    {
+      "path": "winlocalassistant/planning_dashboard.py",
+      "size": 11172,
+      "sha256": "14d52422e045963e065232137a4b9ef7b9664b16eef79c567889203e5af24933"
+    },
+    {
+      "path": "winlocalassistant/project_acceptance.py",
+      "size": 20563,
+      "sha256": "aa6128d1ad542e0f04df3866c5d8ede5e9965b76536be50a8af55edc7bc68725"
+    },
+    {
+      "path": "winlocalassistant/project_brief.py",
+      "size": 22784,
+      "sha256": "5d96977acde18df5c58f0b34ba8cfac8552097c4a204b08bc55fba4b5271f693"
+    },
+    {
+      "path": "winlocalassistant/project_iteration.py",
+      "size": 7564,
+      "sha256": "5193cd948308f3211c4f78d9b90f6d3f30343c14b025817ac42650b3093fd171"
+    },
+    {
+      "path": "winlocalassistant/project_memory.py",
+      "size": 3054,
+      "sha256": "ca15e4f14cb1fd3a5590c2f290dd1969c05b812defb29714e88f1d3d4cb9694a"
+    },
+    {
+      "path": "winlocalassistant/project_request_contract.py",
+      "size": 3838,
+      "sha256": "9dc329500ce289f02708b84eed60c238c44c8cb3e4e86733c6857d2c69636cb8"
+    },
+    {
+      "path": "winlocalassistant/project_runtime_probe.py",
+      "size": 8768,
+      "sha256": "8607fff1a0110ed2ff91c6cbd7978f83f1b94939b2bc6ae5fdf79a2a4c99ac26"
+    },
+    {
+      "path": "winlocalassistant/project_state.py",
+      "size": 15357,
+      "sha256": "de40c1df7486dc3290dc13cabd71d479c1ef50c8d979b7b353bce77d41400872"
+    },
+    {
+      "path": "winlocalassistant/project_state_db.py",
+      "size": 4754,
+      "sha256": "17e0ae03cc6287c87a7bd6f2490bec23c6c48a0c9b317a0f634be8b4e083b973"
+    },
+    {
+      "path": "winlocalassistant/project_type_registry.py",
+      "size": 3778,
+      "sha256": "57dabcfec99d8cc526fa039ce0fb2f978f02e3503b78dc3c23187b7c74732c01"
+    },
+    {
+      "path": "winlocalassistant/projects.py",
+      "size": 5388,
+      "sha256": "68aa47f9ba044f02e6dfbfe7bd4bb71969e3ae9ea7d4f78329b09369262235e6"
+    },
+    {
+      "path": "winlocalassistant/prompt_test_compiler.py",
+      "size": 4517,
+      "sha256": "09f5ff607d04334d3d2ff0552b79b016754a918598e9cb29478a924644996af3"
+    },
+    {
+      "path": "winlocalassistant/proposal_ledger.py",
+      "size": 10042,
+      "sha256": "5f475a35f0480ced9cb0d17f28c3c4baa0c261b606ac56b07e6671dcc4cfb946"
+    },
+    {
+      "path": "winlocalassistant/provider_runtime.py",
+      "size": 18443,
+      "sha256": "59c331ee4786996bd6fff7d09658ec3142cf77d00ba181816c16228485c58b4a"
+    },
+    {
+      "path": "winlocalassistant/quality_dashboard.py",
+      "size": 5592,
+      "sha256": "55cd88d50f2a1caee2bac6611e1718f40dafcc20cd8d20a586315cbfb9c9d224"
+    },
+    {
+      "path": "winlocalassistant/quality_progress.py",
+      "size": 1209,
+      "sha256": "6cc404250e87305e7dc5986592f453d831db693a5ea86845bde5806b067c39cb"
+    },
+    {
+      "path": "winlocalassistant/receipt_history.py",
+      "size": 2579,
+      "sha256": "ee55f88cd011189fe13c5f35efad35718d8adc032ef36531d9c69b8bda79e6c6"
+    },
+    {
+      "path": "winlocalassistant/regression_memory.py",
+      "size": 1607,
+      "sha256": "2f8846d460380487dbffebecfd3b8e31200cc9200be0afbaacdc9142137a9a6a"
+    },
+    {
+      "path": "winlocalassistant/regression_sweep.py",
+      "size": 7521,
+      "sha256": "727b5285d815083b953aab6027a770c9c8ad137d57cdf614677cb30b34690d48"
+    },
+    {
+      "path": "winlocalassistant/release_checklist.py",
+      "size": 3865,
+      "sha256": "b663b3fc71bd89105c23d96f873e251e2a81777464b001a0cfae1d6d119f5695"
+    },
+    {
+      "path": "winlocalassistant/release_hygiene.py",
+      "size": 4368,
+      "sha256": "f0f64eeca0c8af479b98f53593a787e9a7615bc93f262066d03c20e2e67daf5f"
+    },
+    {
+      "path": "winlocalassistant/release_packager.py",
+      "size": 10947,
+      "sha256": "b6f16e2a7a4aac3498e29c78b8147d0f2cf60b145a56f4978ba929eeaabbedae"
+    },
+    {
+      "path": "winlocalassistant/release_readiness.py",
+      "size": 31209,
+      "sha256": "ab36ba17d2093128ec1a058ebd502f9f20eea658aead9341f4b185bbfce7087a"
+    },
+    {
+      "path": "winlocalassistant/remote_access.py",
+      "size": 56103,
+      "sha256": "30c43fa357169455f680e829d4f6e1a27f6aa56fe9ef6088c7f4c6c713c7e978"
+    },
+    {
+      "path": "winlocalassistant/repair_engine_v2.py",
+      "size": 3559,
+      "sha256": "ca1b53b2157d98ebfd8f5d0fef9c61a024b89cf4e70b2821537dc679f3222da0"
+    },
+    {
+      "path": "winlocalassistant/repo_intelligence.py",
+      "size": 9373,
+      "sha256": "b6991c9598c791a63291e4b2f2688e2af53dabc839ad62ebf4cb9c45e8e851d2"
+    },
+    {
+      "path": "winlocalassistant/repo_upgrade_assurance.py",
+      "size": 12135,
+      "sha256": "ef47e027239570db5a9c2445c63afd64172b0cba5bba93f40cf0b57b382a19b7"
+    },
+    {
+      "path": "winlocalassistant/request_intent.py",
+      "size": 7221,
+      "sha256": "d053eb9826e8ff529a4a7a7dc00d65991402c257f1c7c5ce5461e740526f93a4"
+    },
+    {
+      "path": "winlocalassistant/research_engine.py",
+      "size": 22125,
+      "sha256": "b7db975fc13248ac8ae4dd985a1e27cccf12abb644a3f6a1a7f47cb541367dbb"
+    },
+    {
+      "path": "winlocalassistant/response_quality.py",
+      "size": 7531,
+      "sha256": "4e9dec16f1f63d213c5686f1867abba17f852e3f9f73354edb3fc192a007de5b"
+    },
+    {
+      "path": "winlocalassistant/role_router.py",
+      "size": 7062,
+      "sha256": "35b56bfcbf8756bedbe8979db91fe984afb736a8b8f87555a099ec610f630498"
+    },
+    {
+      "path": "winlocalassistant/safe_io.py",
+      "size": 9635,
+      "sha256": "0bf1e31d73b4776f664fe3b65e8b7a93666bb0c1d724c140bb56401ef98977c2"
+    },
+    {
+      "path": "winlocalassistant/safety.py",
+      "size": 1182,
+      "sha256": "31649971125f85910f7bff33260db8fc792a34d6fc0d5ef0e83cf609b2405015"
+    },
+    {
+      "path": "winlocalassistant/sandbox_manager.py",
+      "size": 39976,
+      "sha256": "02f37d750f5941518de19cfaa9c730e75738a1191d7b8521756104d467026ae4"
+    },
+    {
+      "path": "winlocalassistant/sandbox_permissions.py",
+      "size": 4476,
+      "sha256": "7607f3213bea2df9c359a1bafdd8384688937b7776fb2f66559d6b8055645ee9"
+    },
+    {
+      "path": "winlocalassistant/scheduler_foundation.py",
+      "size": 16626,
+      "sha256": "ef5e7ec62f3ef07b42d5473b571d727a1eefa115e59f4a83e3dac8893554c8d4"
+    },
+    {
+      "path": "winlocalassistant/security_status.py",
+      "size": 11125,
+      "sha256": "4ca096871b3e034c2a5bbdc994741c6ed246bb9eddbedc306d853ef640deef41"
+    },
+    {
+      "path": "winlocalassistant/security_watch.py",
+      "size": 3601,
+      "sha256": "f9d0e9eb2325d5a6eb2a2690851a534bad920f63956d67302b4660feec4c2661"
+    },
+    {
+      "path": "winlocalassistant/self_awareness.py",
+      "size": 9180,
+      "sha256": "5b19978fb04cef5895e747ee6bbbb5efa7d461cb31c13f04ea8aede7bdd87f80"
+    },
+    {
+      "path": "winlocalassistant/self_repair_guardian.py",
+      "size": 11411,
+      "sha256": "b3cefb88f8c9469c17339add3c0a74d637a0fefb46705d3725c8ec9a065b02bb"
+    },
+    {
+      "path": "winlocalassistant/self_test_generator.py",
+      "size": 1661,
+      "sha256": "f56b6c5e0c1739763a31a8d9aae6f01f4c54392a05dd4f10c7488d4a18c39e93"
+    },
+    {
+      "path": "winlocalassistant/session_evidence.py",
+      "size": 5213,
+      "sha256": "2120e67b82b8690e794093e67ac536cfd62403588a778d134ef80fc267c5c3d3"
+    },
+    {
+      "path": "winlocalassistant/skill_profiles.py",
+      "size": 7661,
+      "sha256": "a79150e4709ccf689a8c01aba9900cb8299ab1ab5608e87593172c811301d596"
+    },
+    {
+      "path": "winlocalassistant/startup_validation.py",
+      "size": 5442,
+      "sha256": "a1e7a2f2f7f8aa89dd2570c8020f3d260cc2d151e0596ffcd68703cbf239f8e8"
+    },
+    {
+      "path": "winlocalassistant/subagent_orchestrator.py",
+      "size": 3711,
+      "sha256": "460b856cffed6ec86a4849ba303243a1d0a35f78b6e42c6a68bb14764334d6f0"
+    },
+    {
+      "path": "winlocalassistant/surgical_fallback.py",
+      "size": 6372,
+      "sha256": "316b73806157ad5aa44967b678024cd0c365282007634222db3a9fda76ba11d5"
+    },
+    {
+      "path": "winlocalassistant/surgical_recipes.py",
+      "size": 4078,
+      "sha256": "48255a9a0aab289793f12546052dd4a38cbc2377bb03531b17f5d895f80920e0"
+    },
+    {
+      "path": "winlocalassistant/system_test.py",
+      "size": 9908,
+      "sha256": "16a827ae2f33cecf49b93493ae0868f9772068e5d76c0c5fe8da150c9bdd34bc"
+    },
+    {
+      "path": "winlocalassistant/task_decomposition.py",
+      "size": 6906,
+      "sha256": "9116183ed0531dd27ac4c490655ce4096b0eaff54724fb5daed2db3a04dd8fbd"
+    },
+    {
+      "path": "winlocalassistant/task_execution.py",
+      "size": 23734,
+      "sha256": "7f7abff7a2f3d55ec41c62bc6899a9b9eda43fa2c371985476bd5297049bdaca"
+    },
+    {
+      "path": "winlocalassistant/task_scheduler.py",
+      "size": 16132,
+      "sha256": "a85a8183690a92dcd146b5f2e434351f10e1c3b8f7f14e12ee885b405cc1ef65"
+    },
+    {
+      "path": "winlocalassistant/tool_catalog.py",
+      "size": 5289,
+      "sha256": "e0136ad89a0552659a9cb18a925eab162a9d1aea4055ffe668cc1d41be20e1aa"
+    },
+    {
+      "path": "winlocalassistant/tool_guides.py",
+      "size": 2229,
+      "sha256": "2acfadfc282b6068931b81c767ee1776103df589cacc544f6c6b8b102e76d34d"
+    },
+    {
+      "path": "winlocalassistant/tool_orchestrator.py",
+      "size": 12190,
+      "sha256": "2c4eac7f4175bfd82b930041d51b0fcadc113f5fb990e23f1bf2052bf1722e1d"
+    },
+    {
+      "path": "winlocalassistant/tools.py",
+      "size": 602680,
+      "sha256": "9cc5ebc72cafb06c30e24c9cd970fed59a15342625b110c694c006ccabb9611a"
+    },
+    {
+      "path": "winlocalassistant/trace_cockpit.py",
+      "size": 3512,
+      "sha256": "0ccb05107b298c7ea3ba338880f4bd6791428f9b7e6e2e81f05afe0f05fed730"
+    },
+    {
+      "path": "winlocalassistant/upgrade_planner.py",
+      "size": 7637,
+      "sha256": "7cb9770d19411c74fd1fc39a219128c78bf4f0ccb47c2a817cd5d49906912292"
+    },
+    {
+      "path": "winlocalassistant/user_testing.py",
+      "size": 9008,
+      "sha256": "8bae4f2f2af3d4c703e46699ba0b9316f8419c347de4eea15d1dad3c97967ed0"
+    },
+    {
+      "path": "winlocalassistant/validate.py",
+      "size": 27276,
+      "sha256": "00b004d1bea1e04ce85f58e1f210eb217f2c56038b785e368bed15a0c170e7c0"
+    },
+    {
+      "path": "winlocalassistant/validation_matrix.py",
+      "size": 5957,
+      "sha256": "a6f21e30d4dda87435701cc06b5243dd597ffa60f873455705cf3ffd9da6092a"
+    },
+    {
+      "path": "winlocalassistant/visual_regression.py",
+      "size": 972,
+      "sha256": "7f028b967007b2ffe07de9a60295f2b33713af91eb40f22dc3fea4fd8356481c"
+    },
+    {
+      "path": "winlocalassistant/watchdog.py",
+      "size": 3582,
+      "sha256": "cef2614bde202496128fa7a3fb090f50c6da5c279d3b6943c9e508956a2d1e37"
+    },
+    {
+      "path": "winlocalassistant/weakspot_audit.py",
+      "size": 6562,
+      "sha256": "6d2b397de596c315ef42e3528afbd03a6dbe5e91383797306cd264b462574bfc"
+    },
+    {
+      "path": "winlocalassistant/webhook_system.py",
+      "size": 13271,
+      "sha256": "18631e9597779d4735f050532ade623c2df190ac88eddf07f296aa6da8dc0d35"
+    },
+    {
+      "path": "winlocalassistant/webui.py",
+      "size": 437577,
+      "sha256": "415f70652d361c3d8594533382990e25ab934e67701c0696e9589cc136b60906"
+    },
+    {
+      "path": "winlocalassistant/webui_ai_help_overlay.py",
+      "size": 8334,
+      "sha256": "633d5ff0ebfda3715f7ea54ead7b5769ff0012b7c3ebd7522608deea52e406cf"
+    },
+    {
+      "path": "winlocalassistant/webui_arcade.py",
+      "size": 9064,
+      "sha256": "2e6c9ccf65e77124b9541f99e735b02e55a3ee40c0ad70a56f0d31ecf34c9ebe"
+    },
+    {
+      "path": "winlocalassistant/webui_cyberpunk_theme.py",
+      "size": 11923,
+      "sha256": "97e3ad0e30a8e48fd96102072bb1d6d503dc97bd2160a45d8a63cf4898a55c8f"
+    },
+    {
+      "path": "winlocalassistant/webui_emergency_stability.py",
+      "size": 18086,
+      "sha256": "9b7c7f7f353f65fb318fa4fe56d6339eba1d991422183a91a6ab20bdd17b3c8d"
+    },
+    {
+      "path": "winlocalassistant/webui_interaction_overhaul.py",
+      "size": 20751,
+      "sha256": "d20aa1589b411372b1aec30b976e790ce4f8d9304e396547fd153036e4394603"
+    },
+    {
+      "path": "winlocalassistant/webui_layout_overhaul.py",
+      "size": 17829,
+      "sha256": "c65185f3e3540885caf70cad151871f3f0e4cfeff697c427916d3612cff59b79"
+    },
+    {
+      "path": "winlocalassistant/whole_codebase_review.py",
+      "size": 9965,
+      "sha256": "9e0cd293dba8c199b387ea7177c7dd0348a7859198dc7f21fb35d74ba881aa87"
+    },
+    {
+      "path": "winlocalassistant/wla_doctor.py",
+      "size": 20152,
+      "sha256": "494a2caa7e9c521fd1f1b5a13d24dc884e23cdef7625e2296031422141130173"
+    },
+    {
+      "path": "winlocalassistant/wla_mega_test.py",
+      "size": 8607,
+      "sha256": "dd5e50db67aef90c02718bf0d24d86f574cf4de8a0883a42483cf8476d09d982"
+    }
+  ],
+  "skipped": [
+    {
+      "path": ".nova_runtime/llm_lab_contract_sample/notes.txt",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/activity.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/config.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/efficiency_metrics.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/playwright/traces.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/activity.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/efficiency_metrics.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/chat_fallback_status/traces.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/command_help_status/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/activity.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/efficiency_metrics.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/model_health_and_host_calibration_status/traces.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/activity.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/config.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/efficiency_metrics.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/real_browser_gui_runtime_test/traces.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/KNOWLEDGE_BASE.md",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/activity.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/conversations.json",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/efficiency_metrics.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".nova_runtime/release_readiness/write_read_verify_code_do_status/traces.jsonl",
+      "reason": "excluded directory .nova_runtime"
+    },
+    {
+      "path": ".pytest_cache/.gitignore",
+      "reason": "excluded directory .pytest_cache"
+    },
+    {
+      "path": ".pytest_cache/CACHEDIR.TAG",
+      "reason": "excluded directory .pytest_cache"
+    },
+    {
+      "path": ".pytest_cache/README.md",
+      "reason": "excluded directory .pytest_cache"
+    },
+    {
+      "path": ".pytest_cache/v/cache/lastfailed",
+      "reason": "excluded directory .pytest_cache"
+    },
+    {
+      "path": ".pytest_cache/v/cache/nodeids",
+      "reason": "excluded directory .pytest_cache"
+    },
+    {
+      "path": "RELEASE_MANIFEST.json",
+      "reason": "generated release manifest is rewritten during packaging"
+    },
+    {
+      "path": "__pycache__/app.cpython-313.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_action_watcher.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_architecture_audit.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_autonomous_explain.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_autonomous_failure.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_autonomous_journal.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_autonomous_memory_robustness.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_autonomous_sequence.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_cli_user_mode.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_command_contract_download.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_command_suggestions.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_command_verifier.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_creation_intent.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_emergency_stability.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_eventlog_resilience.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_feature_continuity.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_file_context.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_format_result.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_game_design.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_idle_engine.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_idle_events.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_improvement_features_v55_3_124.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_intent_planning.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_legacy_continuity_guard.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_model_calibration.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_model_health_timeout.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_model_json_recovery.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_agent_upgrade_v55_3_127.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_better_model_env.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_capability_drift_v55_3_132.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_clean_gui_docker_v55_3_159.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_coding_v55_3_126.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_deep_research_v55_3_129.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_improvement_assurance_v55_3_131.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_inspiration_v55_3_125.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_launchers_v55_3_154.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_media_refinement_v55_3_160.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_release_sync_v55_3_154.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_reliability_v55_3_128.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_route_resilience_v55_3_130.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_start_here_v55_3_155.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_nova_video_manifest.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_planning_dashboard.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_acceptance.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_behaviour_contract.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_iteration.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_quality_score.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_quality_ui.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_runtime_probe.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_project_state_continuity.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_quality_dashboard.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_release_hygiene.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_report_hygiene.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_request_intent.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_runtime_usability_release_gate.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_self_awareness.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_self_improve_guardrails.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_smoke.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_surgical_fallback.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_task_decomposition.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_task_execution_hardening.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_timeout_resilience.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_tool_catalog_interaction_learning.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_tool_guides.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_v52_5_roadmap.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_v52_7_iteration.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_v52_roadmap.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_v55_ux_game.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_webui_idle_status.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "__pycache__/tests_webui_planning_visibility.cpython-313-pytest-9.0.2.pyc",
+      "reason": "excluded directory __pycache__"
+    },
+    {
+      "path": "logs/gui_runtime_server.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/gui_runtime_server.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/gui_runtime_usability_latest.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_122632.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_122634.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_122724.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_122725.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_122755.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_123214.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_123308.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/project_state/project_state_20260609_123347.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/chat_fallback_status.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/chat_fallback_status.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/command_help_status.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/command_help_status.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/compileall.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/compileall.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/host_ollama_gpu_probe_evidence.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/model_health_and_host_calibration_status.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/model_health_and_host_calibration_status.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/real_browser_gui_runtime_test.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/real_browser_gui_runtime_test.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/write_read_verify_code_do_status.stderr.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/release_readiness/write_read_verify_code_do_status.stdout.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122632_release_contract_smoke_ae6fada4.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122632_release_contract_smoke_ae6fada4.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122634_release_contract_smoke_05e54440.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122634_release_contract_smoke_05e54440.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122724_release_contract_smoke_fbfba4cf.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122724_release_contract_smoke_fbfba4cf.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122725_release_contract_smoke_e1a07e18.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122725_release_contract_smoke_e1a07e18.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122755_release_contract_smoke_380dc8e3.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_122755_release_contract_smoke_380dc8e3.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123214_release_contract_smoke_1f8f3247.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123214_release_contract_smoke_1f8f3247.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123308_release_contract_smoke_85c540e7.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123308_release_contract_smoke_85c540e7.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123347_release_contract_smoke_7175b834.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/task_evidence/20260609_123347_release_contract_smoke_7175b834.md",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/validation_latest.json",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/validation_latest.txt",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "logs/validation_progress.jsonl",
+      "reason": "excluded directory logs"
+    },
+    {
+      "path": "nova/__pycache__/__init__.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "nova/__pycache__/validate.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "scripts/__pycache__/nova_perf_probe.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "scripts/__pycache__/run_gui_runtime_test.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/__init__.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/action_watcher.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/adaptive_backlog.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/analytics_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/architecture_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/assistant_box.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/assistant_datastore.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_explain.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_failure.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_journal.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_loop_guard.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_mission_contract.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomous_sequence.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomy_capabilities.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/autonomy_idle_intelligence.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/behavior_rules.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/benchmark_migration.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/blueprint_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/branding.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/browser_worker.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/bug_review.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/build_info.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/candidate_tournament.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_quality_gate.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_repair_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/code_review_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_advisor.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_integrity_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/codebase_sanity_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/cohesion_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_help.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_suggestions.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/command_verifier.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/completion_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/config.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/conversation_store.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/core.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/creation_intent.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/custom_tools.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/dependency_check.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/deterministic_generation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/development_governor.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/docker_manager.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/document_ingestion.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/efficiency_profiler.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/env_profiles.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/eventlog.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/feature_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/feature_continuity.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/file_context.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/flow_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/game_design.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_context_help.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_layout_diagnostics.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/gui_redesign.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/high_spec_profile.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/idle_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/idle_policy.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/image_generation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_cycle.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_features_integration.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/improvement_roadmap.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/integration_radar.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/integration_review.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/intent_planning.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/interaction_learning.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/iterative_coding.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/jarvis_bridge.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/legacy_continuity.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/llm_training_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/local_model_optimizer.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/main.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/maintenance_validation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mcp_export.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mcp_security.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/memory_inventory.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/mission_planner_v2.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_calibration.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_context.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_download_manager.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_health.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_output_coach.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_registry.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/model_router.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/next_feature_suite.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_agent_upgrade_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_api.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_arcade.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_capability_drift_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_coding_capabilities.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_deep_research_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_efficiency_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_eval_packs.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_improvement_assurance_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_improvement_research.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_inspiration_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_odysseus_suite.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_operating_context.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_reliability_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_route_resilience_lab.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_system_test.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_verified_changes.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/nova_video.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/ollama.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/optional_upgrade_installer.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/orchestration_foundation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/performance_profiler.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/performance_tuning.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/persona_profile.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/pipeline_manifests.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/pipeline_router.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/planner.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/planning_dashboard.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_acceptance.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_brief.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_iteration.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_memory.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_request_contract.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_runtime_probe.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_state.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_state_db.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/project_type_registry.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/projects.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/prompt_test_compiler.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/proposal_ledger.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/provider_runtime.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/quality_dashboard.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/quality_progress.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/receipt_history.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/regression_memory.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/regression_sweep.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_checklist.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_hygiene.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_packager.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/release_readiness.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/remote_access.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repair_engine_v2.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repo_intelligence.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/repo_upgrade_assurance.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/request_intent.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/research_engine.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/response_quality.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/role_router.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/safe_io.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/safety.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/sandbox_manager.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/sandbox_permissions.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/scheduler_foundation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/security_status.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/security_watch.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_awareness.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_repair_guardian.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/self_test_generator.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/session_evidence.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/skill_profiles.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/startup_validation.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/subagent_orchestrator.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/surgical_fallback.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/surgical_recipes.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/system_test.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_decomposition.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_execution.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/task_scheduler.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_catalog.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_guides.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tool_orchestrator.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/tools.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/trace_cockpit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/upgrade_planner.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/user_testing.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/validate.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/validation_matrix.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/visual_regression.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/watchdog.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/weakspot_audit.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webhook_system.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_ai_help_overlay.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_arcade.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_cyberpunk_theme.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_emergency_stability.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_interaction_overhaul.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/webui_layout_overhaul.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/whole_codebase_review.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/wla_doctor.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    },
+    {
+      "path": "winlocalassistant/__pycache__/wla_mega_test.cpython-313.pyc",
+      "reason": "excluded nested cache/tooling directory"
+    }
+  ],
+  "validation_hint": [
+    "python -m compileall -q winlocalassistant app.py",
+    "python -m winlocalassistant.startup_validation --mode quick --timeout 90",
+    "python -m winlocalassistant.nova_system_test --profile quick --timeout 120"
+  ]
+}

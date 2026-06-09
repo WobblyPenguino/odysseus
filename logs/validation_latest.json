@@ -1,0 +1,256 @@
+{
+  "ok": true,
+  "sections": [
+    {
+      "name": "environment",
+      "ok": true,
+      "detail": {
+        "python": "3.12.10",
+        "cwd": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530"
+      }
+    },
+    {
+      "name": "imports",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "compileall",
+      "ok": true,
+      "detail": {
+        "cmd": [
+          "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+          "-m",
+          "compileall",
+          "app.py",
+          "nova",
+          "winlocalassistant"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "elapsed_sec": 0.211,
+        "timeout_sec": 300,
+        "stdout_tail": "Listing 'nova'...\nCompiling 'nova\\\\__init__.py'...\nCompiling 'nova\\\\validate.py'...\nListing 'winlocalassistant'...\n",
+        "stderr_tail": "",
+        "pytest_plugin_autoload_disabled": false
+      }
+    },
+    {
+      "name": "cli_smoke",
+      "ok": true,
+      "detail": {
+        "cmd": [
+          "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+          "app.py",
+          "/version"
+        ],
+        "ok": true,
+        "returncode": 0,
+        "elapsed_sec": 0.41,
+        "timeout_sec": 60,
+        "stdout_tail": "Nova 55.3.168\nv55.3.168 project-state continuity memory | preserves v55.3.167 task execution evidence/autonomy hardening | preserves v55.3.166 LLM-from-scratch inspired training lab | preserves v55.3.165 real-machine model calibration release candidate | preserves v55.3.164 runtime usability release-readiness gate | scheduling control plane, task DAG decomposition, prompt-injection filtering, confirmation-gated scheduled tasks, scheduler audit and provider runtime continuity | preserves v55.3.163 SubQ/NVIDIA/local runtime provider abstraction | preserves v55.3.162 efficiency audit and focus GUI | preserves GUI route/startup hardening, media pipeline refinement, bounded self-repair and Ollama model queue | legacy continuity: Hey Nova, wake, voice, packaging, no-regression, completion audit, autonomous cockpit, voice reliability, codebase advisor, voice-profile, wake-listener handoff, Odysseus-style voyage workspace deck, Clean Studio GUI shell, Orbit GUI shell, Voice cue, Orbit workspace drawer hotfix, self-validation, clean release packaging, hidden-panel layout, v55.3.141 historical safety validation dock, v55.3.150 repo research radar, qwen3-coder better-PC model routing, Nova video manifest planning, CLI thinking-time display, v55.3.153 repo intelligence, document/browser worker planning, comprehensive integration review, v55.3.154 regression research launcher hardening, v55.3.156 autonomous continuous mission hardening, v55.3.157 natural research routing and research/voice truthfulness, v55.3.158 bounded self-repair and Ollama model queue, v55.3.159 clean GUI and Docker validation hardening, v55.3.160 media pipeline refinement, v55.3.161 GUI startup media route hardening, v55.3.162 efficiency audit focus GUI, v55.3.163 provider runtime hardening\nWorkspace: C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\nCode/build model: qwen3-coder:30b\nChat/creative model: gemma2:2b\nPlanning/review model: qwen3-coder:30b\nVersion consistency check: GUI title, CLI banner, package metadata and /version are aligned.\n",
+        "stderr_tail": "",
+        "pytest_plugin_autoload_disabled": false
+      }
+    },
+    {
+      "name": "unit_tests",
+      "ok": true,
+      "detail": {
+        "skipped_under_pytest": true,
+        "reason": "avoid recursive pytest from validation smoke test",
+        "targeted": [
+          "tests_release_hygiene.py",
+          "tests_nova_better_model_env.py",
+          "tests_nova_video_manifest.py",
+          "tests_nova_launchers_v55_3_154.py",
+          "tests_nova_release_sync_v55_3_154.py",
+          "tests_nova_start_here_v55_3_155.py",
+          "tests_nova_clean_gui_docker_v55_3_159.py",
+          "tests_nova_media_refinement_v55_3_160.py",
+          "tests_improvement_features_v55_3_124.py",
+          "tests_nova_scheduler_v55_3_164.py",
+          "tests_validation_reporting.py",
+          "tests_validation_status_command.py",
+          "tests_nova_remote_access_v55_3_164.py",
+          "tests_validation_chunked_full.py",
+          "tests_nova_gui_startup_routes_v55_3_161.py",
+          "tests_v55_3_146_pipeline_observability.py",
+          "tests_v55_3_148_tool_awareness_orchestration.py",
+          "tests_gui_ai_help_overlay.py",
+          "tests_gui_cyberpunk_theme.py",
+          "tests_gui_interaction_overhaul.py",
+          "tests_performance_tuning.py"
+        ]
+      }
+    },
+    {
+      "name": "full_pytest",
+      "ok": true,
+      "detail": {
+        "skipped": true,
+        "hint": "run with --full for a chunked complete legacy sweep; add --single-process-full only when debugging old monolithic pytest behavior"
+      }
+    },
+    {
+      "name": "version_sync",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "version": "55.3.168",
+        "files": {
+          "winlocalassistant\\__init__.py": true,
+          "README.md": true,
+          "CHANGELOG.md": true,
+          "RELEASE_MANIFEST.json": true,
+          "winlocalassistant\\webui.py": true
+        }
+      }
+    },
+    {
+      "name": "launchers",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "checks": {
+          "start_nova_best_models.ps1": {
+            "exists": true,
+            "qwen3": true,
+            "delegates": true,
+            "node_path_ok": true
+          },
+          "start_nova_best_models.bat": {
+            "exists": true,
+            "qwen3": true,
+            "delegates": true,
+            "node_path_ok": true
+          },
+          "start_windows_assistant.bat": {
+            "exists": true,
+            "qwen3": true,
+            "delegates": true,
+            "node_path_ok": true
+          },
+          "start_nova_fastapi_api.bat": {
+            "exists": true,
+            "qwen3": true,
+            "delegates": true,
+            "node_path_ok": true
+          },
+          "start_better_models_env.ps1": {
+            "exists": true,
+            "qwen3": true,
+            "delegates": true,
+            "node_path_ok": true
+          }
+        }
+      }
+    },
+    {
+      "name": "startup_bat_obviousness",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "results": {
+          "START_NOVA_HERE.bat": {
+            "exists": true,
+            "needles": {
+              "start_nova_best_models.ps1": true,
+              "-Setup": true,
+              "-Mode web": true
+            }
+          },
+          "SETUP_NOVA_FIRST.bat": {
+            "exists": true,
+            "needles": {
+              "start_nova_best_models.ps1": true,
+              "-Mode setup": true
+            }
+          },
+          "README_START_HERE.txt": {
+            "exists": true,
+            "needles": {
+              "START_NOVA_HERE.bat": true,
+              "qwen3-coder:30b": true,
+              "python -m winlocalassistant.validate --all": true
+            }
+          },
+          "README.md": {
+            "exists": true,
+            "needles": {
+              "START_NOVA_HERE.bat": true,
+              "SETUP_NOVA_FIRST.bat": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "gui_smoke",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "required": {
+          "v55.3.164": true,
+          "populateSpecChoices": true,
+          "safeApplyUiSettings": true,
+          "/video-plan": true,
+          "/media-status": true,
+          "/video-package": true,
+          "focus-workspace": true,
+          "/nova-efficiency-audit": true,
+          "qwen3-coder:30b": true,
+          "natural-research-routing": true,
+          "/provider-route": true,
+          "/queue-status": true,
+          "provider-route-bar": true,
+          "gui-overhaul-v3": true,
+          "apply_gui_layout_overhaul": true
+        }
+      }
+    },
+    {
+      "name": "voice_state_machine",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "coding_worker_fixture",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "browser_worker_fixture",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "rag_fixture",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "creative_worker_fixture",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "model_registry",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "integration_review",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "package_lock_and_license_scan",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "command": "python -m winlocalassistant.validate --all",
+  "progress_log": "logs/validation_progress.jsonl",
+  "note": "Layered validation: environment, imports, compile, targeted tests, version sync, launchers, CLI/web smoke, worker surfaces and package/license surface. Progress is written to logs/validation_progress.jsonl while stages run."
+}

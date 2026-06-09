@@ -1,0 +1,64 @@
+{
+  "ok": true,
+  "mode": "gui-feature-coverage",
+  "feature_flagged": true,
+  "classic_preserved": true,
+  "layout": {
+    "left": [
+      "Chat",
+      "Projects",
+      "Build",
+      "Validate",
+      "Repair",
+      "Sandbox",
+      "Autonomous",
+      "Research",
+      "Memory",
+      "Settings"
+    ],
+    "center": [
+      "Prompt",
+      "Plan",
+      "Candidate",
+      "Files",
+      "Validation",
+      "Final Output"
+    ],
+    "right": [
+      "Model status",
+      "Current trace",
+      "Autonomous state",
+      "Warnings",
+      "Next best action"
+    ],
+    "bottom": [
+      "Attach",
+      "Mic",
+      "Mic test",
+      "Send",
+      "Model progress"
+    ]
+  },
+  "feature_coverage": [
+    "chat",
+    "projects",
+    "build",
+    "validate",
+    "repair",
+    "sandbox",
+    "autonomous",
+    "research",
+    "memory",
+    "settings",
+    "trace",
+    "patch queue",
+    "candidate comparison",
+    "model progress",
+    "architecture map"
+  ],
+  "regression_rules": [
+    "classic mode remains default",
+    "every classic feature mapped before cockpit default",
+    "run /gui-regression-test and /gui-visual-test before default switch"
+  ]
+}

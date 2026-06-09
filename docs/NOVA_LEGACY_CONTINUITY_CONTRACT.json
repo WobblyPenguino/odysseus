@@ -1,0 +1,397 @@
+{
+  "ok": true,
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "anchor_count": 8,
+  "failed_count": 0,
+  "anchors": [
+    {
+      "id": "odysseus_voyage_deck",
+      "introduced": "v55.3.139",
+      "name": "Odysseus-style voyage/workbench surfaces",
+      "why": "Earlier versions exposed Chat/Agents, Cookbook, Deep Research, Compare, Documents, Notes/Tasks, Memory and Themes without digging through raw panels.",
+      "required_files": [
+        "winlocalassistant/webui.py",
+        "winlocalassistant/nova_odysseus_suite.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/nova-odysseus-suite"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/nova-notes"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/nova-tasks"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/nova-docs"
+        ]
+      ],
+      "commands": [
+        "/nova-odysseus-suite",
+        "/nova-notes",
+        "/nova-tasks",
+        "/nova-docs",
+        "/nova-skills",
+        "/nova-presets"
+      ],
+      "test_suggestions": [
+        "tests_nova_odysseus_suite_v55_3_136.py",
+        "tests_nova_eval_packs_v55_3_134.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "voice_wake_reliability",
+      "introduced": "v55.3.141",
+      "name": "Hey Nova voice/wake reliability and listener pause semantics",
+      "why": "Voice/wake should not show listening while Nova is still thinking, and wake/listener diagnostics must remain available.",
+      "required_files": [
+        "start_nova_desktop_voice_listener.bat",
+        "start_nova_desktop_voice_listener.ps1"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/voice-troubleshoot"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/voice-mode"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/voice-audit"
+        ]
+      ],
+      "commands": [
+        "/voice-mode",
+        "/voice-troubleshoot",
+        "/voice-audit",
+        "/speak"
+      ],
+      "test_suggestions": [
+        "tests_v55_3_113_voice_wake_chat_mute.py",
+        "tests_v55_3_118_unified_voice_ux.py",
+        "tests_v55_3_120_voice_reliability_security.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "resize_activity_scroll",
+      "introduced": "v55.3.141",
+      "name": "Resizable panels and Live Activity scroll preservation",
+      "why": "Live Activity and centre panels were previously hardened so polling/refreshes do not jump or cover the composer.",
+      "required_files": [
+        "winlocalassistant/webui.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/webui.py",
+          "liveActivity"
+        ],
+        [
+          "winlocalassistant/webui.py",
+          "composer"
+        ],
+        [
+          "winlocalassistant/webui_emergency_stability.py",
+          "NovaEmergencyStability"
+        ]
+      ],
+      "commands": [
+        "/activity",
+        "/live-timeline",
+        "/gui-layout-status"
+      ],
+      "test_suggestions": [
+        "tests_v55_3_141_voice_resize_coding_flow.py",
+        "tests_gui_interaction_overhaul.py",
+        "tests_emergency_stability.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "pipeline_observability",
+      "introduced": "v55.3.146",
+      "name": "Pipeline routing, browser smoke and live timeline observability",
+      "why": "Broad review/QA prompts should route to audits and evidence traces instead of unrelated project generation.",
+      "required_files": [
+        "winlocalassistant/pipeline_router.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/pipeline-route"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/browser-smoke"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/live-timeline"
+        ],
+        [
+          "winlocalassistant/tools.py",
+          "live_timeline"
+        ]
+      ],
+      "commands": [
+        "/pipeline-route",
+        "/browser-smoke",
+        "/live-timeline",
+        "/project-patterns"
+      ],
+      "test_suggestions": [
+        "tests_v55_3_146_pipeline_observability.py",
+        "tests_v55_3_148_tool_awareness_orchestration.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "repo_session_memory",
+      "introduced": "v55.3.147-v55.3.150",
+      "name": "Repo/session memory, command verification and repo upgrade assurance",
+      "why": "Nova should keep command-contract verification, repo-upgrade assurance, session evidence and codebase sanity routes.",
+      "required_files": [
+        "winlocalassistant/command_verifier.py",
+        "winlocalassistant/regression_sweep.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/command-verify"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/repo-upgrade-assurance"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/codebase-sanity-audit"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/session-evidence"
+        ]
+      ],
+      "commands": [
+        "/command-verify",
+        "/repo-upgrade-assurance",
+        "/codebase-sanity-audit",
+        "/session-evidence",
+        "/regression-sweep"
+      ],
+      "test_suggestions": [
+        "tests_command_verifier.py",
+        "tests_v55_3_150_repo_research_codebase_audit.py",
+        "tests_codebase_integrity_audit.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "provider_runtime",
+      "introduced": "v55.3.163",
+      "name": "Provider runtime lanes and local/remote routing gates",
+      "why": "Modern Nova must preserve local-first Ollama plus optional guarded remote provider lanes and queue receipts.",
+      "required_files": [
+        "winlocalassistant/provider_runtime.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/providers"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/provider-route"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/queue-status"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/allow-internet"
+        ]
+      ],
+      "commands": [
+        "/providers",
+        "/provider-route",
+        "/queue-status",
+        "/allow-internet"
+      ],
+      "test_suggestions": [
+        "tests_nova_provider_runtime_v55_3_163.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "remote_scheduler_validation",
+      "introduced": "v55.3.164",
+      "name": "Scheduler, validation, remote access and Wake-on-LAN controls",
+      "why": "Recent remote/profile/scheduler/validation work must stay guarded and testable.",
+      "required_files": [
+        "winlocalassistant/remote_access.py",
+        "winlocalassistant/validate.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "/remote-access-test"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/remote-profile"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/remote-wake"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "/validation-status"
+        ]
+      ],
+      "commands": [
+        "/remote-access-test",
+        "/remote-profile",
+        "/remote-wake",
+        "/validation-status"
+      ],
+      "test_suggestions": [
+        "tests_nova_remote_access_v55_3_164.py",
+        "tests_nova_scheduler_v55_3_164.py",
+        "tests_validation_status_command.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    },
+    {
+      "id": "emergency_chat_help_layout",
+      "introduced": "v55.3.164 emergency",
+      "name": "Emergency chat/help/layout stability path",
+      "why": "Normal chat must answer small prompts even when the local model is slow, and help must be concise by default.",
+      "required_files": [
+        "winlocalassistant/webui_emergency_stability.py",
+        "winlocalassistant/command_help.py"
+      ],
+      "required_text": [
+        [
+          "winlocalassistant/core.py",
+          "render_concise_help"
+        ],
+        [
+          "winlocalassistant/core.py",
+          "local_fallback"
+        ],
+        [
+          "winlocalassistant/webui_emergency_stability.py",
+          "NovaEmergencyStability"
+        ]
+      ],
+      "commands": [
+        "/help",
+        "/help-full",
+        "/command-help",
+        "/llm-status"
+      ],
+      "test_suggestions": [
+        "tests_emergency_stability.py",
+        "tests_smoke.py"
+      ],
+      "status": "pass",
+      "ok": true,
+      "missing_files": [],
+      "missing_text": []
+    }
+  ],
+  "candidate_archives": [
+    {
+      "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_164_local_ai_performance_tuning_patch_20260608 (2).zip",
+      "name": "Nova_v55_3_164_local_ai_performance_tuning_patch_20260608 (2).zip",
+      "size_bytes": 47773007,
+      "file_count": 5008,
+      "has_core": true,
+      "has_webui": true,
+      "has_tests": true
+    },
+    {
+      "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_164_remaining_tasks_arcade_help_runtime_patch_20260609.zip",
+      "name": "Nova_v55_3_164_remaining_tasks_arcade_help_runtime_patch_20260609.zip",
+      "size_bytes": 8458919,
+      "file_count": 1051,
+      "has_core": true,
+      "has_webui": true,
+      "has_tests": true
+    },
+    {
+      "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_project_state_continuity_memory_patch_20260609_120006.zip",
+      "name": "Nova_v55_3_168_project_state_continuity_memory_patch_20260609_120006.zip",
+      "size_bytes": 6470077,
+      "file_count": 600,
+      "has_core": true,
+      "has_webui": true,
+      "has_tests": true
+    },
+    {
+      "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530.zip",
+      "name": "Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530.zip",
+      "size_bytes": 6466195,
+      "file_count": 600,
+      "has_core": true,
+      "has_webui": true,
+      "has_tests": true
+    }
+  ],
+  "limitations": [
+    "This deterministic check covers known uploaded/diffed historical anchors and local zip candidates visible to this runtime.",
+    "It cannot prove account-wide absence of a regression unless every historical zip/source tree is supplied or discoverable.",
+    "Unknown old features should be added as new anchors once found."
+  ],
+  "recommended_tests": [
+    "tests_codebase_integrity_audit.py",
+    "tests_command_verifier.py",
+    "tests_emergency_stability.py",
+    "tests_gui_interaction_overhaul.py",
+    "tests_nova_eval_packs_v55_3_134.py",
+    "tests_nova_odysseus_suite_v55_3_136.py",
+    "tests_nova_provider_runtime_v55_3_163.py",
+    "tests_nova_remote_access_v55_3_164.py",
+    "tests_nova_scheduler_v55_3_164.py",
+    "tests_smoke.py",
+    "tests_v55_3_113_voice_wake_chat_mute.py",
+    "tests_v55_3_118_unified_voice_ux.py",
+    "tests_v55_3_120_voice_reliability_security.py",
+    "tests_v55_3_141_voice_resize_coding_flow.py",
+    "tests_v55_3_146_pipeline_observability.py",
+    "tests_v55_3_148_tool_awareness_orchestration.py",
+    "tests_v55_3_150_repo_research_codebase_audit.py",
+    "tests_validation_status_command.py"
+  ]
+}

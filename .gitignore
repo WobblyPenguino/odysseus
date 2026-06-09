@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.nova_runtime/
+.winlocalassistant_runtime/ # legacy runtime cache
+
+downloads/
+backups/

@@ -1,0 +1,60 @@
+{
+  "ok": true,
+  "mode": "apply",
+  "status": "applied",
+  "changeset": {
+    "id": "verified-self-change-flow",
+    "title": "Document Nova verified self-change flow",
+    "source": "self-application hardening",
+    "risk": "low",
+    "description": "Adds a receipt-oriented flow explaining how Nova applies, validates and rolls back selected changes.",
+    "odysseus_feature_source": "skills self-evolving and admin-gated privileged tools",
+    "validation_commands": [
+      "/opt/pyvenv/bin/python -m compileall -q app.py winlocalassistant",
+      "/opt/pyvenv/bin/python app.py /version",
+      "/opt/pyvenv/bin/python app.py /nova-eval-packs run core"
+    ],
+    "changes": [
+      {
+        "path": "docs/NOVA_VERIFIED_SELF_CHANGE_FLOW.md",
+        "content": "# Nova Verified Self-Change Flow\n\nNova can now apply selected low-risk self-changes through a deterministic gate instead of pretending a simulated patch was applied.\n\n## Flow\n\n1. `plan` lists available change sets and their exact file targets.\n2. `preview` shows the unified diff before mutation.\n3. `apply --confirm` writes the change only after path allow-list checks.\n4. Nova creates backups under `.nova_backups/verified_changes/`.\n5. Nova runs validation commands.\n6. If validation fails, Nova restores the backup or removes newly created files.\n7. A JSON receipt is written under `docs/NOVA_VERIFIED_CHANGE_RECEIPT_LATEST.json`.\n\n## Safety rules\n\n- No absolute paths.\n- No path traversal.\n- No writes to `.git`, runtime data, logs, uploads, generated artefacts, virtual environments, build folders or dependency folders.\n- Only safe text/code suffixes are allowed.\n- Current built-in changes are low-risk documentation/report changes.\n- Future code-writing changes should be added as explicit named change sets with tests attached.\n",
+        "reason": "Document the verified self-change/apply pathway."
+      }
+    ]
+  },
+  "root": "/mnt/data/nova_work/Nova_v55_3_134_eval_packs_upgrade_checks_20260602",
+  "applied": [
+    {
+      "path": "docs/NOVA_VERIFIED_SELF_CHANGE_FLOW.md",
+      "existed": false,
+      "backup": "/mnt/data/nova_work/Nova_v55_3_134_eval_packs_upgrade_checks_20260602/.nova_backups/verified_changes/20260601_181552_verified-self-change-flow/docs__NOVA_VERIFIED_SELF_CHANGE_FLOW.md.bak",
+      "reason": "Document the verified self-change/apply pathway."
+    }
+  ],
+  "validation": [
+    {
+      "command": "/opt/pyvenv/bin/python -m compileall -q app.py winlocalassistant",
+      "returncode": 0,
+      "ok": true,
+      "seconds": 1.35,
+      "output": ""
+    },
+    {
+      "command": "/opt/pyvenv/bin/python app.py /version",
+      "returncode": 0,
+      "ok": true,
+      "seconds": 1.604,
+      "output": "Nova 55.3.135\nv55.3.135 Odysseus adaptation, verified self-apply engine, eval packs, deterministic upgrade checks, capability drift audit, feature preservation contract, agent feedback loop, behaviour fuzzer plan, local spec search plan, improvement assurance lab, evidence gates, test impact graph, patch quality score, success-claim audit, regression bisect plan, route resilience lab, self-healing route planner, tool health map, guardrail memory plan, context router policy, local runtime sentinel, deep research advisory lab, agent topology planner, trace observability contract, local stack advisor, verifier ladder, tool namespace plan, voice pipeline review, repo context map, patch impact tests, permission/scope review, local model benchmark plan, tool contract audit, agent upgrade radar, context budget planner, coding behaviour tests, Ollama runtime profile, upgrade regression audit, multi-runtime coding planner, coding capability audit, local model performance plan, Python/Java/Node/PowerShell/FastAPI generation guidance, inspiration radar, tool context pack, deterministic handoff planner, improvement preflight, analytics dashboard, proposal ledger, guarded task scheduler, webhook status tools, performance profiler, wake-listener handoff reliability for Hey Nova voice activation, fuzzy Hey Nova voice-profile lock, desktop voice launcher helper, hidden-panel layout reclaim, game build loop guard, communication centre, voice reliability, autonomous cockpit self-validation, clean release packaging, completion audit, codebase advisor and no-regression hardening\nWorkspace: /mnt/data/nova_work/Nova_v55_3_134_eval_packs_upgrade_checks_20260602\nCode/build model: qwen2.5-coder:7b\nChat/creative model: llama3.2:3b\nPlanning/review model: qwen2.5-coder:7b\nVersion consistency check: GUI title, CLI banner, package metadata and /version are aligned.\n"
+    },
+    {
+      "command": "/opt/pyvenv/bin/python app.py /nova-eval-packs run core",
+      "returncode": 0,
+      "ok": true,
+      "seconds": 1.606,
+      "output": "# Nova Eval Packs\n\nMode: **run**\nPack: **core**\nResult: **PASS**\nPassed: 3/3\n\n## Results\n- **PASS** `/version` \u2014 Version and product identity stay aligned [identity]\n- **PASS** `/status` \u2014 Runtime status remains available [runtime]\n- **PASS** `/help` \u2014 Main command help renders [routing]\n"
+    }
+  ],
+  "rolled_back": false,
+  "backup_dir": "/mnt/data/nova_work/Nova_v55_3_134_eval_packs_upgrade_checks_20260602/.nova_backups/verified_changes/20260601_181552_verified-self-change-flow",
+  "generated_at": "2026-06-01 18:15:57"
+}

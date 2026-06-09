@@ -1,0 +1,171 @@
+{
+  "ok": true,
+  "summary": "Nova maintenance validation passed",
+  "generated_at": "2026-06-09 23:39:24",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "profile": "quick",
+  "checks": [
+    {
+      "name": "python_310_compat",
+      "ok": true,
+      "severity": "critical",
+      "summary": "Python parses under the configured py310 target",
+      "detail": {
+        "ok": true,
+        "files_checked": 416,
+        "errors": []
+      }
+    },
+    {
+      "name": "whole_codebase_review",
+      "ok": true,
+      "severity": "high",
+      "summary": "Whole-codebase review passed",
+      "detail": {
+        "warnings": [
+          "200 cache/runtime artifact(s) detected",
+          "high broad-exception count (318); keep converting high-risk paths to structured diagnostics"
+        ],
+        "blockers": []
+      }
+    },
+    {
+      "name": "codebase_sanity_audit",
+      "ok": true,
+      "severity": "high",
+      "summary": "Codebase sanity audit completed",
+      "detail": {
+        "findings_total": 35,
+        "severity_counts": {
+          "medium": 4,
+          "low": 29,
+          "info": 2
+        }
+      }
+    },
+    {
+      "name": "feature_audit",
+      "ok": true,
+      "severity": "high",
+      "summary": "Requested-feature audit passed",
+      "detail": {
+        "implemented": 15,
+        "partial": null,
+        "missing": 0
+      }
+    },
+    {
+      "name": "release_hygiene",
+      "ok": true,
+      "severity": "warning",
+      "summary": "Release hygiene found 720 package artifact(s)",
+      "detail": {
+        "warning_count": 720
+      }
+    },
+    {
+      "name": "image_backend_test_env",
+      "ok": true,
+      "severity": "warning",
+      "summary": "Image backend is enabled; fallback tests must clear image env first",
+      "detail": {
+        "ok": false,
+        "values": {
+          "NOVA_IMAGE_BACKEND": "diffusers",
+          "NOVA_DIFFUSERS_MODEL": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+          "NOVA_ALLOW_DIFFUSERS_DOWNLOAD": ""
+        },
+        "stable_pytest_prefix": "$env:NOVA_IMAGE_BACKEND='auto'; $env:NOVA_DIFFUSERS_MODEL=''; $env:NOVA_ALLOW_DIFFUSERS_DOWNLOAD='0'",
+        "summary": "Image backend is enabled; fallback tests must clear image env first"
+      }
+    },
+    {
+      "name": "maintenance_tool_registry",
+      "ok": true,
+      "severity": "high",
+      "summary": "Maintenance validation tools are registered",
+      "detail": {
+        "missing_tools": []
+      }
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    {
+      "name": "release_hygiene",
+      "ok": true,
+      "severity": "warning",
+      "summary": "Release hygiene found 720 package artifact(s)",
+      "detail": {
+        "warning_count": 720
+      }
+    },
+    {
+      "name": "image_backend_test_env",
+      "ok": true,
+      "severity": "warning",
+      "summary": "Image backend is enabled; fallback tests must clear image env first",
+      "detail": {
+        "ok": false,
+        "values": {
+          "NOVA_IMAGE_BACKEND": "diffusers",
+          "NOVA_DIFFUSERS_MODEL": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+          "NOVA_ALLOW_DIFFUSERS_DOWNLOAD": ""
+        },
+        "stable_pytest_prefix": "$env:NOVA_IMAGE_BACKEND='auto'; $env:NOVA_DIFFUSERS_MODEL=''; $env:NOVA_ALLOW_DIFFUSERS_DOWNLOAD='0'",
+        "summary": "Image backend is enabled; fallback tests must clear image env first"
+      }
+    }
+  ],
+  "validation_ladder": [
+    "python -W error::SyntaxWarning -m compileall -q app.py winlocalassistant tests_smoke.py",
+    "python tests_smoke.py",
+    "$env:NOVA_IMAGE_BACKEND='auto'; $env:NOVA_DIFFUSERS_MODEL=''; $env:NOVA_ALLOW_DIFFUSERS_DOWNLOAD='0'; python -m pytest",
+    "python app.py /feature-audit",
+    "python app.py /whole-codebase-review",
+    "python app.py /codebase-sanity-audit",
+    "python app.py /release-hygiene"
+  ],
+  "local_model_validation": {
+    "configured_models": {
+      "OLLAMA_MODEL": "",
+      "NOVA_MODEL": "",
+      "NOVA_CODE_MODEL": "",
+      "NOVA_CHAT_MODEL": "",
+      "NOVA_FAST_MODEL": ""
+    },
+    "has_configured_local_model": false,
+    "review_prompt": "Review this Nova maintenance report for unhandled release blockers. Prioritise Python 3.10 compatibility, failing gates, command/tool drift, unsafe writes, and tests whose result depends on local optional backends. Return only concrete blockers and the smallest next verification command for each.",
+    "suggested_command": "/model-health"
+  },
+  "source_reports": {
+    "whole_codebase_review": {
+      "ok": true,
+      "warnings": [
+        "200 cache/runtime artifact(s) detected",
+        "high broad-exception count (318); keep converting high-risk paths to structured diagnostics"
+      ],
+      "blockers": []
+    },
+    "codebase_sanity_audit": {
+      "ok": true,
+      "findings_total": 35,
+      "severity_counts": {
+        "medium": 4,
+        "low": 29,
+        "info": 2
+      }
+    },
+    "feature_audit": {
+      "ok": true,
+      "summary": "Requested-feature audit passed",
+      "missing": 0,
+      "partial": null
+    },
+    "release_hygiene": {
+      "ok": false,
+      "summary": "Release hygiene found 720 package artifact(s)",
+      "finding_count": 772
+    }
+  }
+}

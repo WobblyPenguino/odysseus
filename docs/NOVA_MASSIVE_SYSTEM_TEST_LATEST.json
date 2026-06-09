@@ -1,0 +1,141 @@
+{
+  "ok": true,
+  "summary": "Massive Nova system test passed",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "audit_root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "profile": "quick",
+  "duration_sec": 0.0,
+  "steps": [
+    {
+      "name": "dependency_check",
+      "ok": true,
+      "summary": "dependency check",
+      "data": {
+        "python_ok": true,
+        "missing_required": []
+      }
+    },
+    {
+      "name": "nova_doctor",
+      "ok": true,
+      "summary": "doctor ok",
+      "data": {
+        "markdown_path": "doctor.md"
+      }
+    },
+    {
+      "name": "feature_audit",
+      "ok": true,
+      "summary": "features ok",
+      "data": {
+        "markdown_path": "features.md"
+      }
+    },
+    {
+      "name": "nova_full_system_contract",
+      "ok": true,
+      "summary": "nova ok",
+      "data": {
+        "failed": [],
+        "categories": {}
+      }
+    },
+    {
+      "name": "previous_task_completion_audit",
+      "ok": true,
+      "summary": "completion ok",
+      "data": {
+        "failed": [],
+        "categories": {}
+      }
+    },
+    {
+      "name": "legacy_regression_groups_optional",
+      "ok": true,
+      "skipped": true,
+      "summary": "Quick massive-test profile prioritises current/latest patch regressions. Run /massive-test --confirm full for the slower legacy stack."
+    },
+    {
+      "name": "compileall",
+      "ok": true,
+      "summary": "stubbed",
+      "command": [
+        "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+        "-m",
+        "compileall",
+        "-q",
+        "winlocalassistant",
+        "app.py",
+        "tests_v55_3_110_jarvis_bridge.py",
+        "tests_v55_3_111_jarvis_source_inspired_bridge.py",
+        "tests_v55_3_112_left_action_jarvis_ui.py",
+        "tests_v55_3_113_voice_wake_chat_mute.py",
+        "tests_v55_3_114_persona_local_model_harness.py",
+        "tests_v55_3_115_startup_workflow_audit.py",
+        "tests_v55_3_116_nova_full_system_test.py",
+        "tests_v55_3_117_completion_hardening.py",
+        "tests_v55_3_118_unified_voice_ux.py",
+        "tests_v55_3_119_autonomous_cockpit_reasoning.py",
+        "tests_v55_3_120_voice_reliability_security.py",
+        "tests_v55_3_121_codebase_packaging_advisor.py"
+      ]
+    },
+    {
+      "name": "pytest_group_1",
+      "ok": true,
+      "summary": "stubbed",
+      "command": [
+        "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests_v55_3_121_codebase_packaging_advisor.py",
+        "tests_v55_3_120_voice_reliability_security.py",
+        "tests_v55_3_119_autonomous_cockpit_reasoning.py",
+        "tests_v55_3_118_unified_voice_ux.py"
+      ]
+    },
+    {
+      "name": "pytest_group_2",
+      "ok": true,
+      "summary": "stubbed",
+      "command": [
+        "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests_v55_3_117_completion_hardening.py",
+        "tests_v55_3_116_nova_full_system_test.py",
+        "tests_v55_3_115_startup_workflow_audit.py",
+        "tests_v55_3_114_persona_local_model_harness.py"
+      ]
+    },
+    {
+      "name": "pytest_group_3",
+      "ok": true,
+      "summary": "stubbed",
+      "command": [
+        "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests_v55_3_113_voice_wake_chat_mute.py",
+        "tests_v55_3_112_left_action_jarvis_ui.py",
+        "tests_v55_3_111_jarvis_source_inspired_bridge.py",
+        "tests_v55_3_110_jarvis_bridge.py"
+      ]
+    },
+    {
+      "name": "docker_optional",
+      "ok": true,
+      "skipped": true,
+      "summary": "Docker not available or skipped"
+    },
+    {
+      "name": "playwright_optional",
+      "ok": true,
+      "skipped": true,
+      "summary": "Playwright unavailable or scaffold missing"
+    }
+  ]
+}

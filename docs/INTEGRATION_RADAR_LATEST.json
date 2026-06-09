@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "summary": "Integration radar completed",
+  "goal": "improve validation",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "ready_count": 7,
+  "missing_count": 3,
+  "candidates": [
+    {
+      "name": "Git safety/worktree backend",
+      "category": "source-control",
+      "available": false,
+      "priority": 100,
+      "status": "git available but current folder is not a repo",
+      "value": "Make every autonomous/promotion change reviewable, reversible and branch/worktree isolated.",
+      "next_step": "Add /git-guard and optional git worktree validation before live promotion.",
+      "command": "git status --short",
+      "risk": "low"
+    },
+    {
+      "name": "Docker validation backend",
+      "category": "sandbox-validation",
+      "available": true,
+      "priority": 95,
+      "status": "integrated; docker CLI available",
+      "value": "Validate copied workspaces and proposed patches without touching the live tree.",
+      "next_step": "Keep Docker as the main patch simulation backend and add profile history/GUI review.",
+      "command": "/docker-status",
+      "risk": "low"
+    },
+    {
+      "name": "Pre-commit release hooks",
+      "category": "validation",
+      "available": true,
+      "priority": 90,
+      "status": "ready",
+      "value": "Run a consistent local gate before promotion: syntax, formatting, static checks and tests.",
+      "next_step": "Add a .pre-commit-config.yaml template and /precommit-check command.",
+      "command": "pre-commit run --all-files",
+      "risk": "low"
+    },
+    {
+      "name": "Ruff lint/format",
+      "category": "validation",
+      "available": true,
+      "priority": 88,
+      "status": "ready",
+      "value": "Fast Python linting catches unused imports, obvious bugs and style drift before Docker tests.",
+      "next_step": "Add optional /ruff-check and include it in release-gate when available.",
+      "command": "ruff check winlocalassistant tests_*.py",
+      "risk": "low"
+    },
+    {
+      "name": "Playwright browser smoke tests",
+      "category": "gui-testing",
+      "available": true,
+      "priority": 86,
+      "status": "ready",
+      "value": "Catch Send-button and JavaScript UI failures through real browser interaction, not just static JS parsing.",
+      "next_step": "Add a browser smoke test for sending chat, toggling tabs and Docker panel buttons.",
+      "command": "npx playwright test",
+      "risk": "medium"
+    },
+    {
+      "name": "Defensive security status",
+      "category": "security",
+      "available": true,
+      "priority": 74,
+      "status": "integrated; read-only local inventory available",
+      "value": "Inventory Windows Defender/AVG-style tooling, firewall state, listening ports and Nova/Docker lab context before security work.",
+      "next_step": "Run /security-status before lab/security tasks and include the report in release checklist context.",
+      "command": "/security-status",
+      "risk": "low"
+    },
+    {
+      "name": "Mypy type checking",
+      "category": "validation",
+      "available": false,
+      "priority": 72,
+      "status": "optional tool missing",
+      "value": "Find interface drift between modules as Nova grows.",
+      "next_step": "Start with a relaxed mypy profile for new modules only, then expand.",
+      "command": "mypy winlocalassistant",
+      "risk": "medium"
+    },
+    {
+      "name": "Semgrep security/static rules",
+      "category": "security",
+      "available": false,
+      "priority": 70,
+      "status": "optional tool missing",
+      "value": "Find risky subprocess, unsafe path handling, injection-prone strings and weak validation gates.",
+      "next_step": "Add optional semgrep scan profile to /release-gate.",
+      "command": "semgrep scan --config auto",
+      "risk": "medium"
+    },
+    {
+      "name": "uv environment manager",
+      "category": "environment",
+      "available": true,
+      "priority": 63,
+      "status": "ready",
+      "value": "Faster, reproducible Python environment setup and lockfile-based dependency installs.",
+      "next_step": "Add optional /env-doctor checks for uv and requirements drift.",
+      "command": "uv sync",
+      "risk": "low"
+    },
+    {
+      "name": "ripgrep code search",
+      "category": "developer-experience",
+      "available": true,
+      "priority": 62,
+      "status": "ready",
+      "value": "Faster codebase scans and bug triage than recursive Python text scans.",
+      "next_step": "Use rg automatically in codebase scans when present, fallback to Python otherwise.",
+      "command": "rg TODO winlocalassistant tests_*.py",
+      "risk": "low"
+    }
+  ],
+  "next_best": [
+    {
+      "name": "Docker validation backend",
+      "category": "sandbox-validation",
+      "available": true,
+      "priority": 95,
+      "status": "integrated; docker CLI available",
+      "value": "Validate copied workspaces and proposed patches without touching the live tree.",
+      "next_step": "Keep Docker as the main patch simulation backend and add profile history/GUI review.",
+      "command": "/docker-status",
+      "risk": "low"
+    },
+    {
+      "name": "Pre-commit release hooks",
+      "category": "validation",
+      "available": true,
+      "priority": 90,
+      "status": "ready",
+      "value": "Run a consistent local gate before promotion: syntax, formatting, static checks and tests.",
+      "next_step": "Add a .pre-commit-config.yaml template and /precommit-check command.",
+      "command": "pre-commit run --all-files",
+      "risk": "low"
+    },
+    {
+      "name": "Ruff lint/format",
+      "category": "validation",
+      "available": true,
+      "priority": 88,
+      "status": "ready",
+      "value": "Fast Python linting catches unused imports, obvious bugs and style drift before Docker tests.",
+      "next_step": "Add optional /ruff-check and include it in release-gate when available.",
+      "command": "ruff check winlocalassistant tests_*.py",
+      "risk": "low"
+    },
+    {
+      "name": "Playwright browser smoke tests",
+      "category": "gui-testing",
+      "available": true,
+      "priority": 86,
+      "status": "ready",
+      "value": "Catch Send-button and JavaScript UI failures through real browser interaction, not just static JS parsing.",
+      "next_step": "Add a browser smoke test for sending chat, toggling tabs and Docker panel buttons.",
+      "command": "npx playwright test",
+      "risk": "medium"
+    },
+    {
+      "name": "Defensive security status",
+      "category": "security",
+      "available": true,
+      "priority": 74,
+      "status": "integrated; read-only local inventory available",
+      "value": "Inventory Windows Defender/AVG-style tooling, firewall state, listening ports and Nova/Docker lab context before security work.",
+      "next_step": "Run /security-status before lab/security tasks and include the report in release checklist context.",
+      "command": "/security-status",
+      "risk": "low"
+    },
+    {
+      "name": "Git safety/worktree backend",
+      "category": "source-control",
+      "available": false,
+      "priority": 100,
+      "status": "git available but current folder is not a repo",
+      "value": "Make every autonomous/promotion change reviewable, reversible and branch/worktree isolated.",
+      "next_step": "Add /git-guard and optional git worktree validation before live promotion.",
+      "command": "git status --short",
+      "risk": "low"
+    },
+    {
+      "name": "Mypy type checking",
+      "category": "validation",
+      "available": false,
+      "priority": 72,
+      "status": "optional tool missing",
+      "value": "Find interface drift between modules as Nova grows.",
+      "next_step": "Start with a relaxed mypy profile for new modules only, then expand.",
+      "command": "mypy winlocalassistant",
+      "risk": "medium"
+    },
+    {
+      "name": "Semgrep security/static rules",
+      "category": "security",
+      "available": false,
+      "priority": 70,
+      "status": "optional tool missing",
+      "value": "Find risky subprocess, unsafe path handling, injection-prone strings and weak validation gates.",
+      "next_step": "Add optional semgrep scan profile to /release-gate.",
+      "command": "semgrep scan --config auto",
+      "risk": "medium"
+    }
+  ],
+  "recommendation": "Highest value next integration: Playwright browser smoke tests, because Nova has had real GUI regressions that static tests only partly cover."
+}

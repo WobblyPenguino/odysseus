@@ -1,0 +1,199 @@
+{
+  "ok": true,
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "checks": [
+    {
+      "name": "webui:chat_input",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:project_panel",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:toolbox",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:live_activity_runs",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:assistant_box",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:audio_guard",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:inspector",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:settings_popup",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:validation_matrix",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:role_router",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:jarvis_bridge",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:left_action_cockpit",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:transparent_output",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:jarvis_ui_harness",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:hey_nova_voice",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:per_chat_mute",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:conversational_speech",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:persona_editor",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:local_model_optimizer",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:startup_validation_and_audit",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:unified_voice_ux",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:autonomous_cockpit_reasoning",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:voice_reliability_auth",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:voice_profile_lock_pipeline",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:wake_handoff_desktop_launcher",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:nova_full_system_test",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:codebase_packaging_advisor",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "webui:completion_audit",
+      "ok": true,
+      "detail": "required browser/UI markers are present",
+      "missing": []
+    },
+    {
+      "name": "tool_registry:critical_commands",
+      "ok": true,
+      "detail": "critical backend tools are registered",
+      "missing": []
+    },
+    {
+      "name": "version:visible_consistency",
+      "ok": true,
+      "detail": "version appears in package and GUI",
+      "missing": []
+    }
+  ],
+  "failed": [],
+  "summary": "Feature continuity audit passed",
+  "guidance": [
+    "Do not remove existing GUI/backend surfaces to make a redesign cleaner; hide, group, or improve them instead.",
+    "When rewriting webui.py, keep compatibility wrappers for existing JS entry points and tests.",
+    "Treat missing custom-tool, project, activity, assistant-box, audio, role-router, Jarvis-bridge/sidecar-policy, Hey Nova voice activation, per-chat mute, persona/custom-chat-window, local-model optimizer, voice-audit, startup-validation, audit-log, workflow-run, and implementation-pipeline markers as release blockers."
+  ],
+  "target_resolution": {
+    "requested_path": ".",
+    "target_type": "wla_source",
+    "autocorrected": false,
+    "warning": ""
+  }
+}

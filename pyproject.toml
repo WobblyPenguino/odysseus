@@ -1,0 +1,24 @@
+[tool.ruff]
+target-version = "py310"
+line-length = 140
+extend-exclude = [
+  ".pytest_cache",
+  "__pycache__",
+  "code_quality_gates",
+  "code_reviews",
+  "codebase_integrity_reports",
+  "docs",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+  "E501",  # legacy long prompt/UI strings are common in Nova; keep line length advisory, not blocking
+  "B007",  # several loops intentionally keep values for diagnostics
+  "B904",  # avoid broad refactors in release hardening patches
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["."]
+python_files = ["tests*.py", "test_*.py"]

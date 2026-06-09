@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "focus": "",
+  "recent_attempts": 2,
+  "recent_rejections": 2,
+  "recent_failures": 9,
+  "recommendations": [
+    "Stop repeating the same prompt after two rejections; switch to prompt-contract + candidate tournament or deterministic template fallback.",
+    "Use /model-output-coach and /model-fallback-strategy before another local model retry."
+  ],
+  "last_model_io_count": 40
+}

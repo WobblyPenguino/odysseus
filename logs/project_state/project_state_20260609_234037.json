@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "created_at": "2026-06-09 23:40:37",
+  "current_version": "55.3.168",
+  "version_label": "v55.3.168 project-state continuity memory | preserves v55.3.167 task execution evidence/autonomy hardening | preserves v55.3.166 LLM-from-scratch inspired training lab | preserves v55.3.165 real-machine model calibration release candidate | preserves v55.3.164 runtime usability release-readiness gate | scheduling control plane, task DAG decomposition, prompt-injection filtering, confirmation-gated scheduled tasks, scheduler audit and provider runtime continuity | preserves v55.3.163 SubQ/NVIDIA/local runtime provider abstraction | preserves v55.3.162 efficiency audit and focus GUI | preserves GUI route/startup hardening, media pipeline refinement, bounded self-repair and Ollama model queue | legacy continuity: Hey Nova, wake, voice, packaging, no-regression, completion audit, autonomous cockpit, voice reliability, codebase advisor, voice-profile, wake-listener handoff, Odysseus-style voyage workspace deck, Clean Studio GUI shell, Orbit GUI shell, Voice cue, Orbit workspace drawer hotfix, self-validation, clean release packaging, hidden-panel layout, v55.3.141 historical safety validation dock, v55.3.150 repo research radar, qwen3-coder better-PC model routing, Nova video manifest planning, CLI thinking-time display, v55.3.153 repo intelligence, document/browser worker planning, comprehensive integration review, v55.3.154 regression research launcher hardening, v55.3.156 autonomous continuous mission hardening, v55.3.157 natural research routing and research/voice truthfulness, v55.3.158 bounded self-repair and Ollama model queue, v55.3.159 clean GUI and Docker validation hardening, v55.3.160 media pipeline refinement, v55.3.161 GUI startup media route hardening, v55.3.162 efficiency audit focus GUI, v55.3.163 provider runtime hardening",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "latest_release_readiness": {
+    "ok": true,
+    "status": "PASS",
+    "summary": "PASS: safe to package",
+    "created_at": "2026-06-09 23:40:35",
+    "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_RELEASE_READINESS_LATEST.json",
+    "required_failed": [],
+    "optional_failed": [],
+    "category_status": {
+      "compile": "PASS",
+      "chat": "PASS",
+      "model": "PASS",
+      "llm_lab": "PASS",
+      "help": "PASS",
+      "tools": "PASS",
+      "project_contracts": "PASS",
+      "packaging": "PASS"
+    }
+  },
+  "latest_task_evidence": [
+    {
+      "schema_version": 1,
+      "created_at": "2026-06-09 23:40:37",
+      "action": "release_contract_smoke",
+      "command": "task contract smoke",
+      "files_changed": [],
+      "changed_files": [],
+      "tests_run": [],
+      "verification_commands": [
+        "task contract smoke"
+      ],
+      "result": "PASS",
+      "status": "PASS",
+      "review_status": "PASS",
+      "stdout_summary": "",
+      "stderr_summary": "",
+      "verification_passed": true,
+      "user_review_needed": false,
+      "repeated_failure_status": {},
+      "extra": {},
+      "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234037_release_contract_smoke_e78c57e9.json",
+      "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234037_release_contract_smoke_e78c57e9.md"
+    },
+    {
+      "schema_version": 1,
+      "created_at": "2026-06-09 23:40:30",
+      "action": "release_contract_smoke",
+      "command": "task contract smoke",
+      "files_changed": [],
+      "changed_files": [],
+      "tests_run": [],
+      "verification_commands": [
+        "task contract smoke"
+      ],
+      "result": "PASS",
+      "status": "PASS",
+      "review_status": "PASS",
+      "stdout_summary": "",
+      "stderr_summary": "",
+      "verification_passed": true,
+      "user_review_needed": false,
+      "repeated_failure_status": {},
+      "extra": {},
+      "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234030_release_contract_smoke_111d3f4b.json",
+      "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234030_release_contract_smoke_111d3f4b.md"
+    },
+    {
+      "schema_version": 1,
+      "created_at": "2026-06-09 23:31:15",
+      "action": "release_contract_smoke",
+      "command": "task contract smoke",
+      "files_changed": [],
+      "changed_files": [],
+      "tests_run": [],
+      "verification_commands": [
+        "task contract smoke"
+      ],
+      "result": "PASS",
+      "status": "PASS",
+      "review_status": "PASS",
+      "stdout_summary": "",
+      "stderr_summary": "",
+      "verification_passed": true,
+      "user_review_needed": false,
+      "repeated_failure_status": {},
+      "extra": {},
+      "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233115_release_contract_smoke_2f64e1e5.json",
+      "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233115_release_contract_smoke_2f64e1e5.md"
+    },
+    {
+      "schema_version": 1,
+      "created_at": "2026-06-09 23:31:09",
+      "action": "release_contract_smoke",
+      "command": "task contract smoke",
+      "files_changed": [],
+      "changed_files": [],
+      "tests_run": [],
+      "verification_commands": [
+        "task contract smoke"
+      ],
+      "result": "PASS",
+      "status": "PASS",
+      "review_status": "PASS",
+      "stdout_summary": "",
+      "stderr_summary": "",
+      "verification_passed": true,
+      "user_review_needed": false,
+      "repeated_failure_status": {},
+      "extra": {},
+      "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233109_release_contract_smoke_0dadcdbb.json",
+      "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233109_release_contract_smoke_0dadcdbb.md"
+    },
+    {
+      "schema_version": 1,
+      "created_at": "2026-06-09 23:25:03",
+      "action": "release_contract_smoke",
+      "command": "task contract smoke",
+      "files_changed": [],
+      "changed_files": [],
+      "tests_run": [],
+      "verification_commands": [
+        "task contract smoke"
+      ],
+      "result": "PASS",
+      "status": "PASS",
+      "review_status": "PASS",
+      "stdout_summary": "",
+      "stderr_summary": "",
+      "verification_passed": true,
+      "user_review_needed": false,
+      "repeated_failure_status": {},
+      "extra": {},
+      "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_232503_release_contract_smoke_80ad92fa.json",
+      "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_232503_release_contract_smoke_80ad92fa.md"
+    }
+  ],
+  "latest_task_result": "PASS",
+  "latest_changed_files": [],
+  "latest_package_manifest": {
+    "ok": true,
+    "status": "FOUND",
+    "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\RELEASE_MANIFEST.json",
+    "version": "55.3.168",
+    "release_name": "Nova_v55_3_168_startup_release_gate_hotfix_20260609",
+    "package_path": "/mnt/data/Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530.zip",
+    "file_count": 599
+  },
+  "last_completed_patch": "Nova_v55_3_168_startup_release_gate_hotfix_20260609",
+  "task_execution_status": {
+    "schema_version": 1,
+    "ok": true,
+    "status": "PASS",
+    "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+    "evidence_dir": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence",
+    "evidence_count": 21,
+    "latest_evidence": [
+      {
+        "schema_version": 1,
+        "created_at": "2026-06-09 23:40:37",
+        "action": "release_contract_smoke",
+        "command": "task contract smoke",
+        "files_changed": [],
+        "changed_files": [],
+        "tests_run": [],
+        "verification_commands": [
+          "task contract smoke"
+        ],
+        "result": "PASS",
+        "status": "PASS",
+        "review_status": "PASS",
+        "stdout_summary": "",
+        "stderr_summary": "",
+        "verification_passed": true,
+        "user_review_needed": false,
+        "repeated_failure_status": {},
+        "extra": {},
+        "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234037_release_contract_smoke_e78c57e9.json",
+        "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234037_release_contract_smoke_e78c57e9.md"
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-06-09 23:40:30",
+        "action": "release_contract_smoke",
+        "command": "task contract smoke",
+        "files_changed": [],
+        "changed_files": [],
+        "tests_run": [],
+        "verification_commands": [
+          "task contract smoke"
+        ],
+        "result": "PASS",
+        "status": "PASS",
+        "review_status": "PASS",
+        "stdout_summary": "",
+        "stderr_summary": "",
+        "verification_passed": true,
+        "user_review_needed": false,
+        "repeated_failure_status": {},
+        "extra": {},
+        "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234030_release_contract_smoke_111d3f4b.json",
+        "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_234030_release_contract_smoke_111d3f4b.md"
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-06-09 23:31:15",
+        "action": "release_contract_smoke",
+        "command": "task contract smoke",
+        "files_changed": [],
+        "changed_files": [],
+        "tests_run": [],
+        "verification_commands": [
+          "task contract smoke"
+        ],
+        "result": "PASS",
+        "status": "PASS",
+        "review_status": "PASS",
+        "stdout_summary": "",
+        "stderr_summary": "",
+        "verification_passed": true,
+        "user_review_needed": false,
+        "repeated_failure_status": {},
+        "extra": {},
+        "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233115_release_contract_smoke_2f64e1e5.json",
+        "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233115_release_contract_smoke_2f64e1e5.md"
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-06-09 23:31:09",
+        "action": "release_contract_smoke",
+        "command": "task contract smoke",
+        "files_changed": [],
+        "changed_files": [],
+        "tests_run": [],
+        "verification_commands": [
+          "task contract smoke"
+        ],
+        "result": "PASS",
+        "status": "PASS",
+        "review_status": "PASS",
+        "stdout_summary": "",
+        "stderr_summary": "",
+        "verification_passed": true,
+        "user_review_needed": false,
+        "repeated_failure_status": {},
+        "extra": {},
+        "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233109_release_contract_smoke_0dadcdbb.json",
+        "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_233109_release_contract_smoke_0dadcdbb.md"
+      },
+      {
+        "schema_version": 1,
+        "created_at": "2026-06-09 23:25:03",
+        "action": "release_contract_smoke",
+        "command": "task contract smoke",
+        "files_changed": [],
+        "changed_files": [],
+        "tests_run": [],
+        "verification_commands": [
+          "task contract smoke"
+        ],
+        "result": "PASS",
+        "status": "PASS",
+        "review_status": "PASS",
+        "stdout_summary": "",
+        "stderr_summary": "",
+        "verification_passed": true,
+        "user_review_needed": false,
+        "repeated_failure_status": {},
+        "extra": {},
+        "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_232503_release_contract_smoke_80ad92fa.json",
+        "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\task_evidence\\20260609_232503_release_contract_smoke_80ad92fa.md"
+      }
+    ],
+    "active_repeated_failures": [],
+    "sample_contract": {
+      "schema_version": 1,
+      "original_request": "improve Nova safely",
+      "inferred_intent": "nova_source_edit",
+      "target_files_or_folders": [
+        "winlocalassistant/",
+        "app.py",
+        "tests_*.py",
+        "docs/"
+      ],
+      "allowed_actions": [
+        "inspect",
+        "plan",
+        "summarize",
+        "edit_files",
+        "run_safe_commands"
+      ],
+      "forbidden_actions": [
+        "delete files without explicit permission",
+        "install packages or use network without explicit permission",
+        "retry the same failing command blindly",
+        "package if release-readiness is FAIL or repeated-failure guard is tripped",
+        "create a random new project instead of inspecting the current one",
+        "create a scaffold when the request asks for one file or a Nova edit"
+      ],
+      "expected_outputs": [
+        "patched Nova source plus validation evidence"
+      ],
+      "verification_commands": [
+        "python -m compileall -q winlocalassistant app.py scripts",
+        "python -m pytest -q <targeted tests>",
+        "python -m winlocalassistant.release_readiness --root . --full"
+      ],
+      "risk_level": "medium",
+      "package_permission": false,
+      "rollback_notes": "Back up touched files or keep a diff before promotion; package only after release-readiness PASS.",
+      "task_plan": [
+        "inspect current files, command routes, recent evidence and failing tests",
+        "identify the smallest concrete defect or missing contract",
+        "patch only the targeted files needed for that defect",
+        "run focused tests/compile checks for the touched area",
+        "verify release-readiness or a lighter gate when full validation is not requested",
+        "summarize files changed, evidence, failures and review items"
+      ],
+      "user_review_needed": true,
+      "notes": [
+        "Broad request decomposed into inspect/identify/patch/test/verify/summarize."
+      ]
+    },
+    "summary": "Task execution evidence exists and repeated-failure guard is clear."
+  },
+  "host_only_checks": [
+    {
+      "name": "model/Ollama/GPU calibration",
+      "status": "READY",
+      "advisory": true,
+      "path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_MODEL_CALIBRATION_LATEST.json",
+      "summary": "Ollama and GPU tooling are visible; use benchmark rows to tune chat/code/autonomous timeouts."
+    }
+  ],
+  "known_limitations": [
+    "Ollama and GPU tooling are visible; use benchmark rows to tune chat/code/autonomous timeouts."
+  ],
+  "packaging_allowed": true,
+  "continue_readiness": "PASS",
+  "recommended_next_action": "Safe next action: choose one small improvement, create a /task-contract, patch narrowly, then rerun /release-readiness --full.",
+  "needs_inspection_before_editing": false,
+  "latest_json": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_PROJECT_STATE_LATEST.json",
+  "latest_markdown": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_PROJECT_STATE_LATEST.md",
+  "snapshot_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\logs\\project_state\\project_state_20260609_234037.json"
+}

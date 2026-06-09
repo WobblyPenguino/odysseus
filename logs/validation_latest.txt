@@ -1,0 +1,26 @@
+# Nova Validation
+
+Status: PASS
+
+Progress log: logs/validation_progress.jsonl
+
+[1] environment: PASS
+[2] imports: PASS
+[3] compileall: PASS (0.211s)
+[4] cli_smoke: PASS (0.41s)
+[5] unit_tests: PASS (skipped under pytest)
+[6] full_pytest: PASS (skipped)
+[7] version_sync: PASS
+[8] launchers: PASS
+[9] startup_bat_obviousness: PASS
+[10] gui_smoke: PASS
+[11] voice_state_machine: PASS
+[12] coding_worker_fixture: PASS
+[13] browser_worker_fixture: PASS
+[14] rag_fixture: PASS
+[15] creative_worker_fixture: PASS
+[16] model_registry: PASS
+[17] integration_review: PASS
+[18] package_lock_and_license_scan: PASS
+
+Layered validation: environment, imports, compile, targeted tests, version sync, launchers, CLI/web smoke, worker surfaces and package/license surface. Progress is written to logs/validation_progress.jsonl while stages run.

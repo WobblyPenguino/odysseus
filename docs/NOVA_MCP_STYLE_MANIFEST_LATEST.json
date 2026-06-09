@@ -1,0 +1,2004 @@
+{
+  "name": "Nova",
+  "version": "mcp-style-local-manifest-v1",
+  "description": "Local Nova tool manifest for future connector/MCP-style use. Execution remains allowlisted inside Nova.",
+  "resources": [
+    "activity log",
+    "model IO log",
+    "project files",
+    "release reports"
+  ],
+  "tools": [
+    {
+      "name": "action_receipts",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "activity_log",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "adaptive_backlog",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_execute",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_feedback_loop_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_fuzzer_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_guardrail_memory",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_harness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_topology_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "agent_upgrade_radar",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "ai_create_project",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "ai_edit_project",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "analytics",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "analytics_dashboard",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "anti_repeat_check",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "append_file",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "assistant_box",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "assistant_db",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "audit_log",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "authority_gate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "auto_verify",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_explain_tools",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_last_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_memory",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_mission_contract",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_patch_mode",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "autonomous_progress_score",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "backtrack_recover",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "behavior_fuzzer_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "behaviour_evidence",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "benchmark_init",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "benchmark_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "benchmark_system",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bisect_regression_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bridge_authority",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bridge_receipts",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "browser_harness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "browser_runtime_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bug_hunt",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bug_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "bug_sweep",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "build_quality_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "build_receipts",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "candidate_failure_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "candidate_tournament",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "capability_drift_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "chat_persona",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "claim_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "clean_release_package",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "code_quality_gate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "code_repair_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "code_review_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "codebase_advisor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "codebase_improvement_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "codebase_integrity_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "coding_acceptance_tests",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "coding_behavior_tests",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "coding_capability_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "coding_loop_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "coding_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "cohesion_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "command_catalog",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "command_contract_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "command_flow_verify",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "completed_improvements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "completion_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "comprehensive_code_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "console_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "context_budget",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "context_compaction_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "context_router_policy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "custom_chat_window",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "custom_tools",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "cycle_schema",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "cycle_score",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "daemon_bridge",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "detect_project",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "development_strategy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_clean",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_help",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_history",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_patch_validate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_promote_patch",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_ps",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_smoke",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docker_validate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "docs_index",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "edit_repair_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "efficiency_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "env_profile",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "error_hunt",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "error_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "explain_error",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "external_daemon_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "feature_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "feature_continuity_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "feature_preservation_contract",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "feature_readiness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "final_project_check",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "find_replace",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "flow_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "flow_improvements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "functionality_continuity",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "functionality_matrix",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "generation_template_manifest",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "generation_templates",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "godmod3_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "guardrail_memory_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "gui_cockpit_v2",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "handoff_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "heartbeat",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "human_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_background_settings",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_explain_tools",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_lessons",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_levels",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_policy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "idle_progress_score",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "image_analyze",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "impact_graph",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "impact_tests",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "implement_improvements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improve_project",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_assurance_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_cycle",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_evidence_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_impact",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_preflight",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_proposals_v2",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_roadmap",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "improvement_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "inspiration_radar",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "install_package",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "integration_health",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "integration_radar",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "interaction_flow_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "interaction_pathways",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "internet_fetch",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "investigate_logs",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "iteration_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "iterative_agent_harness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "iterative_coding_loop",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "iterative_strategy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_bridge",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_doctor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_onboarding",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_receipts",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_setup_doctor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_test_prompts",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_voice_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "jarvis_workflow_blueprint",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "known_error_recover",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "known_issues",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "learning_loop_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "list_files",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "list_tasks",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "llm_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_model_benchmark_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_model_optimizer",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_model_performance_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_model_roles",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_model_runtime_profile",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_runtime_sentinel",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_spec_search_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_stack_advisor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "local_stack_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "make_dir",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mcp_manifest",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mcp_risk_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_contract",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_create",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_dashboard",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_progress",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_progress_score",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mission_step",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mistake_learning_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mistake_log",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "mistake_to_regression",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_benchmark",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_benchmark_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_context",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_doctor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_download_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_fallback_strategy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_install",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_optimization",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_output_coach",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_performance_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_prompt_cache_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_readiness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_reliability",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_requirements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_role_router",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "model_runtime_sentinel",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "next_adaptations",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "next_codebase_improvements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "no_regression_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_agent_topology",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_audit_log",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_brand_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_capability_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_coding_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_context",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_doctor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_drift_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_feedback_loop",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_full_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_handoff_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_improvement_research",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_inspiration_radar",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_release_gate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_repo_map",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_system_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_tool_context_pack",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "nova_upgrade_radar",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "ollama_multi_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "ollama_runtime_profile",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "ollama_stop_model",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "on_device_spec_search",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "open_file",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "operating_context",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "optimize_performance",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "package_release",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "patch_impact_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "patch_quality_score",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "patch_queue",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "patch_regression_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "performance_analytics",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "performance_profiler",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "performance_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "permission_scope_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "persona_editor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "persona_json",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "persona_profile",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "persona_prompt",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "persona_set",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "personality_sliders",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "playwright_scaffold",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "preserve_features",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "preview_server",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "previous_task_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "proactive_action_queue",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "proactive_actions",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_coding_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_create",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_delete",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_files",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_open",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_remove",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_spec",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_state",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_target_decision",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "project_type_registry",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "projects",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "prompt_contract",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "prompt_test_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "proposal_ledger",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "proposal_ledger_view",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "propose_improvements",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "provider_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "quality_score_patch",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "read_file",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "reasoning_diagnostics",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "receipt_history",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "register_webhook",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_add",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_bisect_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_list",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_matrix",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_sweep",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "regression_test_generate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "release_checklist",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "release_package",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "repair_plan_v2",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "repetition_clear",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "repetition_guard_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "repetition_memory",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "repo_context_map",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "research",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "research_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "resource_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "review_codebase",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "role_context_router",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "role_router",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "route_health_map",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "route_resilience_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "run_context",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "run_project",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "run_shell",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "runtime_restart",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "runtime_self_check",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "runtime_start",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "runtime_stop",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "safe_browser_harness",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "safe_improvement_preflight",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "safe_script_demo",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_dev_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_exec",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_flag",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_policy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_setup_help",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_start",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sandbox_stop",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "schedule_task",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "scheduler",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "scope_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "screen_awareness_policy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "search_files",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "search_text",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_apply",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_healing_route_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_improve",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_improve_apply_approved",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_improvement_queue",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "self_test_from_bug",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sidecar_enrollment",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sidecar_enrollment_checklist",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sidecar_policy",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "sidecar_preflight",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "startup_gate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "startup_validation",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "success_claim_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "supervised_workflow_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "support_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "surgical_fallback_v2",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "surgical_recipe",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "surgical_repair",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "task_completion_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "task_scheduler",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "telemetry_export",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "template_build",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "template_list",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "template_manifest",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "test_all",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "test_impact_graph",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_approve",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_choice_trace",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_clean_proposals",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_context_pack",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_contract_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_create",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_delete",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_disable",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_enable",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_health_map",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_help",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_namespace_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_pipeline",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_proposals",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_reject",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_surface_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_use_guide",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tool_view",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "topic_check",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "topic_watch",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "topic_watchers",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "trace_observability_plan",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "trace_spec",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "trace_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "tree",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "upgrade_regression_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "user_test_suite",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "validation_evidence",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "validation_ladder",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "validation_ladder_plus",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "validation_matrix",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "verifier_ladder",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "verify",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "vision_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "visual_repair",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "visual_test",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "voice_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "voice_command_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "voice_mode_report",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "voice_pipeline_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "watchdog",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "weakspot_audit",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "webhook",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "webhook_status",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "webhooks",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "whole_codebase_review",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "wla_audit_log",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "wla_doctor",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "wla_release_gate",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "workflow_blueprint",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "workflow_run",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "write_file",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "write_files",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    },
+    {
+      "name": "zip_path",
+      "description": "Nova internal tool",
+      "risk": "internal_allowlisted"
+    }
+  ],
+  "prompts": [
+    "project blueprint",
+    "candidate repair",
+    "surgical repair",
+    "release validation"
+  ],
+  "security": [
+    "no arbitrary remote tool execution",
+    "commands remain Nova allowlisted",
+    "sandbox/dev runs use copied workspaces"
+  ]
+}

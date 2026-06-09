@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "status": "READY",
+  "summary": "Ollama and GPU tooling are visible; use benchmark rows to tune chat/code/autonomous timeouts.",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "created_at": "2026-06-09 23:43:02",
+  "probes": {
+    "ollama_list": {
+      "command": [
+        "ollama",
+        "list"
+      ],
+      "executable": "C:\\Users\\Daniel\\AppData\\Local\\Programs\\Ollama\\ollama.EXE",
+      "available": true,
+      "ok": true,
+      "returncode": 0,
+      "stdout_tail": "NAME                       ID              SIZE      MODIFIED   \ngemma3:12b                 f4031aab637d    8.1 GB    3 days ago    \nnomic-embed-text:latest    0a109f422b47    274 MB    3 days ago    \ngemma2:2b                  8ccf136fdd52    1.6 GB    3 days ago    \nllama3.2-vision:11b        6f2f9757ae97    7.8 GB    3 days ago    \nqwen3-coder:30b            06c1097efce0    18 GB     3 days ago    \n",
+      "stderr_tail": "",
+      "duration_sec": 0.031
+    },
+    "ollama_ps": {
+      "command": [
+        "ollama",
+        "ps"
+      ],
+      "executable": "C:\\Users\\Daniel\\AppData\\Local\\Programs\\Ollama\\ollama.EXE",
+      "available": true,
+      "ok": true,
+      "returncode": 0,
+      "stdout_tail": "NAME    ID    SIZE    PROCESSOR    CONTEXT    UNTIL \n",
+      "stderr_tail": "",
+      "duration_sec": 0.016
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "executable": "C:\\WINDOWS\\system32\\nvidia-smi.EXE",
+      "available": true,
+      "ok": true,
+      "returncode": 0,
+      "stdout_tail": "-----+------------------------+----------------------+\n| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 5070 Ti   WDDM  |   00000000:01:00.0  On |                  N/A |\n|  0%   39C    P5             25W /  300W |    2301MiB /  16303MiB |      3%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A             420    C+G   ...8wekyb3d8bbwe\\M365Copilot.exe      N/A      |\n|    0   N/A  N/A            5148    C+G   ...xyewy\\ShellExperienceHost.exe      N/A      |\n|    0   N/A  N/A            7292    C+G   ...5n1h2txyewy\\TextInputHost.exe      N/A      |\n|    0   N/A  N/A            7580    C+G   ...em32\\ApplicationFrameHost.exe      N/A      |\n|    0   N/A  N/A           11272    C+G   ...ms\\Microsoft VS Code\\Code.exe      N/A      |\n|    0   N/A  N/A           13144    C+G   ...Chrome\\Application\\chrome.exe      N/A      |\n|    0   N/A  N/A           15768    C+G   ...Local\\PowerToys\\PowerToys.exe      N/A      |\n|    0   N/A  N/A           16228    C+G   ....0.3967.96\\msedgewebview2.exe      N/A      |\n|    0   N/A  N/A           16328    C+G   ...IA App\\CEF\\NVIDIA Overlay.exe      N/A      |\n|    0   N/A  N/A           16360    C+G   ...IA App\\CEF\\NVIDIA Overlay.exe      N/A      |\n|    0   N/A  N/A           17088    C+G   ..._cw5n1h2txyewy\\SearchHost.exe      N/A      |\n|    0   N/A  N/A           17368    C+G   ...Chrome\\Application\\chrome.exe      N/A      |\n|    0   N/A  N/A           20796    C+G   C:\\Windows\\explorer.exe               N/A      |\n|    0   N/A  N/A           21068    C+G   ....0.3967.96\\msedgewebview2.exe      N/A      |\n|    0   N/A  N/A           21076    C+G   ...pps\\PowerToys.QuickAccess.exe      N/A      |\n|    0   N/A  N/A           21812    C+G   ...crosoft\\OneDrive\\OneDrive.exe      N/A      |\n|    0   N/A  N/A           21932    C+G   ...8bbwe\\Microsoft.CmdPal.UI.exe      N/A      |\n|    0   N/A  N/A           25516    C+G   ...\\cef.win64\\steamwebhelper.exe      N/A      |\n+-----------------------------------------------------------------------------------------+\n",
+      "stderr_tail": "",
+      "duration_sec": 0.047
+    }
+  },
+  "gpu_visible": true,
+  "ollama_visible": true,
+  "benchmarks_enabled": false,
+  "chat_benchmarks": [],
+  "recommended_windows_commands": [
+    "ollama list",
+    "ollama ps",
+    "nvidia-smi",
+    "python -m winlocalassistant.model_calibration --root . --bench",
+    "python -m winlocalassistant.release_readiness --root . --full"
+  ]
+}

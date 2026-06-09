@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: nova-compile
+        name: Nova Python compile gate
+        entry: python -m py_compile app.py winlocalassistant/__init__.py winlocalassistant/core.py winlocalassistant/webui.py winlocalassistant/upgrade_planner.py
+        language: system
+        pass_filenames: false
+      - id: nova-smoke
+        name: Nova smoke tests
+        entry: python tests_smoke.py
+        language: system
+        pass_filenames: false

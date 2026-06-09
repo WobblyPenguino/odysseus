@@ -1,0 +1,152 @@
+{
+  "ok": true,
+  "goal": "v55.3.168 smoke",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "summary": "Nova release gate passed",
+  "doctor": {
+    "ok": true,
+    "goal": "v55.3.168 smoke",
+    "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+    "checks": [
+      {
+        "name": "python_syntax",
+        "ok": true,
+        "severity": "info",
+        "summary": "Python syntax scan passed",
+        "detail": "",
+        "fix": "Fix syntax errors before running autonomous or promotion flows."
+      },
+      {
+        "name": "version_consistency",
+        "ok": true,
+        "severity": "info",
+        "summary": "Version 55.3.168 is consistently visible",
+        "detail": "",
+        "fix": "Update README, CHANGELOG, release tests and web UI banner together."
+      },
+      {
+        "name": "required_modules",
+        "ok": true,
+        "severity": "info",
+        "summary": "Required Nova modules are present",
+        "detail": "",
+        "fix": "Restore missing modules from the latest release zip or rollback."
+      },
+      {
+        "name": "command_routes",
+        "ok": true,
+        "severity": "info",
+        "summary": "Important command routes are visible in core.py",
+        "detail": "",
+        "fix": "Add command routing in AssistantCore.handle_command and include it in command help/non-blocking lists where appropriate."
+      },
+      {
+        "name": "webui_inline_js_safety",
+        "ok": true,
+        "severity": "info",
+        "summary": "Web UI inline command strings passed static scan",
+        "detail": "",
+        "fix": "Use data-command with fillDatasetCommand/runDatasetCommand instead of nested quoted JS commands."
+      },
+      {
+        "name": "patch_hash_locking",
+        "ok": true,
+        "severity": "info",
+        "summary": "Docker patch promotion is hash-locked",
+        "detail": "Validated patches include a SHA256 lock and promotion verifies it before applying.",
+        "fix": "Store patch_sha256 during validation and refuse promotion if the saved patch file differs from the validation report."
+      },
+      {
+        "name": "webui_js_parse",
+        "ok": true,
+        "severity": "info",
+        "summary": "Web UI JavaScript parses",
+        "detail": "",
+        "fix": "Fix webui.py script syntax before shipping; a parse failure can break send()."
+      },
+      {
+        "name": "regression_tests_present",
+        "ok": true,
+        "severity": "info",
+        "summary": "Regression tests present: 101",
+        "detail": "Latest: tests_v55_3_95_nova_gui_project_generation.py, tests_v55_3_96_proposal_tool_lock_routing.py, tests_v55_3_97_gui_overhaul.py, tests_v55_3_98_gui_cockpit_refine.py, tests_v55_3_99_vscode_workbench_gui.py",
+        "fix": "Add a tests_v55_3_xx file for each new capability or bugfix."
+      },
+      {
+        "name": "release_hygiene",
+        "ok": true,
+        "severity": "info",
+        "summary": "Release tree has no cache/bytecode package artifacts",
+        "detail": "",
+        "fix": "The shared zip should exclude caches; runtime-created Python caches are ignored during live Doctor checks."
+      }
+    ],
+    "counts": {
+      "critical": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "recommendations": [
+      "Run the validation ladder before shipping: compileall -> targeted pytest -> web UI JS parse -> Docker validation when available.",
+      "Prefer data-command buttons over inline quoted command strings in webui.py.",
+      "For autonomous changes, generate a patch, validate it in Docker, then promote only after checks pass.",
+      "Keep README, version label, CHANGELOG and release tests updated in the same commit/build.",
+      "Goal-specific next step: create a small patch for `v55.3.168 smoke`, run /docker-validate-patch, then promote only if the report passes."
+    ],
+    "summary": "Nova doctor passed critical checks",
+    "markdown_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_DOCTOR_LATEST.md",
+    "json_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\docs\\NOVA_DOCTOR_LATEST.json"
+  },
+  "commands": [
+    {
+      "name": "compileall",
+      "ok": true,
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "command": [
+        "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\.venv\\Scripts\\python.exe",
+        "-m",
+        "compileall",
+        "-q",
+        "winlocalassistant",
+        "app.py"
+      ],
+      "cwd": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530"
+    },
+    {
+      "name": "custom_tests",
+      "ok": true,
+      "returncode": 0,
+      "stdout": ".........                                                                [100%]\n",
+      "stderr": "",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "python -m pytest -q tests_release_hygiene.py tests_report_hygiene.py"
+      ],
+      "cwd": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530"
+    },
+    {
+      "name": "playwright_smoke",
+      "ok": true,
+      "skipped": true,
+      "summary": "Skipped because Playwright is unavailable or Nova server is not reachable at http://127.0.0.1:8766",
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "playwright/nova_gui_smoke.spec.js"
+      ],
+      "cwd": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530"
+    }
+  ],
+  "recommendations": [
+    "Run /nova-doctor before packaging every release.",
+    "Run /release-gate before sharing a zip.",
+    "For code-changing patches, run /docker-validate-patch and only promote hash-locked passing reports.",
+    "If Docker is available, also run /docker-validate quick after /release-gate.",
+    "If Nova is running in the browser and Playwright is installed, /release-gate now runs the GUI smoke test automatically."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "decision": "pass",
+  "generated_at": "2026-06-09 23:39:35",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "python_files": 420,
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "maintainability",
+      "title": "Large modules need extraction seams",
+      "detail": "Large Python modules are harder for local models to reason over and slower to test in focused slices: winlocalassistant\\core.py, winlocalassistant\\tools.py, winlocalassistant\\webui.py",
+      "recommendation": "Prefer additive extraction around stable seams: routing tables, GUI command metadata, media planning, and audits should live in smaller modules with focused tests.",
+      "path": "."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "title": "Broad exceptions still hide repair evidence",
+      "detail": "Found 321 broad exception handlers without structured logging. Examples: scripts\\run_gui_runtime_test.py:31, scripts\\run_gui_runtime_test.py:197, scripts\\run_gui_runtime_test.py:200, scripts\\run_gui_runtime_test.py:205, winlocalassistant\\action_watcher.py:120, winlocalassistant\\adaptive_backlog.py:31, winlocalassistant\\analytics_engine.py:113, winlocalassistant\\analytics_engine.py:140, winlocalassistant\\analytics_engine.py:165, winlocalassistant\\analytics_engine.py:235",
+      "recommendation": "Replace bare `except Exception: pass` with structured warning records so mistake-learning and self-repair can learn the root cause.",
+      "path": "."
+    },
+    {
+      "severity": "medium",
+      "category": "gui",
+      "title": "Monolithic GUI file is a regression risk",
+      "detail": "webui.py is 438,154 characters. Small CSS/JS patches become fragile and hard to visually verify.",
+      "recommendation": "Move command palette metadata, layout CSS, media widgets and voice/state panels toward separate templates/modules while preserving existing routes.",
+      "path": "winlocalassistant/webui.py"
+    }
+  ],
+  "research_signals": [
+    {
+      "source": "Ollama API",
+      "relevance": "Ollama exposes keep_alive, stream=false, JSON/structured outputs and final timing fields such as eval_count/eval_duration.",
+      "nova_action": "Keep queueing same-model calls, use stream=false for tool JSON, and record token/s for model benchmark history."
+    },
+    {
+      "source": "llama.cpp/local inference patterns",
+      "relevance": "Quantization, partial GPU offload, KV-cache choices and speculative decoding are core local-inference efficiency levers.",
+      "nova_action": "Keep high-spec and fallback model profiles separate; add future GGUF/llama.cpp profile export rather than hard-coding only Ollama."
+    },
+    {
+      "source": "Playwright visual comparisons",
+      "relevance": "Screenshot baselines catch GUI regressions that unit tests miss.",
+      "nova_action": "Keep optional Playwright visual tests and add a calm-layout screenshot smoke test for the chat/drawers/popups."
+    },
+    {
+      "source": "OpenTelemetry-style instrumentation",
+      "relevance": "Spans and structured events make failures visible across agent, tool, model and GUI layers.",
+      "nova_action": "Continue replacing silent exceptions with structured events that self-repair can consume."
+    }
+  ],
+  "recommended_validation": [
+    "Run python -m winlocalassistant.validate --all before release.",
+    "Run a focused pytest slice for changed GUI/media/model files.",
+    "Run /nova-efficiency-audit after major patches and attach the generated docs to release notes.",
+    "Use /llm-status to ensure same-model prompts are queued, not overlapped.",
+    "Use optional Playwright visual smoke tests before changing GUI layout again."
+  ]
+}

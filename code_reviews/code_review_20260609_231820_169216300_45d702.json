@@ -1,0 +1,267 @@
+{
+  "generated_at": "2026-06-09 23:18:20",
+  "repo_root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "files_scanned": 415,
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/docker_manager.py",
+      "line": 304,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/gui_context_help.py",
+      "line": 118,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "safety",
+      "path": "winlocalassistant/nova_verified_changes.py",
+      "line": 217,
+      "title": "Shell execution enabled",
+      "detail": "`subprocess` is called with `shell=True`, which is risky around user/model text.",
+      "recommendation": "Prefer argv-list execution or route through the existing command safety guard."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/release_readiness.py",
+      "line": 109,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/release_readiness.py",
+      "line": 131,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/task_execution.py",
+      "line": 263,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 870,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 884,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 893,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 902,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 913,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 927,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 970,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1003,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1013,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1091,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1689,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1698,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1708,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 3280,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/tools.py",
+      "line": 7267,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/validate.py",
+      "line": 59,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "medium",
+      "category": "observability",
+      "path": "winlocalassistant/validate.py",
+      "line": 80,
+      "title": "Broad exception is silently swallowed",
+      "detail": "`except Exception: pass` hides root causes from logs and autonomous repair memory.",
+      "recommendation": "Log the exception or return a structured warning; only ignore narrow expected exception types."
+    },
+    {
+      "severity": "low",
+      "category": "release_hygiene",
+      "path": ".pytest_cache",
+      "line": 1,
+      "title": "Runtime/cache artifact present",
+      "detail": "Generated cache files should not be shipped in release zips.",
+      "recommendation": "Delete cache/runtime artifacts before packaging and keep .gitignore rules in place."
+    },
+    {
+      "severity": "low",
+      "category": "release_hygiene",
+      "path": ".venv",
+      "line": 1,
+      "title": "Runtime/cache artifact present",
+      "detail": "Generated cache files should not be shipped in release zips.",
+      "recommendation": "Delete cache/runtime artifacts before packaging and keep .gitignore rules in place."
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "path": "winlocalassistant/core.py",
+      "line": 1,
+      "title": "Very large Python file",
+      "detail": "File has 7670 lines, which makes autonomous edits riskier and harder to review.",
+      "recommendation": "Extract command handlers, tool groups, or UI handlers into smaller modules with regression tests."
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "path": "winlocalassistant/tools.py",
+      "line": 1,
+      "title": "Very large Python file",
+      "detail": "File has 9672 lines, which makes autonomous edits riskier and harder to review.",
+      "recommendation": "Extract command handlers, tool groups, or UI handlers into smaller modules with regression tests."
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "path": "winlocalassistant/webui.py",
+      "line": 1,
+      "title": "Very large Python file",
+      "detail": "File has 2605 lines, which makes autonomous edits riskier and harder to review.",
+      "recommendation": "Extract command handlers, tool groups, or UI handlers into smaller modules with regression tests."
+    }
+  ],
+  "passed_checks": [
+    "Command literals appear represented in the help/command text.",
+    "Detected 1250 pytest-style test functions across 3957 functions.",
+    "All scanned Python files parsed successfully."
+  ],
+  "markdown_report_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\code_reviews\\code_review_20260609_231820_169216300_45d702.md",
+  "json_report_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\code_reviews\\code_review_20260609_231820_169216300_45d702.json",
+  "ok": true
+}

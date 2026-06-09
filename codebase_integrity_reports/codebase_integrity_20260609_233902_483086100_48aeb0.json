@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-06-09 23:39:02",
+  "repo_root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "version": "55.3.168",
+  "version_label": "v55.3.168 project-state continuity memory | preserves v55.3.167 task execution evidence/autonomy hardening | preserves v55.3.166 LLM-from-scratch inspired training lab | preserves v55.3.165 real-machine model calibration release candidate | preserves v55.3.164 runtime usability release-readiness gate | scheduling control plane, task DAG decomposition, prompt-injection filtering, confirmation-gated scheduled tasks, scheduler audit and provider runtime continuity | preserves v55.3.163 SubQ/NVIDIA/local runtime provider abstraction | preserves v55.3.162 efficiency audit and focus GUI | preserves GUI route/startup hardening, media pipeline refinement, bounded self-repair and Ollama model queue | legacy continuity: Hey Nova, wake, voice, packaging, no-regression, completion audit, autonomous cockpit, voice reliability, codebase advisor, voice-profile, wake-listener handoff, Odysseus-style voyage workspace deck, Clean Studio GUI shell, Orbit GUI shell, Voice cue, Orbit workspace drawer hotfix, self-validation, clean release packaging, hidden-panel layout, v55.3.141 historical safety validation dock, v55.3.150 repo research radar, qwen3-coder better-PC model routing, Nova video manifest planning, CLI thinking-time display, v55.3.153 repo intelligence, document/browser worker planning, comprehensive integration review, v55.3.154 regression research launcher hardening, v55.3.156 autonomous continuous mission hardening, v55.3.157 natural research routing and research/voice truthfulness, v55.3.158 bounded self-repair and Ollama model queue, v55.3.159 clean GUI and Docker validation hardening, v55.3.160 media pipeline refinement, v55.3.161 GUI startup media route hardening, v55.3.162 efficiency audit focus GUI, v55.3.163 provider runtime hardening",
+  "decision": "pass",
+  "files_scanned": 416,
+  "modules_imported": 185,
+  "tests_detected": 1251,
+  "issues": [
+    {
+      "severity": "low",
+      "category": "release_hygiene",
+      "path": ".",
+      "line": 1,
+      "title": "Runtime/cache artifacts present",
+      "detail": ".nova_runtime, .pytest_cache, .venv",
+      "patch_status": "patched-before-zip",
+      "recommendation": "Delete cache/runtime artifacts before packaging."
+    }
+  ],
+  "passed_checks": [
+    "Imported all 185 Nova modules successfully.",
+    "User-visible version markers are consistent with package version.",
+    "Deep code review has no critical/high findings.",
+    "Repair audit has no critical/high findings.",
+    "Code quality gate is non-blocking: warn.",
+    "Parsed and compiled 416 Python file(s) without syntax errors.",
+    "Detected 1251 pytest-style test function(s)."
+  ],
+  "markdown_report_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\codebase_integrity_reports\\codebase_integrity_20260609_233902_483086100_48aeb0.md",
+  "json_report_path": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530\\codebase_integrity_reports\\codebase_integrity_20260609_233902_483086100_48aeb0.json",
+  "ok": true
+}

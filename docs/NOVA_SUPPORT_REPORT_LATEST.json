@@ -1,0 +1,200 @@
+{
+  "ok": true,
+  "version_context": "support report generated locally",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "focus": "",
+  "generated_at": "2026-06-09 23:42:29",
+  "activity_tail": [
+    {
+      "time": "2026-06-09 23:41:18",
+      "ts": 1781012478.692966,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "sandbox_policy",
+      "message": "Sandbox event: policy",
+      "data": {
+        "level": "trusted_lab"
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:18",
+      "ts": 1781012478.6968734,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "sandbox_policy",
+      "message": "Sandbox event: policy",
+      "data": {
+        "level": "trusted_lab"
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:18",
+      "ts": 1781012478.6989422,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "sandbox_start",
+      "message": "Sandbox event: start",
+      "data": {
+        "profile": "kali",
+        "name": "wla-kali-sandbox",
+        "runtime": "docker",
+        "ok": true,
+        "network": "bridge",
+        "stderr": ""
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:26",
+      "ts": 1781012486.039502,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "candidate_refine_step",
+      "message": "Edited rejected candidate in memory",
+      "data": {
+        "round": 1,
+        "ok": true,
+        "reason": "ok",
+        "edits": [
+          {
+            "kind": "candidate_domain_fallback",
+            "detail": "Replaced weak/repeating game candidate with themed deterministic runnable game",
+            "missing": [
+              "canvas",
+              "score",
+              "controls",
+              "collision"
+            ],
+            "reason": "model output did not implement the requested domain"
+          }
+        ]
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:26",
+      "ts": 1781012486.045012,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "avatar",
+      "message": "Working",
+      "data": {
+        "mood": "working",
+        "emoji": "\ud83e\udd16",
+        "title": "Working",
+        "text": "Processing current request...",
+        "updated_at": "2026-06-09 23:41:26",
+        "speak": "",
+        "sound": "working"
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:32",
+      "ts": 1781012492.5381868,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "docker_promote_patch",
+      "message": "Docker event: promote_patch",
+      "data": {
+        "ok": true,
+        "promotion_id": "20260609_234132_8907a501",
+        "validation_run_id": "run_patch_crlf",
+        "rollback": false
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:50",
+      "ts": 1781012510.8872323,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "file_write",
+      "message": "Wrote C:\\Users\\Daniel\\AppData\\Local\\Temp\\pytest-of-Daniel\\pytest-366\\test_write_one_does_not_crash_0\\Tinyappproject\\index.html",
+      "data": {
+        "path": "C:\\Users\\Daniel\\AppData\\Local\\Temp\\pytest-of-Daniel\\pytest-366\\test_write_one_does_not_crash_0\\Tinyappproject\\index.html",
+        "bytes": 11,
+        "preview": "<h1>ok</h1>",
+        "diff_preview": "--- before\n+++ after\n@@ -0,0 +1 @@\n+<h1>ok</h1>"
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:50",
+      "ts": 1781012510.8899171,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "code_write_start",
+      "message": "Writing model-generated file index.html",
+      "data": {
+        "file": "index.html",
+        "chars": 11,
+        "code_preview": "<h1>ok</h1>"
+      }
+    },
+    {
+      "time": "2026-06-09 23:41:50",
+      "ts": 1781012510.8915114,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "file_write",
+      "message": "Wrote index.html",
+      "data": {
+        "path": "C:\\Users\\Daniel\\AppData\\Local\\Temp\\pytest-of-Daniel\\pytest-366\\test_model_top_level_sibling_p0\\Tinyapp\\index.html",
+        "bytes": 11,
+        "preview": "<h1>ok</h1>",
+        "diff_preview": "--- before\n+++ after\n@@ -0,0 +1 @@\n+<h1>ok</h1>"
+      }
+    },
+    {
+      "time": "2026-06-09 23:42:28",
+      "ts": 1781012548.0739303,
+      "session_id": "20260609_233842_bb6a49d6",
+      "run_id": null,
+      "kind": "tool_created_deterministic",
+      "message": "Installed deterministic safe custom tool and refreshed registry",
+      "data": {
+        "goal": "now make yourself a useful tool",
+        "name": "project_health_snapshot",
+        "path": "C:\\Users\\Daniel\\.nova\\custom_tools\\project_health_snapshot.py",
+        "description": "Summarises the current project structure and highlights simple test/UI coverage warnings",
+        "input_schema": {
+          "subdir": "folder under workspace"
+        },
+        "source": "deterministic_fallback",
+        "reason": "The request was a broad self-tool request, so Nova used a known safe project-analysis helper instead of opening a generic app/build planning loop.",
+        "registry_visible": true,
+        "registry": {
+          "tools": [
+            {
+              "name": "project_health_snapshot",
+              "description": "Summarises the current project structure and highlights simple test/UI coverage warnings",
+              "input_schema": {
+                "subdir": "folder under workspace"
+              },
+              "section": "Project Analysis",
+              "risk": "read_only",
+              "enabled": true,
+              "created_at": "2026-06-09 23:42:28",
+              "last_tested": "2026-06-09 23:42:28",
+              "last_used": "2026-06-09 23:42:28",
+              "created_by": "local_llm_or_fallback",
+              "last_test_ok": true,
+              "last_test_summary": "Project health snapshot: 1 files, 0 Python, 0 JS, 1 HTML, 0 tests.",
+              "exists": true,
+              "path": "C:\\Users\\Daniel\\.nova\\custom_tools\\project_health_snapshot.py"
+            }
+          ],
+          "count": 1,
+          "manifest_path": "C:\\Users\\Daniel\\.nova\\custom_tools\\manifest.json",
+          "custom_tools_dir": "C:\\Users\\Daniel\\.nova\\custom_tools"
+        },
+        "tool_test_ok": true,
+        "tool_test_summary": "Custom tool project_health_snapshot test ran"
+      }
+    }
+  ],
+  "model_tail_count": 5,
+  "release_hygiene": null,
+  "recommended_copy_paste": [
+    "/nova-mega-test --confirm",
+    "/bug-review",
+    "/trace-errors",
+    "/support-report"
+  ]
+}

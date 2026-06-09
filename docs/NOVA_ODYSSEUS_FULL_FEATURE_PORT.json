@@ -1,0 +1,139 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-01 18:31:37",
+  "source": "uploaded odysseus-main.zip and public README feature map",
+  "suite_version": "v55.3.136",
+  "root": "/mnt/data/work_nova/Nova_v55_3_135_odysseus_verified_self_apply_20260602",
+  "coverage": {
+    "covered": 13,
+    "total": 13,
+    "percent": 100.0
+  },
+  "features": [
+    {
+      "id": "chat",
+      "name": "Chat / provider switching",
+      "odysseus_surface": "Chat with local or API models: vLLM, llama.cpp, Ollama, OpenRouter, OpenAI.",
+      "nova_command": "/providers, /provider, /ollama-multi, /openrouter-model",
+      "status": "native_plus_mapped",
+      "nova_adaptation": "Nova keeps its existing provider commands and exposes this suite as the feature coverage audit."
+    },
+    {
+      "id": "agent_tools",
+      "name": "Agent tools + guarded autonomy",
+      "odysseus_surface": "Agent with MCP, web, files, shell, skills and memory tools.",
+      "nova_command": "/autonomous, /nova-self-apply, /nova-tool-permissions",
+      "status": "native_plus_new_gate",
+      "nova_adaptation": "Nova already has autonomous/tool routing; this patch adds an Odysseus-style privilege policy table and command checker."
+    },
+    {
+      "id": "cookbook",
+      "name": "Hardware-aware model cookbook",
+      "odysseus_surface": "Hardware scan, VRAM-aware fit scoring, model recommendations and serving/download planning.",
+      "nova_command": "/nova-cookbook",
+      "status": "implemented",
+      "nova_adaptation": "Nova now detects RAM/CPU/NVIDIA VRAM where available, accepts what-if hardware hints, ranks local model choices and prints install/serve guidance without auto-downloading."
+    },
+    {
+      "id": "deep_research",
+      "name": "Deep research reports",
+      "odysseus_surface": "Multi-step source gathering, reading and synthesis into a report.",
+      "nova_command": "/research, /nova-deep-research, /nova-odysseus-suite",
+      "status": "native_plus_mapped",
+      "nova_adaptation": "Nova keeps its existing research engine and documents the Odysseus deep-research target in the suite manifest."
+    },
+    {
+      "id": "compare",
+      "name": "Blind model comparison",
+      "odysseus_surface": "Prompt two models side-by-side, hide model names, record winner/tie and reveal after vote.",
+      "nova_command": "/nova-compare",
+      "status": "implemented",
+      "nova_adaptation": "Nova now creates blind comparison packets and stores comparison/vote receipts under the workspace runtime directory."
+    },
+    {
+      "id": "documents",
+      "name": "Documents-first editing",
+      "odysseus_surface": "Markdown/HTML/CSV editor with AI suggestions while the user owns the text.",
+      "nova_command": "/nova-docs",
+      "status": "implemented",
+      "nova_adaptation": "Nova now has a workspace document vault with create/list/read/suggest/export commands and explicit AI-suggestion sidecars."
+    },
+    {
+      "id": "memory_skills",
+      "name": "Memory and skills",
+      "odysseus_surface": "Persistent memory/skills with vector + keyword retrieval, import/export and audit surfaces.",
+      "nova_command": "/nova-memory-vault, /nova-skills, /memory, /remember",
+      "status": "implemented",
+      "nova_adaptation": "Nova now adds skill library CRUD/export and memory-vault audit/export commands on top of its existing memory commands."
+    },
+    {
+      "id": "email",
+      "name": "Email triage scaffold",
+      "odysseus_surface": "IMAP/SMTP inbox with urgency reminders, tags, summaries and reply drafts.",
+      "nova_command": "/nova-email-plan",
+      "status": "safe_scaffold",
+      "nova_adaptation": "Nova now exposes a no-secret integration checklist and triage schema. It does not connect to mail until credentials and explicit consent are configured."
+    },
+    {
+      "id": "notes_tasks",
+      "name": "Notes and tasks",
+      "odysseus_surface": "Quick notes, checklist tasks, reminder channels and scheduled agent actions.",
+      "nova_command": "/nova-notes, /nova-tasks",
+      "status": "implemented",
+      "nova_adaptation": "Nova now stores notes/tasks as workspace JSON with add/list/search/done/export operations."
+    },
+    {
+      "id": "calendar",
+      "name": "Calendar scaffold",
+      "odysseus_surface": "Local-first calendar, CalDAV sync, .ics import/export and agent-aware events.",
+      "nova_command": "/nova-calendar-plan",
+      "status": "safe_scaffold",
+      "nova_adaptation": "Nova now provides an .ics-oriented integration plan and event schema without silently syncing external calendars."
+    },
+    {
+      "id": "mobile_pwa",
+      "name": "Mobile/PWA readiness",
+      "odysseus_surface": "Responsive, installable and touch-friendly mobile UI.",
+      "nova_command": "/nova-mobile-plan",
+      "status": "implemented_as_audit",
+      "nova_adaptation": "Nova now has a mobile/PWA readiness checklist command that maps required files and regression checks for the current web UI."
+    },
+    {
+      "id": "extras",
+      "name": "Extras: uploads, vision, image, themes, sessions, web search, presets, 2FA style hardening",
+      "odysseus_surface": "Image editor, theme editor, uploads, vision/PDF, web search, presets, sessions and two-factor extras.",
+      "nova_command": "/attach-file, /image-analyze, /image-generate, /chats, /nova-presets, /nova-theme-plan, /nova-auth-plan",
+      "status": "native_plus_scaffold",
+      "nova_adaptation": "Nova already has file/image/chat/web search surfaces; this patch adds presets plus theme/auth hardening plans."
+    },
+    {
+      "id": "backup_vault_webhooks",
+      "name": "Backup, vault and webhooks",
+      "odysseus_surface": "Backup/vault/API token/webhook admin surfaces.",
+      "nova_command": "/nova-integration-gates, /webhook-status",
+      "status": "safe_scaffold",
+      "nova_adaptation": "Nova now has a privileged-integration gate command that classifies risky actions before implementation or use."
+    }
+  ],
+  "signals": {
+    "nova_modules": 140,
+    "docs_markdown": 23,
+    "has_verified_self_apply": true,
+    "has_eval_packs": true,
+    "has_research_lab": true,
+    "has_file_context": true
+  },
+  "primary_commands": [
+    "/nova-odysseus-suite",
+    "/nova-tool-permissions",
+    "/nova-cookbook",
+    "/nova-compare",
+    "/nova-docs",
+    "/nova-notes",
+    "/nova-tasks",
+    "/nova-skills",
+    "/nova-presets",
+    "/nova-memory-vault",
+    "/nova-integration-gates"
+  ]
+}

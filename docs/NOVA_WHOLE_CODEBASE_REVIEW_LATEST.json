@@ -1,0 +1,1065 @@
+{
+  "ok": true,
+  "summary": "Whole-codebase review passed",
+  "generated_at": "2026-06-09 23:43:23",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "version": "55.3.168",
+  "version_label": "v55.3.168 project-state continuity memory | preserves v55.3.167 task execution evidence/autonomy hardening | preserves v55.3.166 LLM-from-scratch inspired training lab | preserves v55.3.165 real-machine model calibration release candidate | preserves v55.3.164 runtime usability release-readiness gate | scheduling control plane, task DAG decomposition, prompt-injection filtering, confirmation-gated scheduled tasks, scheduler audit and provider runtime continuity | preserves v55.3.163 SubQ/NVIDIA/local runtime provider abstraction | preserves v55.3.162 efficiency audit and focus GUI | preserves GUI route/startup hardening, media pipeline refinement, bounded self-repair and Ollama model queue | legacy continuity: Hey Nova, wake, voice, packaging, no-regression, completion audit, autonomous cockpit, voice reliability, codebase advisor, voice-profile, wake-listener handoff, Odysseus-style voyage workspace deck, Clean Studio GUI shell, Orbit GUI shell, Voice cue, Orbit workspace drawer hotfix, self-validation, clean release packaging, hidden-panel layout, v55.3.141 historical safety validation dock, v55.3.150 repo research radar, qwen3-coder better-PC model routing, Nova video manifest planning, CLI thinking-time display, v55.3.153 repo intelligence, document/browser worker planning, comprehensive integration review, v55.3.154 regression research launcher hardening, v55.3.156 autonomous continuous mission hardening, v55.3.157 natural research routing and research/voice truthfulness, v55.3.158 bounded self-repair and Ollama model queue, v55.3.159 clean GUI and Docker validation hardening, v55.3.160 media pipeline refinement, v55.3.161 GUI startup media route hardening, v55.3.162 efficiency audit focus GUI, v55.3.163 provider runtime hardening",
+  "blockers": [],
+  "warnings": [
+    "200 cache/runtime artifact(s) detected",
+    "high broad-exception count (318); keep converting high-risk paths to structured diagnostics"
+  ],
+  "python": {
+    "python_file_count": 416,
+    "parse_errors": [],
+    "broad_exception_count": 318,
+    "broad_exception_examples": [
+      {
+        "path": "winlocalassistant\\action_watcher.py",
+        "line": 120,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\adaptive_backlog.py",
+        "line": 31,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 113,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 140,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 165,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 235,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 282,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 321,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\analytics_engine.py",
+        "line": 341,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\architecture_audit.py",
+        "line": 69,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\architecture_audit.py",
+        "line": 80,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\architecture_audit.py",
+        "line": 182,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\assistant_datastore.py",
+        "line": 78,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\assistant_datastore.py",
+        "line": 348,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_failure.py",
+        "line": 138,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_failure.py",
+        "line": 199,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_failure.py",
+        "line": 476,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_failure.py",
+        "line": 493,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_journal.py",
+        "line": 103,
+        "text": "except Exception:"
+      },
+      {
+        "path": "winlocalassistant\\autonomous_journal.py",
+        "line": 230,
+        "text": "except Exception:"
+      }
+    ],
+    "todo_count": 19,
+    "todo_examples": [
+      {
+        "path": "winlocalassistant\\code_review_audit.py",
+        "line": 275,
+        "text": "findings.append(CodeReviewFinding(\"low\", \"maintainability\", _rel(root, path), token.start[0], \"Open TODO/FIXME/HACK marker\", token.string.strip()[:180], \"Either"
+      },
+      {
+        "path": "winlocalassistant\\codebase_sanity_audit.py",
+        "line": 122,
+        "text": "detail=f\"{len(todo_hits)} TODO/FIXME/HACK markers; first lines {todo_hits[:12]}\","
+      },
+      {
+        "path": "winlocalassistant\\command_help.py",
+        "line": 30,
+        "text": "CommandHelpItem(\"Files\", \"/search TEXT\", \"Search workspace files.\", \"Find code or TODOs quickly.\", \"Run with text to search.\", \"/search TODO\"),"
+      },
+      {
+        "path": "winlocalassistant\\core.py",
+        "line": 1173,
+        "text": "\"for match in search_files('.', 'TODO'):\\n\""
+      },
+      {
+        "path": "winlocalassistant\\integration_radar.py",
+        "line": 141,
+        "text": "\"rg TODO winlocalassistant tests_*.py\", \"low\","
+      },
+      {
+        "path": "winlocalassistant\\tools.py",
+        "line": 3476,
+        "text": "patterns = args.get(\"patterns\") or [\"TODO\", \"FIXME\"]"
+      },
+      {
+        "path": "winlocalassistant\\tools.py",
+        "line": 3495,
+        "text": "return {\"ok\": True, \"summary\": f\"Found {sum(counts.values())} TODO/FIXME-style comments\", \"counts\": counts, \"matches\": results[:500]}"
+      },
+      {
+        "path": "winlocalassistant\\tools.py",
+        "line": 3497,
+        "text": "return {\"name\": \"todo_fixme_counter\", \"description\": \"Counts TODO/FIXME comments in project files\", \"input_schema\": {\"subdir\": \"folder under workspace\", \"patter"
+      },
+      {
+        "path": "winlocalassistant\\tools.py",
+        "line": 3730,
+        "text": "return ToolResult(False, \"Local LLM did not return valid tool JSON and no safe fallback matched\", {\"goal\": goal, \"fix\": \"Check /llm-status, then retry or ask fo"
+      },
+      {
+        "path": "winlocalassistant\\tools.py",
+        "line": 6524,
+        "text": "- Do not output placeholder screens, TODO-only files, planning packs, or generic item trackers unless the user asked for that."
+      },
+      {
+        "path": "winlocalassistant\\webui.py",
+        "line": 725,
+        "text": "<div class=\"row\" style=\"margin-top:8px\"><input id=\"toolGoal\" placeholder=\"Tool idea, e.g. count TODO comments\"><button class=\"tiny\" onclick=\"createTool()\">Creat"
+      },
+      {
+        "path": "winlocalassistant\\webui.py",
+        "line": 946,
+        "text": "{group:'Tools',label:'Create tool',command:'/tool-create count TODO comments in the project',desc:'Make a narrow reusable helper',tags:'custom tool create'},"
+      },
+      {
+        "path": "winlocalassistant\\webui_emergency_stability.py",
+        "line": 200,
+        "text": "['Search','/search TEXT','Search workspace files.','/search TODO'],"
+      },
+      {
+        "path": "winlocalassistant\\whole_codebase_review.py",
+        "line": 73,
+        "text": "if \"TODO\" in line or \"FIXME\" in line:"
+      },
+      {
+        "path": "winlocalassistant\\whole_codebase_review.py",
+        "line": 206,
+        "text": "f\"- TODO/FIXME markers: {py.get('todo_count', 0)}\","
+      },
+      {
+        "path": "tests_codebase_integrity_audit.py",
+        "line": 37,
+        "text": "assert not [f for f in report.findings if f.title == 'Open TODO/FIXME/HACK marker']"
+      },
+      {
+        "path": "tests_codebase_integrity_audit.py",
+        "line": 47,
+        "text": "# TODO: tighten validation"
+      },
+      {
+        "path": "tests_codebase_integrity_audit.py",
+        "line": 51,
+        "text": "assert [f for f in report.findings if f.title == 'Open TODO/FIXME/HACK marker']"
+      },
+      {
+        "path": "tests_v55_3_71_autonomy_command_access.py",
+        "line": 34,
+        "text": "seq = build_autonomous_tool_sequence(\"make its own custom tool to summarize TODO comments and run it when useful\")"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "path": ".nova_runtime",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".pytest_cache",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".nova_runtime\\llm_lab_contract_sample",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".pytest_cache\\.gitignore",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".pytest_cache\\CACHEDIR.TAG",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".pytest_cache\\README.md",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".pytest_cache\\v",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "winlocalassistant\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__\\app.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__\\tests_emergency_stability.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__\\tests_model_calibration.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__\\tests_model_health_timeout.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": "__pycache__\\tests_runtime_usability_release_gate.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".nova_runtime\\llm_lab_contract_sample\\notes.txt",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\activity.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\config.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\efficiency_metrics.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\traces.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\playwright\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\activity.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\efficiency_metrics.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\traces.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\chat_fallback_status\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\command_help_status\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\host_ollama_gpu_probe_evidence\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\activity.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\efficiency_metrics.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\traces.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\model_health_and_host_calibration_status\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\activity.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\config.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\efficiency_metrics.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\traces.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\real_browser_gui_runtime_test\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\activity.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\analytics",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\conversations.json",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\efficiency_metrics.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\KNOWLEDGE_BASE.md",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\performance",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\proposals",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\scheduler",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\traces.jsonl",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".nova_runtime\\release_readiness\\write_read_verify_code_do_status\\webhooks",
+      "kind": "runtime_state"
+    },
+    {
+      "path": ".pytest_cache\\v\\cache",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".pytest_cache\\v\\cache\\nodeids",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_doc\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_types\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\certifi\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\click\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\colorama\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\distlib\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\fastapi\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\filelock\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\greenlet\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\h11\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\httpcore\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\httpx\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\identify\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\idna\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\iniconfig\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\packaging\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pip\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\platformdirs\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\playwright\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pluggy\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pre_commit\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pydantic\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pydantic_core\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pyee\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pygments\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pypdf\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\pytest\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\python_discovery\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\ruff\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\starlette\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\typing_inspection\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\uvicorn\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\virtualenv\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\yaml\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\_pytest\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\_yaml\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\__pycache__\\cfgv.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\__pycache__\\nodeenv.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\__pycache__\\py.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\__pycache__\\typing_extensions.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_doc\\__pycache__\\main.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_doc\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_types\\__pycache__\\test_cases.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\annotated_types\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\from_thread.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\from_thread.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\functools.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\lowlevel.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\lowlevel.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\pytest_plugin.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\pytest_plugin.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\to_interpreter.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\to_process.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\to_thread.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\to_thread.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\__init__.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_eventloop.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_eventloop.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_resources.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_resources.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_sockets.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_sockets.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_streams.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_streams.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_subprocesses.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_subprocesses.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_tasks.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_tasks.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_testing.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\_testing.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\__init__.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\abc\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\buffered.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\file.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\memory.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\memory.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\stapled.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\stapled.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\text.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\tls.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\tls.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\__init__.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\streams\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\_asyncio.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\_asyncio.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\_trio.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\_trio.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\__init__.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_backends\\__pycache__\\__init__.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_asyncio_selector_thread.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_contextmanagers.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_contextmanagers.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_eventloop.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_eventloop.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_exceptions.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_exceptions.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_fileio.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_fileio.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_resources.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_resources.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_signals.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_signals.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_sockets.cpython-312-pytest-9.0.3.pyc",
+      "kind": "cache_or_bytecode"
+    },
+    {
+      "path": ".venv\\Lib\\site-packages\\anyio\\_core\\__pycache__\\_sockets.cpython-312.pyc",
+      "kind": "cache_or_bytecode"
+    }
+  ],
+  "routes": {
+    "required_commands_checked": [
+      "/nova-mega-test",
+      "/regression-sweep",
+      "/weakspot-audit",
+      "/improvement-roadmap",
+      "/implement-improvements",
+      "/prompt-contract",
+      "/candidate-tournament",
+      "/repair-plan",
+      "/trace-status",
+      "/mcp-risk-report",
+      "/mission-create",
+      "/model-output-coach",
+      "/env-profile",
+      "/project-state",
+      "/regression-list"
+    ],
+    "missing_command_markers": [],
+    "missing_tool_registry_markers": [],
+    "missing_runtime_tools": []
+  },
+  "docs": {
+    "readme_mentions_version": true,
+    "changelog_mentions_version": true,
+    "version_label_mentions_current_version": true,
+    "version_label_mentions_current_capabilities": true
+  },
+  "improvements": [
+    {
+      "title": "Keep direct CLI command execution for one-shot QA",
+      "status": "implemented_in_v55.3.89",
+      "why": "Allows `python app.py /nova-mega-test --confirm` and other copy/paste diagnostics without opening the GUI."
+    },
+    {
+      "title": "Use whole-codebase review before packaging",
+      "status": "implemented_in_v55.3.89",
+      "why": "Aggregates syntax, route/tool visibility, docs, cache artifacts and broad exception risk into one report."
+    },
+    {
+      "title": "Continue reducing broad exception paths",
+      "status": "next_safe_follow_up",
+      "why": "Many are acceptable optional best-effort paths, but high-risk paths should log context instead of silently recovering."
+    }
+  ]
+}

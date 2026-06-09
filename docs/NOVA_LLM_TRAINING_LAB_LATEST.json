@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "created_at": "2026-06-09 23:43:01",
+  "root": "C:\\Users\\Daniel\\Documents\\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
+  "inspiration": [
+    "rasbt/LLMs-from-scratch: educational GPT-like model pipeline",
+    "FareedKhan-dev/train-llm-from-scratch: end-to-end data-to-generation and post-training stages",
+    "karpathy/llm.c: small reproducible training/debugging emphasis"
+  ],
+  "plan": {
+    "ok": true,
+    "goal": "training budget estimate",
+    "hardware": "consumer 16GB GPU",
+    "phases": [
+      {
+        "phase": "1. Data",
+        "purpose": "Collect a small legal/local text dataset, inspect size, duplicates and format.",
+        "nova_check": "/llm-lab dataset PATH"
+      },
+      {
+        "phase": "2. Tokenizer",
+        "purpose": "Start with an existing tokenizer or tiny educational BPE experiment before any expensive run.",
+        "nova_check": "confirm vocab size and sample encoding/decoding"
+      },
+      {
+        "phase": "3. Architecture",
+        "purpose": "Use a tiny GPT-style config first, then scale only after loss curves and generation smoke tests behave.",
+        "nova_check": "/llm-lab estimate 13m 5m"
+      },
+      {
+        "phase": "4. Pretraining smoke",
+        "purpose": "Train on a tiny slice only to prove dataloader, checkpoints, resume, logging and generation work.",
+        "nova_check": "save loss, sample output and checkpoint hash"
+      },
+      {
+        "phase": "5. Finetuning",
+        "purpose": "Prefer SFT or task-specific finetuning for usefulness; avoid expensive from-scratch unless educational.",
+        "nova_check": "hold out eval prompts and regression tests"
+      },
+      {
+        "phase": "6. Evaluation",
+        "purpose": "Run deterministic prompt tests, safety checks, hallucination checks and code/file task checks before routing into Nova.",
+        "nova_check": "/model-calibration --bench and Nova eval packs"
+      },
+      {
+        "phase": "7. Routing",
+        "purpose": "Use the trained model only for roles it passes; keep fallback to the proven chat/code model.",
+        "nova_check": "/llm-status and /release-readiness --full"
+      }
+    ],
+    "guardrails": [
+      "Do not train on private chats, secrets, API keys, passwords or copyrighted dumps you do not have rights to use.",
+      "Do not let training scripts overwrite Nova source or release files; run in a separate experiments folder.",
+      "Keep the first run tiny and checkpointed; expensive runs need explicit confirmation and host evidence.",
+      "Treat from-scratch models as educational unless evaluation proves they beat your existing Ollama models for a specific Nova role."
+    ]
+  },
+  "estimate": {
+    "ok": true,
+    "params": 13000000,
+    "tokens": 5000000,
+    "seq_len": 1024,
+    "batch_size": 4,
+    "dtype_bytes": 2,
+    "estimated_steps": 1221,
+    "rough_inference_weight_gb": 0.03,
+    "rough_training_vram_gb": 2.9,
+    "rough_checkpoint_gb": 0.03,
+    "consumer_16gb_gpu_feasible_for_smoke": true,
+    "recommendation": "Feasible for an educational tiny/small from-scratch run on a 16GB GPU if code is efficient and batch size is small."
+  },
+  "dataset": null,
+  "recommended_commands": [
+    "/llm-lab plan learn tiny GPT training",
+    "/llm-lab dataset data/my_texts",
+    "/llm-lab estimate 13m 5m",
+    "python -m winlocalassistant.llm_training_lab --root . --plan",
+    "python -m winlocalassistant.release_readiness --root . --full"
+  ]
+}
