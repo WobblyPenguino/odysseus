@@ -45,7 +45,7 @@ function Is-RiskyDiff {
     if ($status -match "^ D ") { return "Deleted file" }
     if ($status -match "docs/NOVA_.*_LATEST|logs/release_readiness|code_quality_gates|code_reviews|codebase_integrity_reports") { return "Generated report/log noise" }
     if ($status -match "NOVA_GUARDED_LOCAL_IMPROVEMENT_RULES.md") { return "Touched guardrail rules; requires manual review" }
-    if ($status -match "^\?\? test_") { return "Created non-standard test_*.py file; use existing tests_*.py or manual review" }
+    if ($status -match "(^|`n)(\?\?|A |AM) test_") { return "Created non-standard top-level test_*.py file; use existing tests_*.py or manual review" }
     if ($status -match "app.py") { return "Touched app.py; requires manual review" }
     if ($status -match "start_.*\.ps1|start_.*\.bat|START_NOVA_HERE\.bat") { return "Touched startup script; requires manual review" }
 
@@ -116,6 +116,7 @@ Hard rules:
 - Do not create placeholder tests.
 - Tests must import real Nova code and assert real behaviour.
 - Prefer adding to existing tests_*.py files instead of creating new top-level test_*.py files.
+- Do not create files named test_*.py; this repo uses tests_*.py naming.
 - Do not add flashy new feature categories.
 - Do not broad-refactor.
 - Do not claim success without validation.
@@ -181,7 +182,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Aider failed. Reverting any changes."
-        git restore .
+        git reset --hard
         git clean -fd
         exit 1
     }
@@ -204,7 +205,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         Write-Host "STOP: Risky diff detected: $risk"
         git diff --stat
         git diff
-        git restore .
+        git reset --hard
         git clean -fd
         exit 1
     }
@@ -215,7 +216,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     catch {
         Write-Host "Validation failed. Reverting this cycle."
         git diff --stat
-        git restore .
+        git reset --hard
         git clean -fd
         exit 1
     }
@@ -225,7 +226,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $remainingRisk = Is-RiskyDiff
     if ($remainingRisk) {
         Write-Host "STOP: Risk detected after validation: $remainingRisk"
-        git restore .
+        git reset --hard
         git clean -fd
         exit 1
     }
