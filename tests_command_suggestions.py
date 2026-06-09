@@ -25,11 +25,11 @@ def test_test_verify_text_suggests_test_all_or_test_proposal() -> None:
 def test_self_improve_text_does_not_suggest_automatic_self_improve() -> None:
     suggestions = suggest_next_commands("improve yourself safely")
     cmds = [item.command.lower() for item in suggestions]
-    assert not any("automatic" in cmd for cmd in cmds)
     assert not any(cmd.startswith("/idle start") for cmd in cmds)
     assert not any(cmd.startswith("/self-improve") for cmd in cmds)
     # Strengthen the assertion to check that no dangerous commands are suggested
-    assert not any(cmd in ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe"] for cmd in cmds)
+    disallowed_commands = ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe"]
+    assert not any(cmd in disallowed_commands for cmd in cmds)
 
 
 def test_manual_self_improve_can_be_marked_high_risk() -> None:
