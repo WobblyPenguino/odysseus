@@ -31,6 +31,12 @@ $SuccessMemory = Join-Path $MemoryDir "SUCCESS_MEMORY.md"
 $LastTestResults = Join-Path $MemoryDir "LAST_TEST_RESULTS.md"
 $NoChangeTargets = Join-Path $MemoryDir "NO_CHANGE_TARGETS.md"
 
+foreach ($f in @($MistakeMemory, $SuccessMemory, $LastTestResults, $NoChangeTargets)) {
+    if (!(Test-Path $f)) {
+        New-Item -ItemType File -Force $f | Out-Null
+    }
+}
+
 function Get-TextBudget {
     param([string]$Text)
     $safeText = ""
@@ -325,21 +331,21 @@ function Get-TargetCandidates {
 
 function Pick-Target {
     $targets = @(
-        "tests_command_verifier.py",
         "tests_command_suggestions.py",
         "tests_runtime_usability_release_gate.py",
         "tests_project_state_continuity.py",
-        "tests_model_health_timeout.py",
+        "tests_model_context_pack.py",
         "tests_validation_status_command.py",
         "tests_report_hygiene.py",
         "tests_release_hygiene.py",
-        "tests_model_context_pack.py"
+        "tests_model_health_timeout.py",
+        "tests_command_verifier.py"
     )
 
     $recentNoChange = @()
     if (Test-Path $NoChangeTargets) {
-        $recentNoChange = Get-Content $NoChangeTargets -Tail 12 | ForEach-Object {
-            if ($_ -match "target=(.+)$") { $Matches[1].Trim() }
+        $recentNoChange = Get-Content $NoChangeTargets -Tail 20 | ForEach-Object {
+            if ($_ -match "target=([^|]+)") { $Matches[1].Trim() }
         }
     }
 
@@ -625,9 +631,18 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Restore-GeneratedNoise
 
     if (!(git status --porcelain)) {
-        Append-Success -Target $target -CommitHash "none - no change made" -TestsPassed "not run because no diff was created" -WhySafe "The loop made no code changes and stopped safely." -NextSuggestedTarget (Get-NextSuggestedTarget -Current $target)
-        Write-Host "No changes made. Stopping safely."
-        exit 0
+        "$(Get-Date -Format s) target=$target" | Add-Content $NoChangeTargets
+
+        "## $(Get-Date -Format s)" | Add-Content $SuccessMemory
+        "Target file: $target" | Add-Content $SuccessMemory
+        "Commit hash: none - no change made" | Add-Content $SuccessMemory
+        "Tests passed: not run because no diff was created" | Add-Content $SuccessMemory
+        "Why safe: The loop made no code changes and continued to the next target." | Add-Content $SuccessMemory
+        "Next suggested target: rotate to the next safe target." | Add-Content $SuccessMemory
+        "" | Add-Content $SuccessMemory
+
+        Write-Host "No changes made for $target. Recorded no-change target and continuing."
+        continue
     }
 
     git status --short
