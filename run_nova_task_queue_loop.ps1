@@ -41,8 +41,9 @@ $TaskMemory = Join-Path $MemoryDir "TASK_LOOP_MEMORY.md"
 $SummaryLatest = Join-Path $MemoryDir "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
 $NoChangeTargets = Join-Path $MemoryDir "NO_CHANGE_TARGETS.md"
 $MistakeMemory = Join-Path $MemoryDir "MISTAKE_MEMORY.md"
+$TaskEventMemory = Join-Path $MemoryDir "TASK_LOOP_EVENTS.jsonl"
 
-foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory)) {
+foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory, $TaskEventMemory)) {
     if (!(Test-Path $f)) {
         New-Item -ItemType File -Force $f | Out-Null
     }
@@ -183,26 +184,82 @@ $Tasks = @(
 $RunTaskCooldown = New-Object "System.Collections.Generic.HashSet[string]"
 
 function Add-TaskSignal {
-    param([hashtable]$Signals, [string]$Reason)
+    param([hashtable]$Signals, [string]$Reason, [string]$Category = "")
 
     $lower = ($Reason -as [string]).ToLowerInvariant()
-    if (!$lower) { return }
+    $categoryLower = ($Category -as [string]).ToLowerInvariant()
+    if (!$lower -and !$categoryLower) { return }
 
-    if ($lower -match "recent-success-cooldown|result:\s*committed|source/test task passed") {
+    if (($categoryLower -eq "success-cooldown") -or ($lower -match "recent-success-cooldown|result:\s*committed|source/test task passed")) {
         $Signals.RecentSuccess += 1
-        $Signals.Reasons += "recent success cooldown"
+        $Signals.Reasons += "category=success-cooldown"
         return
     }
 
-    if ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines") {
+    if (($categoryLower -in @("no-change", "low-significance")) -or ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines")) {
         $Signals.LowValue += 1
-        $Signals.Reasons += "recent low-value/no-change outcome"
+        $Signals.Reasons += "category=$($categoryLower -replace '^$', 'low-value')"
     }
 
-    if ($lower -match "aider failed|command failed|validation-or-significance-failed|validation failed|rejected|context-token|protected-file|speculative|placeholder|failed") {
+    if (($categoryLower -in @("aider-failed", "context-protected-file", "test-failed", "validation-failed", "generated-noise-dirty-state", "bad-command-suggestion-invention", "command-verifier-output-bloat", "placeholder-or-speculative", "unknown-failure")) -or
+        ($lower -match "aider failed|command failed|validation-or-significance-failed|validation failed|rejected|context-token|protected-file|speculative|placeholder|failed")) {
         $Signals.Failures += 1
-        $Signals.Reasons += $Reason
+        $Signals.Reasons += "category=$($categoryLower -replace '^$', 'legacy-failure'): $Reason"
     }
+}
+
+function Get-TaskOutcomeCategory {
+    param([string]$Reason, [string]$Result = "rejected")
+
+    $lower = ($Reason -as [string]).ToLowerInvariant()
+    if (($Result -eq "committed") -or ($lower -match "recent-success-cooldown|source/test task passed")) { return "success-cooldown" }
+    if ($lower -match "no source diff after cleanup|generated-noise|dirty git state") { return "generated-noise-dirty-state" }
+    if ($lower -match "no-change|no change") { return "no-change" }
+    if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
+    if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
+    if ($lower -match "aider failed|aider exited") { return "aider-failed" }
+    if ($lower -match "command_suggestions|command-suggestions|dangerous command|suggestion") { return "bad-command-suggestion-invention" }
+    if ($lower -match "command_verifier|command-verifier|full command output|output_preview|default_command_contracts|/command-verify") { return "command-verifier-output-bloat" }
+    if ($lower -match "placeholder|speculative|assert true|magicmock|mock|todo|would be implemented") { return "placeholder-or-speculative" }
+    if ($lower -match "command failed: python -m pytest|tests_.*\.py|pytest") { return "test-failed" }
+    if ($lower -match "validation|compileall|py_compile|rejected") { return "validation-failed" }
+    return "unknown-failure"
+}
+
+function Record-TaskOutcome {
+    param(
+        [string]$TaskId,
+        [string]$Result,
+        [string]$Reason,
+        [string]$Category = "",
+        [string[]]$Tests = @(),
+        [string]$Before = "",
+        [string]$After = "",
+        [int]$LinesChanged = -1
+    )
+
+    if (!$Category) {
+        $Category = Get-TaskOutcomeCategory -Reason $Reason -Result $Result
+    }
+
+    $head = ""
+    try { $head = (git rev-parse --short HEAD) } catch {}
+    $event = [ordered]@{
+        created_at = Get-Date -Format s
+        task = $TaskId
+        result = $Result
+        category = $Category
+        reason = $Reason
+        model = $Model
+        mode = $Mode
+        head = $head
+        before = $Before
+        after = $After
+        lines_changed = $LinesChanged
+        tests = @($Tests)
+    }
+    ($event | ConvertTo-Json -Compress -Depth 4) | Add-Content $TaskEventMemory
+    Add-Summary "Outcome category: $Category"
 }
 
 function Get-RecentTaskSignals {
@@ -214,21 +271,42 @@ function Get-RecentTaskSignals {
         RecentSuccess = 0
         Reasons = @()
     }
+
+    if (Test-Path $TaskEventMemory) {
+        $events = Get-Content $TaskEventMemory -Tail 240 -ErrorAction SilentlyContinue
+        foreach ($raw in $events) {
+            try {
+                $event = $raw | ConvertFrom-Json -ErrorAction Stop
+            }
+            catch {
+                continue
+            }
+            if ([string]$event.task -eq $TaskId) {
+                Add-TaskSignal -Signals $signals -Reason ([string]$event.reason) -Category ([string]$event.category)
+            }
+        }
+    }
+
     $sources = @($NoChangeTargets, $MistakeMemory)
     foreach ($src in $sources) {
         if (Test-Path $src) {
             $lines = Get-Content $src -Tail 240 -ErrorAction SilentlyContinue
             $currentTask = ""
+            $currentStructured = $false
             foreach ($line in $lines) {
+                if ($line -match "structured_event=1") { $currentStructured = $true }
                 $lineTask = ""
                 $reason = ""
                 if ($line -match "(^|\s)task=([^\s|]+)") {
+                    if ($line -match "structured_event=1") { continue }
                     $lineTask = $Matches[2].Trim()
                     if ($line -match "reason=(.+)$") { $reason = $Matches[1].Trim() }
                 } elseif ($line -match "^Task:\s*([^\s]+)") {
                     $currentTask = $Matches[1].Trim()
+                    $currentStructured = ($line -match "structured_event=1")
                     continue
                 } elseif (($currentTask -eq $TaskId) -and ($line -match "^Reason:\s*(.+)$")) {
+                    if ($currentStructured) { continue }
                     $lineTask = $currentTask
                     $reason = $Matches[1].Trim()
                 }
@@ -458,6 +536,9 @@ function Write-TaskContext {
     "## Recent task memory" | Add-Content $Path
     Get-Content $TaskMemory -Tail 80 -ErrorAction SilentlyContinue | Add-Content $Path
     "" | Add-Content $Path
+    "## Structured task outcome events" | Add-Content $Path
+    Get-Content $TaskEventMemory -Tail 60 -ErrorAction SilentlyContinue | Add-Content $Path
+    "" | Add-Content $Path
     "## Recent mistakes" | Add-Content $Path
     Get-Content $MistakeMemory -Tail 80 -ErrorAction SilentlyContinue | Add-Content $Path
     "" | Add-Content $Path
@@ -506,11 +587,17 @@ function Write-TaskPrompt {
 }
 
 function Append-Mistake {
-    param([string]$TaskId, [string]$Reason)
+    param([string]$TaskId, [string]$Reason, [string]$Category = "")
+
+    if (!$Category) {
+        $Category = Get-TaskOutcomeCategory -Reason $Reason -Result "rejected"
+    }
+    Record-TaskOutcome -TaskId $TaskId -Result "rejected" -Reason $Reason -Category $Category
 
     "" | Add-Content $MistakeMemory
     "## $(Get-Date -Format s)" | Add-Content $MistakeMemory
-    "Task: $TaskId" | Add-Content $MistakeMemory
+    "Task: $TaskId structured_event=1" | Add-Content $MistakeMemory
+    "Category: $Category" | Add-Content $MistakeMemory
     "Reason: $Reason" | Add-Content $MistakeMemory
     "HEAD: $(git rev-parse --short HEAD)" | Add-Content $MistakeMemory
 }
@@ -576,8 +663,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
     if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
-        Append-Mistake $task.Id "Aider context/token/protected-file failure"
-        "$(Get-Date -Format s) task=$($task.Id) reason=context-token-or-protected-file-failure" | Add-Content $NoChangeTargets
+        Append-Mistake $task.Id "Aider context/token/protected-file failure" "context-protected-file"
+        "$(Get-Date -Format s) task=$($task.Id) category=context-protected-file reason=context-token-or-protected-file-failure structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider reported token-limit/context/protected-file output."
         git reset --hard
@@ -587,8 +674,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
     }
 
     if ($LASTEXITCODE -ne 0) {
-        Append-Mistake $task.Id "Aider failed"
-        "$(Get-Date -Format s) task=$($task.Id) reason=aider-failed" | Add-Content $NoChangeTargets
+        Append-Mistake $task.Id "Aider failed" "aider-failed"
+        "$(Get-Date -Format s) task=$($task.Id) category=aider-failed reason=aider-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider exited with a non-zero status."
         git reset --hard
@@ -600,10 +687,11 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Clean-GeneratedNoise
 
     if (!(git status --porcelain)) {
+        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "model found no source-backed improvement or produced identical output" -Category "no-change" -Tests $task.Tests -Before $before
         Add-Summary "Result: no change"
         Add-Summary "Why: model found no source-backed improvement or produced identical output."
         Add-Summary "Cooldown note: this task will be skipped for the rest of this run."
-        "$(Get-Date -Format s) task=$($task.Id) reason=no-change" | Add-Content $NoChangeTargets
+        "$(Get-Date -Format s) task=$($task.Id) category=no-change reason=no-change structured_event=1" | Add-Content $NoChangeTargets
         continue
     }
 
@@ -613,8 +701,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
     try {
         $diffResult = Validate-Diff -Task $task
         if ($diffResult -eq "no-change") {
+            Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no change after diff validation" -Category "no-change" -Tests $task.Tests -Before $before
             Add-Summary "Result: no change after diff validation"
-            "$(Get-Date -Format s) task=$($task.Id) reason=no-change-after-diff" | Add-Content $NoChangeTargets
+            "$(Get-Date -Format s) task=$($task.Id) category=no-change reason=no-change-after-diff structured_event=1" | Add-Content $NoChangeTargets
             continue
         }
 
@@ -623,8 +712,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
         Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
     }
     catch {
-        Append-Mistake $task.Id $_.Exception.Message
-        "$(Get-Date -Format s) task=$($task.Id) reason=validation-or-significance-failed" | Add-Content $NoChangeTargets
+        $category = Get-TaskOutcomeCategory -Reason $_.Exception.Message -Result "rejected"
+        Append-Mistake $task.Id $_.Exception.Message $category
+        "$(Get-Date -Format s) task=$($task.Id) category=$category reason=validation-or-significance-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: $($_.Exception.Message)"
         git diff --stat
@@ -637,8 +727,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Clean-GeneratedNoise
 
     if (!(git status --porcelain)) {
+        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no source diff after generated-noise cleanup" -Category "generated-noise-dirty-state" -Tests $task.Tests -Before $before
         Add-Summary "Result: no source diff after cleanup"
-        "$(Get-Date -Format s) task=$($task.Id) reason=no-source-diff-after-cleanup" | Add-Content $NoChangeTargets
+        "$(Get-Date -Format s) task=$($task.Id) category=generated-noise-dirty-state reason=no-source-diff-after-cleanup structured_event=1" | Add-Content $NoChangeTargets
         continue
     }
 
@@ -656,7 +747,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Add-Summary "Lines changed: $linesChanged"
     Add-Summary "Why beneficial: source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification."
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
-    "$(Get-Date -Format s) task=$($task.Id) reason=recent-success-cooldown" | Add-Content $NoChangeTargets
+    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged
+    "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
 }
 
 Clean-GeneratedNoise
