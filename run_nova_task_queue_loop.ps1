@@ -148,7 +148,16 @@ function Select-TaskModel {
     throw "No suitable local model found. Run: ollama list"
 }
 
-$Model = Select-TaskModel -Mode $Mode
+try {
+    $Model = Select-TaskModel -Mode $Mode
+}
+catch {
+    if (!$PreflightOnly) {
+        throw
+    }
+    $Model = "preflight/no-local-model-selected"
+    Write-Host "Preflight continuing without model selection: $($_.Exception.Message)"
+}
 
 $Tasks = @(
     [ordered]@{
