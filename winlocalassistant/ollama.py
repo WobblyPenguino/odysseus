@@ -232,14 +232,7 @@ def ollama_chat(
             body = exc.read().decode("utf-8", errors="replace")
             _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc), timed_out_or_error=True)
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
-            body = ""
-            try:
-                if isinstance(exc, urllib.error.HTTPError):
-                    body = exc.read().decode("utf-8", errors="replace")
-            except Exception:
-                pass
-
-            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), received_chars=0, timed_out_or_error=True)
+            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), timed_out_or_error=True)
     finally:
         _OLLAMA_BUSY_SINCE = None
         _OLLAMA_BUSY_DESC = ""
@@ -318,14 +311,7 @@ def ollama_vision_chat(
             body = exc.read().decode("utf-8", errors="replace")
             _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc), timed_out_or_error=True)
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
-            body = ""
-            try:
-                if isinstance(exc, urllib.error.HTTPError):
-                    body = exc.read().decode("utf-8", errors="replace")
-            except Exception:
-                pass
-
-            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), received_chars=0, timed_out_or_error=True)
+            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), timed_out_or_error=True)
     finally:
         _OLLAMA_BUSY_SINCE = None
         _OLLAMA_BUSY_DESC = ""
