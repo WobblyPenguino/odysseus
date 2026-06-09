@@ -2,7 +2,10 @@ param(
     [int]$Cycles = 1,
     [string]$Repo = "C:\Users\Daniel\Documents\Nova_v55_3_168_startup_release_gate_hotfix_20260609_20260609_123530",
     [string]$AiderVenv = "C:\Users\Daniel\Documents\aider-venv-py312",
-    [string]$Model = "ollama_chat/qwen3-coder:30b"
+    [string]$Model = "",
+    [ValidateSet("code", "plan", "fast")]
+    [string]$TaskMode = "code",
+    [int]$ContextBudgetKb = 64
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,6 +17,81 @@ if (!(Test-Path $Aider)) {
 }
 
 $env:OLLAMA_API_BASE = "http://127.0.0.1:11434"
+
+function Get-OllamaModelNames {
+    try {
+        $rows = ollama list 2>$null
+        if (!$rows) { return @() }
+        return $rows |
+            Select-Object -Skip 1 |
+            ForEach-Object {
+                $parts = ($_ -split "\s+")
+                if ($parts.Count -gt 0) { $parts[0] }
+            } |
+            Where-Object { $_ -and $_ -ne "" }
+    }
+    catch {
+        return @()
+    }
+}
+
+function Get-GpuVramMb {
+    try {
+        $raw = nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>$null | Select-Object -First 1
+        if ($raw) { return [int]($raw.Trim()) }
+    }
+    catch {}
+    return 0
+}
+
+function Select-NovaLocalModel {
+    param([string]$Mode)
+
+    $models = @(Get-OllamaModelNames)
+    $vram = Get-GpuVramMb
+
+    Write-Host "Detected Ollama models: $($models -join ', ')"
+    if ($vram -gt 0) {
+        Write-Host "Detected NVIDIA VRAM: $vram MB"
+    } else {
+        Write-Host "Detected NVIDIA VRAM: unknown"
+    }
+
+    function HasModel([string]$Name) {
+        return $models -contains $Name
+    }
+
+    if ($Mode -eq "code") {
+        if ((HasModel "qwen3-coder:30b") -and (($vram -ge 14000) -or ($vram -eq 0))) { return "ollama_chat/qwen3-coder:30b" }
+        if (HasModel "qwen2.5-coder:7b") { return "ollama_chat/qwen2.5-coder:7b" }
+        if (HasModel "gpt-oss:20b") { return "ollama_chat/gpt-oss:20b" }
+        if (HasModel "gemma3:12b") { return "ollama_chat/gemma3:12b" }
+    }
+
+    if ($Mode -eq "plan") {
+        if (HasModel "gpt-oss:20b") { return "ollama_chat/gpt-oss:20b" }
+        if (HasModel "qwen3-coder:30b") { return "ollama_chat/qwen3-coder:30b" }
+        if (HasModel "gemma3:12b") { return "ollama_chat/gemma3:12b" }
+    }
+
+    if ($Mode -eq "fast") {
+        if (HasModel "qwen2.5-coder:7b") { return "ollama_chat/qwen2.5-coder:7b" }
+        if (HasModel "gemma3:12b") { return "ollama_chat/gemma3:12b" }
+        if (HasModel "gpt-oss:20b") { return "ollama_chat/gpt-oss:20b" }
+    }
+
+    if (HasModel "qwen3-coder:30b") { return "ollama_chat/qwen3-coder:30b" }
+    if (HasModel "gpt-oss:20b") { return "ollama_chat/gpt-oss:20b" }
+    if (HasModel "gemma3:12b") { return "ollama_chat/gemma3:12b" }
+
+    throw "No suitable local Ollama model found. Run: ollama list"
+}
+
+if ([string]::IsNullOrWhiteSpace($Model)) {
+    $Model = Select-NovaLocalModel -Mode $TaskMode
+}
+
+Write-Host "Selected Aider model for ${TaskMode}: $Model"
 
 $LogDir = Join-Path $Repo "local_ai_cycles"
 $MemoryDir = Join-Path $LogDir "memory"
@@ -140,7 +218,7 @@ function Pick-Target {
     $recentNoChange = @()
     if (Test-Path $NoChangeTargets) {
         $recentNoChange = Get-Content $NoChangeTargets -Tail 20 | ForEach-Object {
-            if ($_ -match "target=([^|]+)") { $Matches[1].Trim() }
+            if ($_ -match "target=([^\s|]+)") { $Matches[1].Trim() }
         }
     }
 
@@ -339,6 +417,10 @@ function Write-Prompt {
 @"
 You are improving Nova, Daniel's local-first Windows AI assistant.
 
+Local model selected by loop: $Model
+Task mode: $TaskMode
+Context budget KB: $ContextBudgetKb
+
 You may edit ONLY this file:
 $($Candidate.Target)
 
@@ -417,6 +499,13 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $contextKb = [Math]::Round((Get-Item $context).Length / 1KB, 1)
     Write-Host "Editable target: $target"
     Write-Host "Slim context: $contextKb KB"
+
+    if ($contextKb -gt $ContextBudgetKb) {
+        Write-Host "STOP: Slim context exceeds budget: $contextKb KB > $ContextBudgetKb KB"
+        Append-Mistake "Slim context exceeds budget: $contextKb KB > $ContextBudgetKb KB" $target
+        "$(Get-Date -Format s) target=$target reason=context-budget-exceeded" | Add-Content $NoChangeTargets
+        continue
+    }
 
     $aiderArgs = @(
         "--model", $Model,
