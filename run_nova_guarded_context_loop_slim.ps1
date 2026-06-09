@@ -31,6 +31,21 @@ foreach ($f in @($MistakeMemory, $SuccessMemory, $NoChangeTargets, $LastTestResu
     }
 }
 
+
+$ProtectedContextMentions = @(
+    "README.md",
+    "CHANGELOG.md",
+    "app.py",
+    "start_windows_assistant.bat",
+    "START_NOVA_HERE.bat",
+    "winlocalassistant/core.py",
+    "winlocalassistant\\core.py",
+    "winlocalassistant/tools.py",
+    "winlocalassistant\\tools.py",
+    "winlocalassistant/webui.py",
+    "winlocalassistant\\webui.py"
+)
+
 $Candidates = @(
     @{
         Target = "tests_command_suggestions.py"
@@ -103,6 +118,24 @@ function Append-Mistake {
     git status --short | Add-Content $MistakeMemory
 }
 
+
+function Target-HasProtectedContextMentions {
+    param([string]$Target)
+
+    if (!(Test-Path $Target)) {
+        return $true
+    }
+
+    $text = Get-Content $Target -Raw -ErrorAction SilentlyContinue
+    foreach ($name in $ProtectedContextMentions) {
+        if ($text -match [Regex]::Escape($name)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Pick-Target {
     $recentNoChange = @()
     if (Test-Path $NoChangeTargets) {
@@ -112,14 +145,20 @@ function Pick-Target {
     }
 
     foreach ($c in $Candidates) {
-        if ((Test-Path $c.Target) -and ($recentNoChange -notcontains $c.Target)) {
+        if ((Test-Path $c.Target) -and ($recentNoChange -notcontains $c.Target) -and !(Target-HasProtectedContextMentions $c.Target)) {
+            return $c
+        }
+    }
+
+    foreach ($c in $Candidates) {
+        if ((Test-Path $c.Target) -and !(Target-HasProtectedContextMentions $c.Target)) {
             return $c
         }
     }
 
     foreach ($c in $Candidates) {
         if (Test-Path $c.Target) {
-            return $c
+            "$(Get-Date -Format s) target=$($c.Target) reason=all-safe-targets-exhausted-or-protected-context" | Add-Content $NoChangeTargets
         }
     }
 
@@ -269,6 +308,7 @@ Do not mention or request any other files.
 Do not add files to the chat.
 Do not print a full-file rewrite unless you are actually editing $($Candidate.Target).
 Do not mention app.py, README.md, CHANGELOG.md, startup scripts, core.py, tools.py, or webui.py.
+If the target file contains references to broad/protected files, make no changes and do not ask to add them.
 Do not create new files.
 
 Task:
