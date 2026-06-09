@@ -409,6 +409,7 @@ function Validate-Target {
     }
 
     Run-Cmd "python -m pytest -q tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
+    Run-Cmd "python -m pytest -q tests_nova_user_sanity.py"
 }
 
 function Write-Prompt {
