@@ -208,7 +208,7 @@ function Add-TaskSignal {
         return
     }
 
-    if (($categoryLower -in @("no-change", "low-significance")) -or ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines")) {
+    if (($categoryLower -in @("no-change", "low-significance", "reverted-success")) -or ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines")) {
         $Signals.LowValue += 1
         $Signals.Reasons += "category=$($categoryLower -replace '^$', 'low-value')"
     }
@@ -227,6 +227,7 @@ function Get-TaskOutcomeCategory {
     if (($Result -eq "committed") -or ($lower -match "recent-success-cooldown|source/test task passed")) { return "success-cooldown" }
     if ($lower -match "no source diff after cleanup|generated-noise|dirty git state") { return "generated-noise-dirty-state" }
     if ($lower -match "no-change|no change") { return "no-change" }
+    if ($lower -match "reverted-success|success commit was later reverted") { return "reverted-success" }
     if ($lower -match "claim/diff mismatch|dead error-body|dead added variable|unreachable error-body|no-op") { return "low-significance" }
     if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
     if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
@@ -311,6 +312,61 @@ function Test-TaskEventWasReverted {
     return ($ids -contains $commit) -or (($commit.Length -gt 7) -and ($ids -contains $commit.Substring(0, 7)))
 }
 
+function Get-TaskEventCommitKey {
+    param($Event)
+
+    $task = [string]($Event.task -as [string])
+    $commit = [string]($Event.after -as [string])
+    if (!$commit) { $commit = [string]($Event.head -as [string]) }
+    if (!$task -or !$commit) { return "" }
+    $commit = $commit.ToLowerInvariant()
+    if ($commit.Length -gt 7) { $commit = $commit.Substring(0, 7) }
+    return "$task|$commit"
+}
+
+function Read-TaskEvents {
+    if (!(Test-Path $TaskEventMemory)) { return @() }
+    $rows = @()
+    foreach ($raw in (Get-Content $TaskEventMemory -Tail 240 -ErrorAction SilentlyContinue)) {
+        try {
+            $rows += ($raw | ConvertFrom-Json -ErrorAction Stop)
+        }
+        catch {}
+    }
+    return $rows
+}
+
+function Ensure-RevertedSuccessEvents {
+    $events = @(Read-TaskEvents)
+    if (!$events) { return }
+
+    $existing = New-Object "System.Collections.Generic.HashSet[string]"
+    foreach ($event in $events) {
+        if ([string]$event.category -eq "reverted-success") {
+            $key = Get-TaskEventCommitKey -Event $event
+            if ($key) { [void]$existing.Add($key) }
+        }
+    }
+
+    foreach ($event in $events) {
+        if ([string]$event.category -ne "success-cooldown") { continue }
+        if (!(Test-TaskEventWasReverted -Event $event)) { continue }
+        $key = Get-TaskEventCommitKey -Event $event
+        if (!$key -or $existing.Contains($key)) { continue }
+
+        Record-TaskOutcome `
+            -TaskId ([string]$event.task) `
+            -Result "rejected" `
+            -Reason "success commit was later reverted: $($event.after)" `
+            -Category "reverted-success" `
+            -Tests @($event.tests) `
+            -Before ([string]$event.before) `
+            -After ([string]$event.after) `
+            -LinesChanged ([int]$event.lines_changed)
+        [void]$existing.Add($key)
+    }
+}
+
 function Get-RecentTaskSignals {
     param([string]$TaskId)
 
@@ -322,17 +378,22 @@ function Get-RecentTaskSignals {
     }
 
     if (Test-Path $TaskEventMemory) {
-        $events = Get-Content $TaskEventMemory -Tail 240 -ErrorAction SilentlyContinue
-        foreach ($raw in $events) {
-            try {
-                $event = $raw | ConvertFrom-Json -ErrorAction Stop
+        $events = @(Read-TaskEvents)
+        $revertedKeys = New-Object "System.Collections.Generic.HashSet[string]"
+        foreach ($event in $events) {
+            if ([string]$event.category -eq "reverted-success") {
+                $key = Get-TaskEventCommitKey -Event $event
+                if ($key) { [void]$revertedKeys.Add($key) }
             }
-            catch {
-                continue
-            }
+        }
+
+        foreach ($event in $events) {
             if ([string]$event.task -eq $TaskId) {
                 if (([string]$event.category -eq "success-cooldown") -and (Test-TaskEventWasReverted -Event $event)) {
-                    Add-TaskSignal -Signals $signals -Reason "success commit was later reverted: $($event.after)" -Category "low-significance"
+                    $key = Get-TaskEventCommitKey -Event $event
+                    if (!$key -or !$revertedKeys.Contains($key)) {
+                        Add-TaskSignal -Signals $signals -Reason "success commit was later reverted: $($event.after)" -Category "reverted-success"
+                    }
                 } else {
                     Add-TaskSignal -Signals $signals -Reason ([string]$event.reason) -Category ([string]$event.category)
                 }
@@ -767,6 +828,7 @@ Add-Summary "AllowTestOnly: $AllowTestOnly"
 Add-Summary "MinChangedLines: $MinChangedLines"
 Add-Summary "MaxRecentTaskFailures: $MaxRecentTaskFailures"
 Add-Summary "PreflightOnly: $PreflightOnly"
+Ensure-RevertedSuccessEvents
 
 Assert-CleanGit
 
