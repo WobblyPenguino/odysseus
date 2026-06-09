@@ -4,14 +4,16 @@ param(
     [string]$Mode = "code",
     [switch]$AllowTestOnly,
     [int]$MinChangedLines = 6,
-    [int]$MaxRecentTaskFailures = 2
+    [int]$MaxRecentTaskFailures = 2,
+    [Alias("DryRun")]
+    [switch]$PreflightOnly
 )
 
 $ErrorActionPreference = "Stop"
 
 $Repo = (Get-Location).Path
 $Aider = "C:\Users\Daniel\Documents\aider-venv-py312\Scripts\aider.exe"
-if (!(Test-Path $Aider)) {
+if (!$PreflightOnly -and !(Test-Path $Aider)) {
     throw "Aider not found at $Aider"
 }
 
@@ -609,6 +611,26 @@ Add-Summary "Model: $Model"
 Add-Summary "AllowTestOnly: $AllowTestOnly"
 Add-Summary "MinChangedLines: $MinChangedLines"
 Add-Summary "MaxRecentTaskFailures: $MaxRecentTaskFailures"
+Add-Summary "PreflightOnly: $PreflightOnly"
+
+Assert-CleanGit
+
+if ($PreflightOnly) {
+    Add-Summary ""
+    Add-Summary "## Preflight task selection"
+    $task = Pick-Task
+    Add-Summary "Result: preflight-only"
+    Add-Summary "Selected task: $($task.Id)"
+    Add-Summary "Editable files: $($task.Editable -join ', ')"
+    Add-Summary "Targeted tests: $($task.Tests -join ', ')"
+    Add-Summary "No Aider invocation, validation run, commit, or source edit was attempted."
+    Write-Host "Preflight selected task: $($task.Id)"
+    Write-Host "Editable files: $($task.Editable -join ', ')"
+    Write-Host "Targeted tests: $($task.Tests -join ', ')"
+    Write-Host "No Aider invocation, validation run, commit, or source edit was attempted."
+    Write-Host "Summary: $SummaryLatest"
+    exit 0
+}
 
 Clean-GeneratedNoise
 Assert-CleanGit
