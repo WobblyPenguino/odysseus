@@ -226,6 +226,7 @@ function Get-TaskOutcomeCategory {
     if (($Result -eq "committed") -or ($lower -match "recent-success-cooldown|source/test task passed")) { return "success-cooldown" }
     if ($lower -match "no source diff after cleanup|generated-noise|dirty git state") { return "generated-noise-dirty-state" }
     if ($lower -match "no-change|no change") { return "no-change" }
+    if ($lower -match "dead error-body|unreachable error-body|no-op") { return "low-significance" }
     if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
     if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
     if ($lower -match "aider failed|aider exited") { return "aider-failed" }
@@ -517,6 +518,12 @@ function Validate-Diff {
 
     if ($bad.Contains("output: str =") -or $bad.Contains("output=output_text") -or $bad.Contains("item.get('output')")) {
         throw "Rejected full command output capture in verifier; use bounded output_preview instead."
+    }
+
+    if (($bad -match '\+\s+body = ""') -and
+        ($bad -match 'isinstance\(exc, urllib\.error\.HTTPError\)') -and
+        ($bad -match '_set_last_error\(request_id, desc, started, "timeout_or_error", repr\(exc\), received_chars=0')) {
+        throw "Rejected dead error-body capture in non-HTTP exception handler."
     }
 
     if ($bad.Contains("test_idle_propose_is_suggested") -or $bad.Contains("test_self_improve_suggestion") -or $bad.Contains("/idle propose what can I improve?")) {
