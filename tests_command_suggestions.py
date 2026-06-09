@@ -32,6 +32,10 @@ def test_self_improve_text_does_not_suggest_automatic_self_improve() -> None:
     assert not any(cmd in disallowed_commands for cmd in cmds)
     # Additional check: ensure the suggestions include at least one valid command
     assert len(suggestions) > 0
+    # Verify that the suggestions don't contain any commands from the blocked list
+    blocked_commands = ["/idle start", "/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe", "/reset-project"]
+    for suggestion in suggestions:
+        assert suggestion.command not in blocked_commands
 
 
 def test_manual_self_improve_can_be_marked_high_risk() -> None:
