@@ -193,6 +193,7 @@ $Tasks = @(
 )
 
 $RunTaskCooldown = New-Object "System.Collections.Generic.HashSet[string]"
+$Script:RevertedTaskCommitIds = $null
 
 function Add-TaskSignal {
     param([hashtable]$Signals, [string]$Reason, [string]$Category = "")
@@ -274,6 +275,42 @@ function Record-TaskOutcome {
     Add-Summary "Outcome category: $Category"
 }
 
+function Get-RevertedTaskCommitIds {
+    if ($null -ne $Script:RevertedTaskCommitIds) {
+        return $Script:RevertedTaskCommitIds
+    }
+
+    $ids = @()
+    try {
+        $messages = git log --format=%B -n 200 2>$null
+        foreach ($line in $messages) {
+            if ($line -match "This reverts commit ([0-9a-fA-F]{7,40})") {
+                $full = $Matches[1].ToLowerInvariant()
+                $ids += $full
+                if ($full.Length -gt 7) {
+                    $ids += $full.Substring(0, 7)
+                }
+            }
+        }
+    }
+    catch {}
+
+    $Script:RevertedTaskCommitIds = @($ids | Select-Object -Unique)
+    return $Script:RevertedTaskCommitIds
+}
+
+function Test-TaskEventWasReverted {
+    param($Event)
+
+    $commit = [string]($Event.after -as [string])
+    if (!$commit) { $commit = [string]($Event.head -as [string]) }
+    if (!$commit) { return $false }
+
+    $commit = $commit.ToLowerInvariant()
+    $ids = @(Get-RevertedTaskCommitIds)
+    return ($ids -contains $commit) -or (($commit.Length -gt 7) -and ($ids -contains $commit.Substring(0, 7)))
+}
+
 function Get-RecentTaskSignals {
     param([string]$TaskId)
 
@@ -294,7 +331,11 @@ function Get-RecentTaskSignals {
                 continue
             }
             if ([string]$event.task -eq $TaskId) {
-                Add-TaskSignal -Signals $signals -Reason ([string]$event.reason) -Category ([string]$event.category)
+                if (([string]$event.category -eq "success-cooldown") -and (Test-TaskEventWasReverted -Event $event)) {
+                    Add-TaskSignal -Signals $signals -Reason "success commit was later reverted: $($event.after)" -Category "low-significance"
+                } else {
+                    Add-TaskSignal -Signals $signals -Reason ([string]$event.reason) -Category ([string]$event.category)
+                }
             }
         }
     }
