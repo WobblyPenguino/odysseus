@@ -396,24 +396,30 @@ for ($i = 1; $i -le $Cycles; $i++) {
         $aiderArgs += $f
     }
 
-    $denyInput = "s`n" + ((1..100 | ForEach-Object { "n" }) -join "`n") + "`n"
+    $denyInput = ((1..200 | ForEach-Object { "s" }) -join "`n") + "`n"
     $denyInput | & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
-    if ($text -match "exceeds the .* token limit|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
-        Append-Mistake $task.Id "Aider context/protected-file failure"
-        "$(Get-Date -Format s) task=$($task.Id) reason=context-or-protected-file-failure" | Add-Content $NoChangeTargets
+    if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
+        Append-Mistake $task.Id "Aider context/token/protected-file failure"
+        "$(Get-Date -Format s) task=$($task.Id) reason=context-token-or-protected-file-failure" | Add-Content $NoChangeTargets
+        Add-Summary "Result: rejected"
+        Add-Summary "Why: Aider reported token-limit/context/protected-file output."
         git reset --hard
         git clean -fd
-        throw "Aider context/protected-file failure"
+        Clean-GeneratedNoise
+        continue
     }
 
     if ($LASTEXITCODE -ne 0) {
         Append-Mistake $task.Id "Aider failed"
         "$(Get-Date -Format s) task=$($task.Id) reason=aider-failed" | Add-Content $NoChangeTargets
+        Add-Summary "Result: rejected"
+        Add-Summary "Why: Aider exited with a non-zero status."
         git reset --hard
         git clean -fd
-        throw "Aider failed"
+        Clean-GeneratedNoise
+        continue
     }
 
     Clean-GeneratedNoise
