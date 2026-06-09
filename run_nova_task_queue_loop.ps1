@@ -249,7 +249,10 @@ function Record-TaskOutcome {
         [string[]]$Tests = @(),
         [string]$Before = "",
         [string]$After = "",
-        [int]$LinesChanged = -1
+        [int]$LinesChanged = -1,
+        [string[]]$ChangedFiles = @(),
+        [string[]]$ValidationCommands = @(),
+        [string]$AuditNote = ""
     )
 
     if (!$Category) {
@@ -270,6 +273,9 @@ function Record-TaskOutcome {
         before = $Before
         after = $After
         lines_changed = $LinesChanged
+        changed_files = @($ChangedFiles)
+        validation_commands = @($ValidationCommands)
+        audit_note = $AuditNote
         tests = @($Tests)
     }
     ($event | ConvertTo-Json -Compress -Depth 4) | Add-Content $TaskEventMemory
@@ -362,7 +368,10 @@ function Ensure-RevertedSuccessEvents {
             -Tests @($event.tests) `
             -Before ([string]$event.before) `
             -After ([string]$event.after) `
-            -LinesChanged ([int]$event.lines_changed)
+            -LinesChanged ([int]$event.lines_changed) `
+            -ChangedFiles @($event.changed_files) `
+            -ValidationCommands @($event.validation_commands) `
+            -AuditNote "Reverted success event synthesized from git revert history."
         [void]$existing.Add($key)
     }
 }
@@ -559,6 +568,12 @@ function Get-ChangedLineCount {
         }
     }
     return $total
+}
+
+function Get-ChangedFilesBetween {
+    param([string]$Before, [string]$After)
+
+    return @(git diff --name-only "$Before..$After" | Where-Object { $_ })
 }
 
 function Get-AddedDiffLines {
@@ -980,13 +995,23 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $after = git rev-parse --short HEAD
     $linesChanged = Get-ChangedLineCount -Before $before -After $after
+    $changedFiles = @(Get-ChangedFilesBetween -Before $before -After $after)
+    $validationCommands = @(
+        "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py",
+        "python -m pytest -q $($task.Tests -join ' ')",
+        "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
+    )
+    $auditNote = "Manual audit needed if this commit is later reverted or judged weak: $after"
 
     Add-Summary "Result: committed"
     Add-Summary "After: $after"
     Add-Summary "Lines changed: $linesChanged"
+    Add-Summary "Changed files: $($changedFiles -join ', ')"
+    Add-Summary "Validation commands passed: $($validationCommands -join ' | ')"
+    Add-Summary "Post-commit audit marker: $auditNote"
     Add-Summary "Why beneficial: source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification."
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
-    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged
+    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -AuditNote $auditNote
     "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
 }
 
