@@ -261,6 +261,9 @@ function Is-BadAiderOutput {
     if ($text -match "please provide.*content|paste the content|I don't see the actual content|without seeing the actual content|cannot see the current implementation") {
         return "Aider claimed it could not see the editable target content"
     }
+    if ($text -match "should be present|should be included|specific contract elements that should be present|expected to be present") {
+        return "Aider used speculative exact-string assertion language"
+    }
 
     return $null
 }
@@ -367,6 +370,8 @@ Hard bans:
 - no generated report edits
 
 If there is no obviously safe real improvement, make no changes.
+Do not add exact-string assertions for prose unless that exact string already exists in the editable target or read-only implementation source.
+Do not assert guessed response-quality contract wording. Prefer asserting existing stable keys, commands, filenames, statuses, or structures.
 The PowerShell loop will run validation and commit only if safe.
 "@ | Set-Content $Path
 }
@@ -447,6 +452,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     if ($badOutput) {
         Write-Host "STOP: $badOutput"
         Append-Mistake $badOutput $target
+        "$(Get-Date -Format s) target=$target reason=$badOutput" | Add-Content $NoChangeTargets
         git reset --hard
         git clean -fd
         exit 1
@@ -487,6 +493,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     catch {
         Write-Host "STOP: Validation failed."
         Append-Mistake "Validation failed" $target
+        "$(Get-Date -Format s) target=$target reason=validation-failed" | Add-Content $NoChangeTargets
         git reset --hard
         git clean -fd
         exit 1
