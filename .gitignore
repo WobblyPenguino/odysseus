@@ -8,3 +8,26 @@ __pycache__/
 
 downloads/
 backups/
+.aider*
+
+# Local Python/env/runtime noise
+.venv/
+__pycache__/
+.pytest_cache/
+.nova_runtime/
+
+# Local AI assistant scratch files
+.aider*
+local_ai_cycles/
+NOVA_LOCAL_AI_PLANS.md
+npm_codex_test.md
+npm_codex_tool_test.md
+codex_last_report.md
+codex_tool_test.md
+nova_cycle_*.md
+nova_cycle_report.md
+
+# Generated local validation reports
+code_quality_gates/
+code_reviews/
+codebase_integrity_reports/
