@@ -199,6 +199,9 @@ Hard rules:
 - Do not use placeholder tests.
 - Do not use pass, TODO, assert True, MagicMock, Mock, or "would be implemented".
 - Tests must import real Nova code and assert real behaviour.
+- Do not guess APIs or report dictionary fields.
+- Inspect the read-only implementation files before asserting behaviour.
+- If validation failed previously, use MISTAKE_MEMORY.md and LAST_TEST_RESULTS.md to avoid repeating the same mistake.
 - If unsure, make no changes.
 - Do not claim success; the PowerShell loop will validate.
 
@@ -236,6 +239,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
         --read $context `
         --read NOVA_AGENT_MEMORY.md `
         --read NOVA_ARCHITECTURE_CONTEXT.md `
+        --read winlocalassistant/command_verifier.py `
+        --read winlocalassistant/main.py `
+        --read winlocalassistant/command_suggestions.py `
         --no-auto-commits `
         --no-dirty-commits `
         --no-gitignore `
