@@ -41,30 +41,150 @@ function Restore-GeneratedNoise {
     git clean -fd code_quality_gates code_reviews codebase_integrity_reports 2>$null
 }
 
+function Get-TextTail {
+    param([string]$Path, [int]$Lines = 120)
+    if (Test-Path $Path) {
+        return ((Get-Content $Path -Tail $Lines -ErrorAction SilentlyContinue) -join "`n")
+    }
+    return ""
+}
+
 function Append-Mistake {
-    param([string]$Reason)
+    param(
+        [string]$Target = "unknown",
+        [string]$Reason,
+        [string]$OutputPath = "",
+        [string]$RiskyDiffReason = "",
+        [string]$ValidationFailure = "",
+        [string]$WhatNotToRepeat = ""
+    )
     "`n## $(Get-Date -Format s)" | Add-Content $MistakeMemory
+    "Target file: $Target" | Add-Content $MistakeMemory
     "Reason: $Reason" | Add-Content $MistakeMemory
+    if ($RiskyDiffReason) { "Risky diff reason: $RiskyDiffReason" | Add-Content $MistakeMemory }
+    if ($ValidationFailure) { "Exact validation failure: $ValidationFailure" | Add-Content $MistakeMemory }
+    if ($OutputPath -and (Test-Path $OutputPath)) {
+        "Command output summary:" | Add-Content $MistakeMemory
+        Get-Content $OutputPath -Tail 60 -ErrorAction SilentlyContinue | Add-Content $MistakeMemory
+    }
+    if ($WhatNotToRepeat) { "What not to repeat: $WhatNotToRepeat" | Add-Content $MistakeMemory }
     "HEAD: $(git rev-parse --short HEAD)" | Add-Content $MistakeMemory
     "Status:" | Add-Content $MistakeMemory
     git status --short | Add-Content $MistakeMemory
 }
 
-function Pick-Target {
-    $targets = @(
-        "tests_command_verifier.py",
-        "tests_command_suggestions.py",
-        "tests_runtime_usability_release_gate.py",
-        "tests_project_state_continuity.py",
-        "tests_model_health_timeout.py",
-        "tests_validation_status_command.py",
-        "tests_report_hygiene.py",
-        "tests_release_hygiene.py"
-    )
-    foreach ($t in $targets) {
-        if (Test-Path $t) { return $t }
+function Get-RelatedFiles {
+    param([string]$Target)
+    switch -Regex ($Target) {
+        "command_verifier" { return @("winlocalassistant/command_verifier.py", "winlocalassistant/core.py") }
+        "command_suggestions" { return @("winlocalassistant/command_suggestions.py", "winlocalassistant/webui.py") }
+        "runtime_usability|model_health_timeout" { return @("winlocalassistant/core.py", "winlocalassistant/model_health.py", "winlocalassistant/ollama.py") }
+        "project_state|context|memory" { return @("winlocalassistant/project_state.py", "winlocalassistant/model_context.py") }
+        "validation|hygiene|release" { return @("winlocalassistant/validate.py", "winlocalassistant/release_readiness.py") }
+        default { return @("winlocalassistant/core.py") }
     }
-    throw "No safe target test file found."
+}
+
+function Get-TargetCandidates {
+    $backlog = (Get-TextTail "NOVA_BACKLOG.md" 200) + "`n" + (Get-TextTail "NOVA_APPROVED_FEATURE_BACKLOG.md" 200)
+    $success = Get-TextTail $SuccessMemory 120
+    $mistakes = Get-TextTail $MistakeMemory 160
+    $lastTests = Get-TextTail $LastTestResults 160
+    $definitions = @(
+        "tests_command_verifier.py|command/help consistency|command,help,verify",
+        "tests_command_suggestions.py|user-facing command suggestions|command,help,sanity",
+        "tests_runtime_usability_release_gate.py|runtime usability and model fallback|fallback,timeout,chat",
+        "tests_project_state_continuity.py|project-state memory continuity|project-state,memory,continue",
+        "tests_model_health_timeout.py|model timeout and health|model,timeout,fallback",
+        "tests_validation_status_command.py|validation status reporting|validation,reporting,status",
+        "tests_report_hygiene.py|generated report hygiene|report,generated,hygiene",
+        "tests_release_hygiene.py|release hygiene|release,hygiene,readiness"
+    )
+
+    $rows = @()
+    foreach ($definition in $definitions) {
+        $parts = $definition -split "\|"
+        $path = $parts[0]
+        $theme = $parts[1]
+        $keywords = $parts[2] -split ","
+        if (!(Test-Path $path)) { continue }
+        $score = 20
+        $reasons = @("existing safe test target")
+        foreach ($keyword in $keywords) {
+            if ($backlog -match [regex]::Escape($keyword)) {
+                $score += 4
+                $reasons += "backlog:$keyword"
+            }
+        }
+        $related = Get-RelatedFiles -Target $path
+        $searchPaths = @($path) + $related | Where-Object { Test-Path $_ }
+        $hits = Select-String -Path $searchPaths -Pattern "TODO|FIXME|placeholder|timeout|fallback|help-full|release-readiness|project state|context|validation|command" -ErrorAction SilentlyContinue |
+            Select-Object -First 8
+        if ($hits) {
+            $score += [Math]::Min(8, ($hits | Measure-Object).Count)
+            $reasons += "code-radar-hits"
+        }
+        if ($success -match [regex]::Escape("committed $path")) {
+            $score -= 35
+            $reasons += "recently-committed"
+        }
+        if ($success -match [regex]::Escape("no safe change made | target $path")) {
+            $score -= 25
+            $reasons += "recent-no-change"
+        }
+        if ($mistakes -match [regex]::Escape("Target file: $path")) {
+            if ($mistakes -match "fix plan|how to fix|exact validation failure") {
+                $score += 6
+                $reasons += "failure-memory-has-fix-context"
+            } else {
+                $score -= 30
+                $reasons += "recent-failure-without-fix"
+            }
+        }
+        if ($lastTests -match [regex]::Escape($path)) {
+            $score += 3
+            $reasons += "mentioned-in-last-tests"
+        }
+        $rows += [pscustomobject]@{
+            Path = $path
+            Score = $score
+            Theme = $theme
+            Reasons = ($reasons -join ", ")
+            Related = ((Get-RelatedFiles -Target $path) -join ", ")
+        }
+    }
+    return @($rows | Sort-Object -Property Score, Path -Descending)
+}
+
+function Pick-Target {
+    $Script:LastTargetCandidates = @(Get-TargetCandidates)
+    if (!$Script:LastTargetCandidates -or $Script:LastTargetCandidates.Count -eq 0) {
+        throw "No safe target test file found."
+    }
+    return $Script:LastTargetCandidates[0].Path
+}
+
+function Get-NextSuggestedTarget {
+    param([string]$Current)
+    $next = $Script:LastTargetCandidates | Where-Object { $_.Path -ne $Current } | Select-Object -First 1
+    if ($next) { return $next.Path }
+    return "Ask Daniel for the next approved target."
+}
+
+function Append-Success {
+    param(
+        [string]$Target,
+        [string]$CommitHash,
+        [string]$TestsPassed,
+        [string]$WhySafe,
+        [string]$NextSuggestedTarget
+    )
+    "`n## $(Get-Date -Format s)" | Add-Content $SuccessMemory
+    "Target file: $Target" | Add-Content $SuccessMemory
+    "Commit hash: $CommitHash" | Add-Content $SuccessMemory
+    "Tests passed: $TestsPassed" | Add-Content $SuccessMemory
+    "Why safe: $WhySafe" | Add-Content $SuccessMemory
+    "Next suggested target: $NextSuggestedTarget" | Add-Content $SuccessMemory
 }
 
 function Write-ContextPack {
@@ -88,6 +208,23 @@ function Write-ContextPack {
 
     "`n## Last test results" | Add-Content $Path
     if (Test-Path $LastTestResults) { Get-Content $LastTestResults -Tail 160 | Add-Content $Path } else { "No test result memory yet." | Add-Content $Path }
+
+    "`n## Scored candidate target list" | Add-Content $Path
+    if ($Script:LastTargetCandidates) {
+        $Script:LastTargetCandidates |
+            ForEach-Object { "$($_.Score) | $($_.Path) | $($_.Theme) | $($_.Reasons) | related: $($_.Related)" } |
+            Add-Content $Path
+    } else {
+        "No candidate list was available." | Add-Content $Path
+    }
+
+    "`n## Source files related to chosen target" | Add-Content $Path
+    foreach ($rel in (Get-RelatedFiles -Target $Target)) {
+        if (Test-Path $rel) {
+            "`n### $rel" | Add-Content $Path
+            Get-Content $rel -TotalCount 180 -ErrorAction SilentlyContinue | Add-Content $Path
+        }
+    }
 
     "`n## Available similar tests" | Add-Content $Path
     Get-ChildItem -Name "tests_*.py" | Select-Object -First 160 | Add-Content $Path
@@ -202,6 +339,9 @@ Hard rules:
 - Do not guess APIs or report dictionary fields.
 - Inspect the read-only implementation files before asserting behaviour.
 - If validation failed previously, use MISTAKE_MEMORY.md and LAST_TEST_RESULTS.md to avoid repeating the same mistake.
+- This target was chosen from a scored candidate list. Do not repeat a recently failed/no-change idea unless the context explains a concrete fix.
+- If the useful next step is a feature, it must match NOVA_APPROVED_FEATURE_BACKLOG.md and be source+test or test-only. Otherwise make no changes.
+- If the useful next step needs outside knowledge, a new dependency, or an unfamiliar architecture change, do not edit code.
 - If unsure, make no changes.
 - Do not claim success; the PowerShell loop will validate.
 
@@ -256,7 +396,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         2>&1 | Tee-Object -FilePath $out
 
     if ($LASTEXITCODE -ne 0) {
-        Append-Mistake "Aider failed in cycle $i"
+        Append-Mistake -Target $target -Reason "Aider failed in cycle $i" -OutputPath $out -WhatNotToRepeat "Do not retry this target without using the aider output to identify a concrete smaller fix."
         git reset --hard
         git clean -fd
         exit 1
@@ -265,7 +405,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Restore-GeneratedNoise
 
     if (!(git status --porcelain)) {
-        "## $(Get-Date -Format s) | cycle $i | no safe change made | target $target" | Add-Content $SuccessMemory
+        Append-Success -Target $target -CommitHash "none - no change made" -TestsPassed "not run because no diff was created" -WhySafe "The loop made no code changes and stopped safely." -NextSuggestedTarget (Get-NextSuggestedTarget -Current $target)
         Write-Host "No changes made. Stopping safely."
         exit 0
     }
@@ -276,7 +416,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $risk = Is-RiskyDiff -AllowedTarget $target
     if ($risk) {
         Write-Host "STOP: Risky diff detected: $risk"
-        Append-Mistake $risk
+        Append-Mistake -Target $target -Reason "Risky diff detected before validation" -OutputPath $out -RiskyDiffReason $risk -WhatNotToRepeat "Do not change files outside the selected target, generated reports, app.py, startup scripts, or placeholder tests."
         git diff --stat
         git diff
         git reset --hard
@@ -288,7 +428,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         Validate-Nova -Target $target
     }
     catch {
-        Append-Mistake "Validation failed for target $target"
+        Append-Mistake -Target $target -Reason "Validation failed for target $target" -OutputPath $LastTestResults -ValidationFailure $_.Exception.Message -WhatNotToRepeat "Do not retry the same edit until the exact failing command is addressed."
         git reset --hard
         git clean -fd
         exit 1
@@ -299,7 +439,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $risk = Is-RiskyDiff -AllowedTarget $target
     if ($risk) {
         Write-Host "STOP: Risk after validation: $risk"
-        Append-Mistake $risk
+        Append-Mistake -Target $target -Reason "Risk detected after validation" -OutputPath $LastTestResults -RiskyDiffReason $risk -WhatNotToRepeat "Do not let validation-generated files or broad diffs remain after tests."
         git reset --hard
         git clean -fd
         exit 1
@@ -308,7 +448,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     git add $target
     git commit -m "Guarded local improvement: $target"
 
-    "## $(Get-Date -Format s) | cycle $i | committed $target | HEAD $(git rev-parse --short HEAD)" | Add-Content $SuccessMemory
+    Append-Success -Target $target -CommitHash (git rev-parse --short HEAD) -TestsPassed "compileall, baseline pytest, target pytest, and area-specific pytest from Validate-Nova" -WhySafe "Only the selected target changed; risky diff guard and validation passed." -NextSuggestedTarget (Get-NextSuggestedTarget -Current $target)
     Write-Host "Cycle $i committed successfully."
 }
 
