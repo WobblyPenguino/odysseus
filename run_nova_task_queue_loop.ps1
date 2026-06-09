@@ -355,6 +355,8 @@ function Pick-Task {
         $hasSource = @($task.Editable | Where-Object { $_ -notmatch "(^|\\|/)tests_.*\.py$" }).Count -gt 0
         $hasTests = @($task.Tests | Where-Object { Test-Path $_ }).Count -gt 0
         $usedThisRun = $RunTaskCooldown.Contains([string]$task.Id)
+        $successOffsets = [Math]::Min($signals.Failures, $signals.RecentSuccess)
+        $effectiveFailures = [Math]::Max(0, $signals.Failures - $successOffsets)
         $score = 50
         $reasons = @()
 
@@ -363,8 +365,12 @@ function Pick-Task {
             $reasons += "source+test candidate"
         }
         if ($signals.Failures -gt 0) {
-            $score -= 25 * $signals.Failures
-            $reasons += "$($signals.Failures) recent failure(s)"
+            $score -= 25 * $effectiveFailures
+            if ($successOffsets -gt 0) {
+                $reasons += "$effectiveFailures effective recent failure(s); $successOffsets stale failure(s) offset by later success"
+            } else {
+                $reasons += "$($signals.Failures) recent failure(s)"
+            }
         }
         if ($signals.LowValue -gt 0) {
             $score -= 15 * $signals.LowValue
@@ -381,9 +387,9 @@ function Pick-Task {
 
         $quarantined = $false
         $quarantineReason = ""
-        if ($signals.Failures -ge $MaxRecentTaskFailures) {
+        if ($effectiveFailures -ge $MaxRecentTaskFailures) {
             $quarantined = $true
-            $quarantineReason = "quarantined after $($signals.Failures) recent failure(s)"
+            $quarantineReason = "quarantined after $effectiveFailures effective recent failure(s)"
         } elseif ($signals.LowValue -ge ($MaxRecentTaskFailures + 1)) {
             $quarantined = $true
             $quarantineReason = "quarantined after $($signals.LowValue) recent low-value/no-change outcome(s)"
