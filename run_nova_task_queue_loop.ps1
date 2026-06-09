@@ -3,7 +3,8 @@ param(
     [ValidateSet("fast", "code", "plan")]
     [string]$Mode = "code",
     [switch]$AllowTestOnly,
-    [int]$MinChangedLines = 6
+    [int]$MinChangedLines = 6,
+    [int]$MaxRecentTaskFailures = 2
 )
 
 $ErrorActionPreference = "Stop"
@@ -181,10 +182,30 @@ $Tasks = @(
 
 $RunTaskCooldown = New-Object "System.Collections.Generic.HashSet[string]"
 
+function Get-RecentTaskFailureCount {
+    param([string]$TaskId)
+
+    $count = 0
+    $sources = @($NoChangeTargets, $MistakeMemory)
+    foreach ($src in $sources) {
+        if (Test-Path $src) {
+            $lines = Get-Content $src -Tail 120 -ErrorAction SilentlyContinue
+            foreach ($line in $lines) {
+                if (($line -match "task=$TaskId") -or ($line -match "Task: $TaskId")) {
+                    if ($line -match "Reason:|reason=|rejected|failed|Command failed|low-significance|Aider failed|validation") {
+                        $count += 1
+                    }
+                }
+            }
+        }
+    }
+    return $count
+}
+
 function Pick-Task {
     $recent = @()
     if (Test-Path $NoChangeTargets) {
-        $recent = Get-Content $NoChangeTargets -Tail 60 | ForEach-Object {
+        $recent = Get-Content $NoChangeTargets -Tail 80 | ForEach-Object {
             if ($_ -match "task=([^\s|]+)") { $Matches[1].Trim() }
         }
     }
@@ -198,28 +219,36 @@ function Pick-Task {
         return $true
     }
 
-    foreach ($task in $Tasks) {
-        if ((Task-Files-Exist $task) -and
-            ($recent -notcontains $task.Id) -and
-            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
-            return $task
-        }
-    }
-
-    foreach ($task in $Tasks) {
-        if ((Task-Files-Exist $task) -and
-            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
-            return $task
-        }
-    }
-
+    $healthyTasks = @()
     foreach ($task in $Tasks) {
         if (Task-Files-Exist $task) {
+            $failures = Get-RecentTaskFailureCount -TaskId $task.Id
+            if ($failures -lt $MaxRecentTaskFailures) {
+                $healthyTasks += $task
+            } else {
+                Add-Summary "Skipping task $($task.Id): quarantined after $failures recent failures."
+            }
+        }
+    }
+
+    foreach ($task in $healthyTasks) {
+        if (($recent -notcontains $task.Id) -and
+            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
             return $task
         }
     }
 
-    throw "No task has all editable files present."
+    foreach ($task in $healthyTasks) {
+        if (-not $RunTaskCooldown.Contains([string]$task.Id)) {
+            return $task
+        }
+    }
+
+    foreach ($task in $healthyTasks) {
+        return $task
+    }
+
+    throw "No healthy task available. All tasks are missing files or quarantined by recent failures."
 }
 
 function Get-ChangedLineCount {
@@ -397,6 +426,7 @@ Add-Summary "Mode: $Mode"
 Add-Summary "Model: $Model"
 Add-Summary "AllowTestOnly: $AllowTestOnly"
 Add-Summary "MinChangedLines: $MinChangedLines"
+Add-Summary "MaxRecentTaskFailures: $MaxRecentTaskFailures"
 
 Clean-GeneratedNoise
 Assert-CleanGit
