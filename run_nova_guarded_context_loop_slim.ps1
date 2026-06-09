@@ -250,7 +250,7 @@ function Is-BadAiderOutput {
     $text = Get-Content $OutFile -Raw -ErrorAction SilentlyContinue
 
     if ($text -match "exceeds the .* token limit") { return "Aider context budget exceeded" }
-    if ($text -match "Add file to the chat") { return "Aider tried to expand chat with extra files" }
+    if ($text -match "Add file to the chat") { return "Aider tried to expand chat with extra files; refused by scripted n-input" }
     if ($text -match "Added app\.py|Added README\.md|Added CHANGELOG\.md|Added start_.*|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
         return "Aider added protected/broad files to chat"
     }
@@ -420,8 +420,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         "--no-dirty-commits",
         "--no-gitignore",
         "--subtree-only",
-        "--map-tokens", "0",
-        "--yes"
+        "--map-tokens", "0"
     )
 
     foreach ($r in $candidate.Reads) {
@@ -432,7 +431,11 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $aiderArgs += $target
 
-    & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
+    # Feed "n" repeatedly so Aider refuses add-file/context-expansion prompts.
+    # This prevents broad files such as app.py, README.md, core.py, tools.py, or webui.py
+    # from being added to the chat after the first model response.
+    $denyInput = ((1..200 | ForEach-Object { "n" }) -join "`n") + "`n"
+    $denyInput | & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
 
     $badOutput = Is-BadAiderOutput -OutFile $out
     if ($badOutput) {
