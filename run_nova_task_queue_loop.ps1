@@ -164,30 +164,44 @@ $Tasks = @(
     }
 )
 
+$RunTaskCooldown = New-Object "System.Collections.Generic.HashSet[string]"
+
 function Pick-Task {
     $recent = @()
     if (Test-Path $NoChangeTargets) {
-        $recent = Get-Content $NoChangeTargets -Tail 40 | ForEach-Object {
+        $recent = Get-Content $NoChangeTargets -Tail 60 | ForEach-Object {
             if ($_ -match "task=([^\s|]+)") { $Matches[1].Trim() }
         }
     }
 
-    foreach ($task in $Tasks) {
-        if ($recent -notcontains $task.Id) {
-            $allExist = $true
-            foreach ($f in $task.Editable) {
-                if (!(Test-Path $f)) { $allExist = $false }
+    function Task-Files-Exist($Task) {
+        foreach ($f in $Task.Editable) {
+            if (!(Test-Path $f)) {
+                return $false
             }
-            if ($allExist) { return $task }
+        }
+        return $true
+    }
+
+    foreach ($task in $Tasks) {
+        if ((Task-Files-Exist $task) -and
+            ($recent -notcontains $task.Id) -and
+            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
+            return $task
         }
     }
 
     foreach ($task in $Tasks) {
-        $allExist = $true
-        foreach ($f in $task.Editable) {
-            if (!(Test-Path $f)) { $allExist = $false }
+        if ((Task-Files-Exist $task) -and
+            (-not $RunTaskCooldown.Contains([string]$task.Id))) {
+            return $task
         }
-        if ($allExist) { return $task }
+    }
+
+    foreach ($task in $Tasks) {
+        if (Task-Files-Exist $task) {
+            return $task
+        }
     }
 
     throw "No task has all editable files present."
@@ -363,6 +377,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Assert-CleanGit
 
     $task = Pick-Task
+    [void]$RunTaskCooldown.Add([string]$task.Id)
     $before = git rev-parse --short HEAD
     $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $context = Join-Path $LogDir "task_context_$stamp.md"

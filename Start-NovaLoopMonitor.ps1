@@ -8,8 +8,8 @@ Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Nova Teacher Loop Monitor"
-$form.Width = 1200
-$form.Height = 800
+$form.Width = 1250
+$form.Height = 850
 $form.StartPosition = "CenterScreen"
 
 $font = New-Object System.Drawing.Font("Consolas", 10)
@@ -19,15 +19,17 @@ $tabs.Dock = "Fill"
 
 function New-Tab {
     param([string]$Name)
+
     $page = New-Object System.Windows.Forms.TabPage
     $page.Text = $Name
-    $box = New-Object System.Windows.Forms.TextBox
-    $box.Multiline = $true
+
+    $box = New-Object System.Windows.Forms.RichTextBox
     $box.ReadOnly = $true
     $box.ScrollBars = "Both"
     $box.WordWrap = $false
     $box.Dock = "Fill"
     $box.Font = $font
+
     $page.Controls.Add($box)
     $tabs.TabPages.Add($page) | Out-Null
     return $box
@@ -40,82 +42,78 @@ $mistakeBox = New-Tab "Mistakes"
 
 $form.Controls.Add($tabs)
 
-function Join-Lines {
-    param([object]$Value)
-    if ($null -eq $Value) {
-        return ""
-    }
-    if ($Value -is [array]) {
-        return ($Value -join [Environment]::NewLine)
-    }
-    return [string]$Value
-}
-
 function Read-Tail {
     param(
         [string]$Path,
         [int]$Lines = 180
     )
+
     if (!(Test-Path $Path)) {
         return "Missing: $Path"
     }
+
     try {
         return (Get-Content $Path -Tail $Lines -ErrorAction Stop) -join [Environment]::NewLine
     }
     catch {
-        return "Could not read $Path`n$($_.Exception.Message)"
+        return "Could not read $Path`r`n$($_.Exception.Message)"
+    }
+}
+
+function Run-GitText {
+    param([string[]]$Args)
+
+    try {
+        $out = & git -C $Repo @Args 2>&1
+        if (!$out) {
+            return "Clean"
+        }
+        return ($out -join [Environment]::NewLine)
+    }
+    catch {
+        return "Git command failed: $($_.Exception.Message)"
     }
 }
 
 function Refresh-NovaMonitor {
+    $nl = [Environment]::NewLine
     $memory = Join-Path $Repo "local_ai_cycles\memory"
     $summary = Join-Path $memory "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
     $mistakes = Join-Path $memory "MISTAKE_MEMORY.md"
 
-    $gitStatus = ""
-    try {
-        $gitStatus = (& git -C $Repo status --short 2>&1) -join [Environment]::NewLine
-        if ([string]::IsNullOrWhiteSpace($gitStatus)) {
-            $gitStatus = "Clean"
-        }
-    }
-    catch {
-        $gitStatus = "Could not run git status: $($_.Exception.Message)"
-    }
-
-    $head = ""
-    try {
-        $head = (& git -C $Repo log --oneline -8 2>&1) -join [Environment]::NewLine
-    }
-    catch {
-        $head = "Could not read git log: $($_.Exception.Message)"
-    }
+    $gitStatus = Run-GitText @("status", "--short")
+    $head = Run-GitText @("log", "--oneline", "-8")
 
     $latestAider = Get-ChildItem (Join-Path $Repo "local_ai_cycles") -Filter "task_aider_*.out.txt" -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime -Descending |
         Select-Object -First 1
 
-    $aiderText = "No task_aider_*.out.txt found yet."
     if ($latestAider) {
-        $aiderText = "File: $($latestAider.FullName)`r`n`r`n" + (Read-Tail $latestAider.FullName 260)
+        $aiderText = "File: $($latestAider.FullName)$nl$nl" + (Read-Tail $latestAider.FullName 260)
+    } else {
+        $aiderText = "No task_aider_*.out.txt found yet."
     }
 
-    $nl = [Environment]::NewLine
-    $statusBox.Text = @"
-Repo: $Repo
-Updated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    $statusLines = @(
+        "Repo: $Repo",
+        "Updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')",
+        "",
+        "Git status:",
+        $gitStatus,
+        "",
+        "Recent commits:",
+        $head,
+        "",
+        "Terminal-only:",
+        ".\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode fast",
+        ".\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode code",
+        "",
+        "With this monitor:",
+        ".\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode fast -Monitor",
+        ".\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode code -Monitor"
+    )
 
-Git status:
-$gitStatus
-
-Recent commits:
-$head
-
-Useful commands:
-.\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode fast
-.\run_nova_task_queue_loop_with_monitor.ps1 -Cycles 3 -Mode code
-"@
-
+    $statusBox.Text = $statusLines -join $nl
     $summaryBox.Text = Read-Tail $summary 260
     $aiderBox.Text = $aiderText
     $mistakeBox.Text = Read-Tail $mistakes 220

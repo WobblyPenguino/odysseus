@@ -4,7 +4,7 @@ param(
     [string]$Mode = "fast",
     [switch]$AllowTestOnly,
     [int]$MinChangedLines = 6,
-    [switch]$NoMonitor
+    [switch]$Monitor
 )
 
 $ErrorActionPreference = "Stop"
@@ -17,7 +17,7 @@ if (!(Test-Path $LoopScript)) {
     throw "Missing loop script: $LoopScript"
 }
 
-if (!$NoMonitor) {
+if ($Monitor) {
     if (!(Test-Path $MonitorScript)) {
         throw "Missing monitor script: $MonitorScript"
     }
@@ -30,10 +30,15 @@ if (!$NoMonitor) {
     )
 }
 
-# Run the real task loop in THIS terminal exactly like normal.
-# The monitor is only an extra viewer window.
-if ($AllowTestOnly) {
-    & $LoopScript -Cycles $Cycles -Mode $Mode -MinChangedLines $MinChangedLines -AllowTestOnly
-} else {
-    & $LoopScript -Cycles $Cycles -Mode $Mode -MinChangedLines $MinChangedLines
+$loopParams = @{
+    Cycles = $Cycles
+    Mode = $Mode
+    MinChangedLines = $MinChangedLines
 }
+
+if ($AllowTestOnly) {
+    $loopParams.AllowTestOnly = $true
+}
+
+# Run the real task loop in this terminal. The monitor is only an optional viewer.
+& $LoopScript @loopParams
