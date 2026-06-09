@@ -35,7 +35,7 @@ function Get-GitStatus {
 
 function Restore-GeneratedNoise {
     git restore -- docs/NOVA_LLM_TRAINING_LAB_LATEST.json docs/NOVA_LLM_TRAINING_LAB_LATEST.md docs/NOVA_MODEL_CALIBRATION_LATEST.json docs/NOVA_MODEL_CALIBRATION_LATEST.md docs/NOVA_RELEASE_READINESS_LATEST.json docs/NOVA_RELEASE_READINESS_LATEST.md logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt 2>$null
-    git clean -fd code_quality_gates code_reviews codebase_integrity_reports local_ai_cycles 2>$null
+    git clean -fd code_quality_gates code_reviews codebase_integrity_reports 2>$null
 }
 
 function Is-RiskyDiff {
