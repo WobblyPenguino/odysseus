@@ -603,6 +603,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     git add $target
     git commit -m "Slim guarded improvement: $target"
 
+    "$(Get-Date -Format s) target=$target reason=recent-success-cooldown" | Add-Content $NoChangeTargets
     "## $(Get-Date -Format s)`nTarget file: $target`nCommit hash: $(git rev-parse --short HEAD)`nTests passed: yes`n" | Add-Content $SuccessMemory
     Write-Host "Cycle $i committed successfully."
 }
