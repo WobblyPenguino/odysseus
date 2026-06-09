@@ -28,7 +28,7 @@ def test_self_improve_text_does_not_suggest_automatic_self_improve() -> None:
     assert not any(cmd.startswith("/idle start") for cmd in cmds)
     assert not any(cmd.startswith("/self-improve") for cmd in cmds)
     # Strengthen the assertion to check that no dangerous commands are suggested
-    disallowed_commands = ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe"]
+    disallowed_commands = ["/allow-internet on", "/internet-fetch", "/pip-install", "powershell", "pwsh", "cmd.exe", "/reset-project"]
     assert not any(cmd in disallowed_commands for cmd in cmds)
 
 
