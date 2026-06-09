@@ -165,6 +165,37 @@ function Pick-Target {
     throw "No safe target found."
 }
 
+function Add-SafeTail {
+    param(
+        [string]$File,
+        [string]$Output,
+        [int]$Tail = 80
+    )
+
+    if (!(Test-Path $File)) {
+        return
+    }
+
+    Get-Content $File -Tail $Tail -ErrorAction SilentlyContinue | ForEach-Object {
+        $line = $_
+        $skip = $false
+
+        foreach ($name in $ProtectedContextMentions) {
+            if ($line -like "*$name*") {
+                $skip = $true
+            }
+        }
+
+        if ($line -match "estimated chat context|token limit|```|Added .* to the chat|Warning: it's best|Please paste|provide the current content|complete updated file|Aider v|No filename provided|exceeds the") {
+            $skip = $true
+        }
+
+        if (-not $skip) {
+            $line
+        }
+    } | Add-Content $Output
+}
+
 function Write-SlimContext {
     param([string]$Path, [hashtable]$Candidate)
 
@@ -177,16 +208,16 @@ function Write-SlimContext {
     git log --oneline -8 | Add-Content $Path
 
     "`n## Recent no-change targets" | Add-Content $Path
-    Get-Content $NoChangeTargets -Tail 20 -ErrorAction SilentlyContinue | Add-Content $Path
+    Add-SafeTail -File $NoChangeTargets -Output $Path -Tail 20
 
     "`n## Recent mistakes" | Add-Content $Path
-    Get-Content $MistakeMemory -Tail 80 -ErrorAction SilentlyContinue | Add-Content $Path
+    Add-SafeTail -File $MistakeMemory -Output $Path -Tail 80
 
     "`n## Recent successes" | Add-Content $Path
-    Get-Content $SuccessMemory -Tail 60 -ErrorAction SilentlyContinue | Add-Content $Path
+    Add-SafeTail -File $SuccessMemory -Output $Path -Tail 60
 
     "`n## Last test results" | Add-Content $Path
-    Get-Content $LastTestResults -Tail 80 -ErrorAction SilentlyContinue | Add-Content $Path
+    Add-SafeTail -File $LastTestResults -Output $Path -Tail 80
 
     "`n## Approved work summary" | Add-Content $Path
     Get-Content .\NOVA_APPROVED_FEATURE_BACKLOG.md -TotalCount 80 -ErrorAction SilentlyContinue | Add-Content $Path
@@ -225,6 +256,9 @@ function Is-BadAiderOutput {
     }
     if ($text -match "placeholder|would be implemented|assert True|MagicMock|Mock") {
         return "Aider output contained placeholder/fake-test language"
+    }
+    if ($text -match "please provide.*content|paste the content|I don't see the actual content|without seeing the actual content|cannot see the current implementation") {
+        return "Aider claimed it could not see the editable target content"
     }
 
     return $null
@@ -309,6 +343,7 @@ Do not add files to the chat.
 Do not print a full-file rewrite unless you are actually editing $($Candidate.Target).
 Do not mention app.py, README.md, CHANGELOG.md, startup scripts, core.py, tools.py, or webui.py.
 If the target file contains references to broad/protected files, make no changes and do not ask to add them.
+Do not ask Daniel to paste file contents. The editable target is already in chat. If you cannot inspect it safely, make no changes.
 Do not create new files.
 
 Task:
@@ -355,6 +390,22 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $out = Join-Path $LogDir "slim_aider_$stamp.out.txt"
 
     Write-SlimContext -Path $context -Candidate $candidate
+
+    $protectedHit = $null
+    foreach ($name in $ProtectedContextMentions) {
+        if (Select-String -Path $context -Pattern ([Regex]::Escape($name)) -Quiet -ErrorAction SilentlyContinue) {
+            $protectedHit = $name
+            break
+        }
+    }
+
+    if ($protectedHit) {
+        Write-Host "STOP: Slim context contains protected file mention before Aider runs: $protectedHit"
+        Append-Mistake "Slim context contained protected file mention before Aider: $protectedHit" $target
+        "$(Get-Date -Format s) target=$target reason=protected-context-mention-$protectedHit" | Add-Content $NoChangeTargets
+        continue
+    }
+
     Write-Prompt -Path $prompt -Candidate $candidate
 
     $contextKb = [Math]::Round((Get-Item $context).Length / 1KB, 1)
