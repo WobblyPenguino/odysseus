@@ -132,3 +132,14 @@ def test_task_loop_includes_real_model_context_named_file_cache_task():
     assert "test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_includes_research_only_repo_inspiration_task():
+    text = _runner_text()
+    assert "research-only-agent-repo-inspiration-v1" in text
+    assert "Research-only planning task" in text
+    assert "Do not clone repos or copy external code" in text
+    assert "docs\\research\\NOVA_AGENT_REPO_INSPIRATION_LATEST.md" in text
+    assert "No source code copied" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text

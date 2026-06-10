@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "research-only-agent-repo-inspiration-v1"
+        Goal = "Research-only planning task. Do not edit Nova runtime source. Create or update docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md with repo/article-inspired ideas for safer Nova autonomous development. The report must include: source names, licence/risk notes, no-copy warning, ranked ideas, suggested RequiredChangedFiles/RequiredDiffContains for the top idea, and validation commands. Do not clone repos or copy external code."
+        Editable = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
+        RequiredChangedFiles = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
+        RequiredDiffContains = @("Research-only", "No source code copied", "RequiredChangedFiles", "RequiredDiffContains")
+        Tests = @("tests_task_loop_static_contract.py")
+    },
+
+    @{
         Id = "real-model-context-named-file-cache-freshness-v1"
         Goal = "Improve Nova model context continuity with one small source+test behaviour change. Ensure prompt-named file previews refresh when the named file content changes, instead of reusing stale cached context. Add or update a helper named _prompt_named_file_signature in winlocalassistant\model_context.py and add a regression test named test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change in tests_model_context_pack.py. You must modify BOTH files. Do not edit broad Nova runtime files."
         Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
