@@ -538,3 +538,19 @@ def test_task_loop_picker_merges_runtime_promoted_tasks_into_active_tasks():
     assert "$Tasks = @($script:RuntimeApprovedRecoveryTasks) + @($Tasks)" in text
     assert "Runtime promoted task candidates merged into active task list" in text
     assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_registers_idea_promotion_task_from_json_draft():
+    text = _runner_text()
+    assert "NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
+    assert "ConvertTo-Json -Depth 6" in text
+    assert "ConvertFrom-Json" in text
+    assert "Idea promotion task registered from JSON draft" in text
+    assert "$taskId = [string]$draft.Id" in text
+    assert "Editable = @($draft.Editable" in text
+    register_start = text.find("function Register-IdeaPromotionTaskDraft")
+    preflight_start = text.find("if ($PreflightOnly) {", register_start)
+    assert register_start != -1
+    assert preflight_start != -1
+    register_text = text[register_start:preflight_start]
+    assert 'Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"' not in register_text
