@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "real-model-context-named-file-preview-v1"
+        Goal = "Improve Nova model context continuity with one small source+test behaviour change. Add a helper named _prompt_named_files in winlocalassistant\model_context.py so the context pack can reliably identify small top-level files explicitly named in the user prompt, and add a regression test named test_model_context_pack_includes_prompt_named_python_file_preview in tests_model_context_pack.py. You must modify BOTH files. Keep previews bounded and do not edit broad Nova runtime files."
+        Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredChangedFiles = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredDiffContains = @("_prompt_named_files", "test_model_context_pack_includes_prompt_named_python_file_preview")
+        Tests = @("tests_model_context_pack.py")
+    },
+
+    @{
         Id = "lab-risk-contract-source-test-v3"
         Goal = "Improve only the isolated Nova improvement lab by adding explicit risk-level contract behaviour. You must modify BOTH nova_improvement_lab\text_tools.py and tests_improvement_lab_contract.py. Add a test named test_score_candidate_improvement_rejects_unknown_risk. Add or update source behaviour so unknown risk levels are rejected clearly, while existing low/high tests still pass. Do not edit broad Nova runtime files."
         Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")

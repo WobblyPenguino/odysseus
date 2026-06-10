@@ -104,3 +104,14 @@ def test_required_diff_contract_can_override_generic_executable_classifier():
     assert "$hasExecutableChange" in text
     assert "Executable classifier fallback: accepted required diff contract" in text
     assert "Rejected documentation/comment-only patch with no executable code change." in text
+
+
+def test_task_loop_includes_real_model_context_named_file_task():
+    text = _runner_text()
+    assert "real-model-context-named-file-preview-v1" in text
+    assert "winlocalassistant\\model_context.py" in text or "winlocalassistant\model_context.py" in text
+    assert "tests_model_context_pack.py" in text
+    assert "_prompt_named_files" in text
+    assert "test_model_context_pack_includes_prompt_named_python_file_preview" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
