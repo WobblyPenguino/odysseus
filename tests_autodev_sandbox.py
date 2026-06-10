@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -107,3 +107,23 @@ def test_autodev_sandbox_explains_next_action_with_evidence():
     # When no actionable items remain, it should return 'idle'
     idle_explanation = explain_next_action([WorkItem("done_item", status="done")])
     assert idle_explanation == "idle"
+
+
+def test_autodev_sandbox_groups_items_by_status():
+    items = [
+        WorkItem("todo1", status="todo"),
+        WorkItem("blocked1", status="blocked"),
+        WorkItem("review1", status="review"),
+        WorkItem("done1", status="done"),
+        WorkItem("pass_alias", status="passed"),  # alias for done
+        WorkItem("open1", status="open"),       # normalises to todo
+    ]
+
+    grouped = group_work_items_by_status(items)
+
+    # Expected keys and order of items within each key
+    assert set(grouped.keys()) == {"todo", "blocked", "review", "done"}
+    assert [i.title for i in grouped["todo"]] == ["todo1", "open1"]
+    assert [i.title for i in grouped["blocked"]] == ["blocked1"]
+    assert [i.title for i in grouped["review"]] == ["review1"]
+    assert [i.title for i in grouped["done"]] == ["done1", "pass_alias"]

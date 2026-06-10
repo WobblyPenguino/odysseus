@@ -114,3 +114,23 @@ def actionable_work_items(items: Iterable[WorkItem]) -> list[WorkItem]:
     preserved.
     """
     return [i for i in items if normalise_status(i.status) != "done"]
+
+
+def group_work_items_by_status(items: Iterable[WorkItem]) -> dict[str, list[WorkItem]]:
+    """
+    Group work items by their normalised status.
+
+    The function returns a dictionary mapping each normalised status
+    string to a list of WorkItem objects that have that status.  Items are
+    appended in the order they appear in *items*, so the original ordering
+    within each group is preserved.  Status aliases such as "pass" and
+    "passed" are normalised to "done", ensuring they appear under the
+    ``"done"`` key.
+    """
+    grouped: dict[str, list[WorkItem]] = {}
+    for item in items:
+        status_key = normalise_status(item.status)
+        if status_key not in grouped:
+            grouped[status_key] = []
+        grouped[status_key].append(item)
+    return grouped
