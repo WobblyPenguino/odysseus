@@ -142,6 +142,12 @@ def build_project_state_snapshot(root: str | Path = ".", *, write: bool = True) 
     task_evidence = latest_task_evidence(root_path, limit=5)
     latest_manifest = latest_package_manifest_summary(root_path)
     manifest_release = latest_manifest.get("release_name") or latest_manifest.get("package_path") or ""
+
+    # Improved readability for packaging allowed logic
+    is_readiness_pass = readiness.get("status") == "PASS" and readiness.get("ok")
+    no_repeated_failures = not task_status.get("active_repeated_failures")
+    packaging_allowed = is_readiness_pass and no_repeated_failures
+
     known_limitations = [
         item.get("summary", "") for item in latest_host_checks(root_path) if item.get("advisory") and str(item.get("status", "")).upper() != "PASS"
     ]
@@ -151,34 +157,33 @@ def build_project_state_snapshot(root: str | Path = ".", *, write: bool = True) 
             for item in ev.get(key) or []:
                 if item and item not in changed_files:
                     changed_files.append(str(item))
-    packaging_allowed = readiness.get("status") == "PASS" and bool(readiness.get("ok")) and not task_status.get("active_repeated_failures")
-    snapshot = {
-        "schema_version": SCHEMA_VERSION,
-        "ok": True,
-        "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "current_version": __version__,
-        "version_label": VERSION_LABEL,
-        "root": str(root_path),
-        "latest_release_readiness": readiness,
-        "latest_task_evidence": task_evidence,
-        "latest_task_result": (task_evidence[0].get("result") if task_evidence else "MISSING"),
-        "latest_changed_files": changed_files[:30],
-        "latest_package_manifest": latest_manifest,
-        "last_completed_patch": manifest_release or f"Nova v{__version__}",
-        "task_execution_status": task_status,
-        "host_only_checks": latest_host_checks(root_path),
-        "known_limitations": known_limitations,
-        "packaging_allowed": packaging_allowed,
-        "continue_readiness": "PASS" if packaging_allowed else ("FAIL" if readiness.get("status") == "FAIL" or task_status.get("active_repeated_failures") else "REVIEW"),
-        "recommended_next_action": infer_recommended_next_action(readiness, task_status),
-        "needs_inspection_before_editing": readiness.get("status") != "PASS" or not task_evidence,
-        "latest_json": str(root_path / LATEST_JSON),
-        "latest_markdown": str(root_path / LATEST_MD),
-    }
+    packaging_allowed = is_readiness_pass and no_repeated_failures
     if write:
         stamp = time.strftime("%Y%m%d_%H%M%S")
         snap_path = root_path / SNAPSHOT_DIR / f"project_state_{stamp}.json"
-        snapshot["snapshot_path"] = str(snap_path)
+        snapshot = {
+            "schema_version": SCHEMA_VERSION,
+            "ok": True,
+            "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "current_version": __version__,
+            "version_label": VERSION_LABEL,
+            "root": str(root_path),
+            "latest_release_readiness": readiness,
+            "latest_task_evidence": task_evidence,
+            "latest_task_result": (task_evidence[0].get("result") if task_evidence else "MISSING"),
+            "latest_changed_files": changed_files[:30],
+            "latest_package_manifest": latest_manifest,
+            "last_completed_patch": manifest_release or f"Nova v{__version__}",
+            "task_execution_status": task_status,
+            "host_only_checks": latest_host_checks(root_path),
+            "known_limitations": known_limitations,
+            "packaging_allowed": packaging_allowed,
+            "continue_readiness": "PASS" if packaging_allowed else ("FAIL" if readiness.get("status") == "FAIL" or task_status.get("active_repeated_failures") else "REVIEW"),
+            "recommended_next_action": infer_recommended_next_action(readiness, task_status),
+            "needs_inspection_before_editing": readiness.get("status") != "PASS" or not task_evidence,
+            "latest_json": str(root_path / LATEST_JSON),
+            "latest_markdown": str(root_path / LATEST_MD),
+        }
         atomic_write_json(snap_path, snapshot, ensure_ascii=True)
         atomic_write_json(root_path / LATEST_JSON, snapshot, ensure_ascii=True)
         atomic_write_text(root_path / LATEST_MD, render_project_state_snapshot(snapshot))
