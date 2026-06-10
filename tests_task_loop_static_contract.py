@@ -235,3 +235,24 @@ def test_task_loop_defines_static_tool_status_helper_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_writes_patch_review_report():
+    text = _runner_text()
+    assert "function Write-PatchReviewReport" in text
+    assert "NOVA_PATCH_REVIEW_LATEST.md" in text
+    assert "Reviewer verdict:" in text
+    assert "Risk level:" in text
+    assert "Changed files:" in text
+    assert "Unexpected changed files:" in text
+    assert "Security and correctness review checklist:" in text
+    assert "Write-PatchReviewReport -Task $task" in text
+
+
+def test_task_loop_patch_review_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-PatchReviewReport")
+    call_pos = text.find("Write-PatchReviewReport -Task $task")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos

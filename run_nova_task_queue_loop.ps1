@@ -1820,6 +1820,124 @@ function Write-StaticToolStatusReport {
     return $Path
 }
 
+
+function Write-PatchReviewReport {
+    param(
+        $Task,
+        $ChangedFiles,
+        [string]$Before = "",
+        [string]$After = "",
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $taskId = if ($Task) { [string]$Task.Id } else { "<none>" }
+    $changed = @($ChangedFiles)
+    $editable = @($Task.Editable)
+    $requiredChanged = @(Get-TaskRequiredChangedFiles -Task $Task)
+    $requiredDiff = @(Get-TaskRequiredDiffContains -Task $Task)
+    $requiredFinal = Get-TaskRequiredFinalFileContains -Task $Task
+
+    $allowedNormalised = @{}
+    foreach ($item in @($editable + $requiredChanged)) {
+        $key = ([string]$item).Replace("/", "\").ToLowerInvariant()
+        $allowedNormalised[$key] = $true
+    }
+
+    $unexpected = @()
+    foreach ($pathItem in $changed) {
+        $normalised = ([string]$pathItem).Replace("/", "\")
+        $key = $normalised.ToLowerInvariant()
+        if (!$allowedNormalised.ContainsKey($key)) {
+            $unexpected += $normalised
+        }
+    }
+
+    $risk = "low"
+    if ($unexpected.Count -gt 0) {
+        $risk = "high"
+    } elseif ($changed.Count -gt 3) {
+        $risk = "medium"
+    }
+
+    $verdict = if ($unexpected.Count -gt 0) { "manual-review" } else { "accepted-after-validation" }
+
+    $lines = @(
+        "# Nova Patch Review Latest",
+        "",
+        "Task ID: $taskId",
+        "Before: $Before",
+        "After: $After",
+        "Reviewer verdict: $verdict",
+        "Risk level: $risk",
+        "",
+        "Patch summary:",
+        "- Local review generated from the accepted patch metadata.",
+        "- This report does not replace compile, targeted tests, baseline regression tests, generated-noise cleanup, or clean-git gates.",
+        "",
+        "Changed files:"
+    )
+
+    foreach ($item in $changed) { $lines += "- $item" }
+
+    $lines += @("", "Allowed editable files:")
+    foreach ($item in $editable) { $lines += "- $item" }
+
+    $lines += @("", "Required changed files:")
+    foreach ($item in $requiredChanged) { $lines += "- $item" }
+
+    $lines += @("", "Unexpected changed files:")
+    if ($unexpected.Count -eq 0) {
+        $lines += "- none"
+    } else {
+        foreach ($item in $unexpected) { $lines += "- $item" }
+    }
+
+    $lines += @("", "Required diff markers:")
+    foreach ($item in $requiredDiff) { $lines += "- $item" }
+
+    $lines += @("", "Required final-file markers:")
+    if ($requiredFinal) {
+        foreach ($pathKey in $requiredFinal.Keys) {
+            $lines += "- $pathKey"
+            foreach ($marker in @($requiredFinal[$pathKey])) {
+                $lines += "  - $marker"
+            }
+        }
+    }
+
+    $lines += @(
+        "",
+        "Security and correctness review checklist:",
+        "- Path traversal or out-of-workspace file access",
+        "- Unsafe shell execution",
+        "- Secret/token leakage",
+        "- Broad file writes",
+        "- Placeholder/speculative code",
+        "- Suspicious URL or localhost changes",
+        "- Tests that only check strings rather than behavior",
+        "",
+        "Validation expected:",
+        "- compile gate",
+        "- targeted tests",
+        "- baseline Nova sanity/regression tests",
+        "- generated-noise cleanup",
+        "- clean-git verification",
+        "",
+        "Human review notes:",
+        "- If risk is high or verdict is manual-review, inspect before using this commit as a good baseline.",
+        "- If this commit is later reverted, use this report to diagnose why."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Patch review report: $Path"
+    Add-Summary "Patch review verdict: $verdict"
+    Add-Summary "Patch review risk: $risk"
+
+    return $Path
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
@@ -2141,6 +2259,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     Add-Summary "After: $after"
     Add-Summary "Lines changed: $linesChanged"
     Add-Summary "Changed files: $($changedFiles -join ', ')"
+    Write-PatchReviewReport -Task $task -ChangedFiles $changedFiles -Before $before -After $after -Path ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md" | Out-Null
     Add-Summary "Validation gates passed: $($validationGateResults -join ' | ')"
     Add-Summary "Validation commands passed: $($validationCommands -join ' | ')"
     Add-Summary "Post-commit audit marker: $auditNote"
