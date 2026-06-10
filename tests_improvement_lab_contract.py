@@ -23,3 +23,12 @@ def test_score_candidate_improvement_rewards_source_and_tests():
 
 def test_score_candidate_improvement_penalises_high_risk_without_tests():
     assert score_candidate_improvement(touches_source=True, has_test=False, risk="high") < 35
+
+
+def test_score_candidate_improvement_rejects_unknown_risk():
+    try:
+        score_candidate_improvement(touches_source=True, has_test=False, risk="unknown")
+    except ValueError as e:
+        assert "unknown" in str(e).lower()
+    else:
+        assert False, "Expected ValueError for unknown risk"

@@ -36,6 +36,11 @@ def score_candidate_improvement(
     user_visible: bool = False,
 ) -> int:
     """Score a candidate improvement so the lab can practise safe task ranking."""
+    # Reject unknown risk levels explicitly
+    risk_normalised = str(risk or "").lower()
+    if risk_normalised not in {"low", "medium", "high"}:
+        raise ValueError(f"Unknown risk level: {risk}")
+
     score = 0
     if touches_source:
         score += 35
@@ -44,7 +49,6 @@ def score_candidate_improvement(
     if user_visible:
         score += 10
 
-    risk_normalised = str(risk or "").lower()
     if risk_normalised == "low":
         score += 10
     elif risk_normalised == "high":
