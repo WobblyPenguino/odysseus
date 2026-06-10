@@ -213,3 +213,16 @@ def test_task_loop_includes_model_context_prompt_file_path_safety_task():
     assert "winlocalassistant\\model_context.py" in normalised
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_writes_static_tool_status_report():
+    text = _runner_text()
+    assert "function Write-StaticToolStatusReport" in text
+    assert "NOVA_STATIC_TOOL_STATUS_LATEST.md" in text
+    assert "ruff" in text
+    assert "mypy" in text
+    assert "semgrep" in text
+    assert "bandit" in text
+    assert "pip-audit" in text
+    assert "detect-secrets" in text
+    assert "Write-StaticToolStatusReport -Path" in text

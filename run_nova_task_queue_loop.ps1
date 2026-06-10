@@ -1799,10 +1799,73 @@ if ($PreflightOnly) {
 
 Clean-GeneratedNoise
 Assert-CleanGit
+Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
 
+
+
+
+function Write-StaticToolStatusReport {
+    param(
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $tools = @(
+        @{ Name = "ruff"; Command = "python -m ruff --version" },
+        @{ Name = "mypy"; Command = "python -m mypy --version" },
+        @{ Name = "semgrep"; Command = "semgrep --version" },
+        @{ Name = "bandit"; Command = "python -m bandit --version" },
+        @{ Name = "pip-audit"; Command = "python -m pip_audit --version" },
+        @{ Name = "detect-secrets"; Command = "detect-secrets --version" },
+        @{ Name = "vulture"; Command = "python -m vulture --version" },
+        @{ Name = "radon"; Command = "python -m radon --version" },
+        @{ Name = "pytest-cov"; Command = "python -m pytest --help" }
+    )
+
+    $lines = @(
+        "# Nova Static Tool Status Latest",
+        "",
+        "Purpose:",
+        "- Report which optional review/static-analysis tools are available.",
+        "- Missing tools do not fail the task loop yet.",
+        "- This report is advisory until a future strict gate enables selected tools.",
+        "",
+        "Tool status:"
+    )
+
+    foreach ($tool in $tools) {
+        $cmd = [string]$tool.Command
+        $name = [string]$tool.Name
+        try {
+            $output = cmd /c "$cmd 2>&1"
+            if ($LASTEXITCODE -eq 0) {
+                $lines += "- ${name}: available"
+            } else {
+                $lines += "- ${name}: missing or failed"
+            }
+        } catch {
+            $lines += "- ${name}: missing or failed"
+        }
+    }
+
+    $lines += @(
+        "",
+        "Suggested future strict gates:",
+        "- ruff for linting",
+        "- mypy or pyright for typing",
+        "- bandit or semgrep for security checks",
+        "- pip-audit for dependency vulnerabilities",
+        "- detect-secrets or gitleaks for secrets"
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Static tool status report: $Path"
+    return $Path
+}
 
 
 function Write-TaskLargeFileSnippetContext {
