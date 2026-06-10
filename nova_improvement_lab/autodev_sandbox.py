@@ -44,3 +44,22 @@ def suggest_next_action(items: Iterable[WorkItem]) -> str:
     if summary["todo"]:
         return "continue-implementation"
     return "idle"
+
+
+def priority_score(item: WorkItem) -> int:
+    """
+    Return a numeric score representing the priority of a work item.
+    Higher scores indicate higher priority.
+
+    Priority order (highest to lowest):
+      - blocked
+      - review
+      - todo
+      - done
+
+    The mapping is intentionally simple so that callers can compare scores directly.
+    """
+    status = normalise_status(item.status)
+    # Assign numeric values: larger number = higher priority
+    score_map = {"blocked": 3, "review": 2, "todo": 1, "done": 0}
+    return score_map.get(status, 0)
