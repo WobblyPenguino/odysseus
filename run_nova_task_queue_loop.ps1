@@ -2049,6 +2049,105 @@ function Write-SubagentReviewReport {
     return $Path
 }
 
+
+function Write-TaskIdeaPoolReport {
+    param(
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $lines = @(
+        "# Nova Task Idea Pool Latest",
+        "",
+        "Purpose:",
+        "- Let Nova imagine useful next improvements without editing files.",
+        "- Ideas are proposals only.",
+        "- A future task must still define Editable files, RequiredChangedFiles, RequiredDiffContains, and Tests before any edit is allowed.",
+        "",
+        "Idea selection rules:",
+        "- Prefer tiny source+test tasks.",
+        "- Prefer tasks that build on the last successful sandbox improvement.",
+        "- Avoid broad Nova runtime edits until multiple sandbox cycles pass.",
+        "- Avoid documentation-only, test-only, speculative, or GUI redesign tasks.",
+        "",
+        "Candidate ideas:",
+        "",
+        "## idea-1: select-next-work-item",
+        "Why useful: builds on priority_score and sort_work_items_by_priority by selecting the single next actionable item.",
+        "Risk: low",
+        "Editable files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required changed files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required diff markers:",
+        "- select_next_work_item",
+        "- test_autodev_sandbox_selects_highest_priority_item",
+        "Targeted tests:",
+        "- tests_autodev_sandbox.py",
+        "Justification: improves task monitoring and autonomous next-action choice.",
+        "",
+        "## idea-2: filter-actionable-work-items",
+        "Why useful: prevents done work from being selected again.",
+        "Risk: low",
+        "Editable files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required changed files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required diff markers:",
+        "- actionable_work_items",
+        "- test_autodev_sandbox_filters_done_items_from_actionable_work",
+        "Targeted tests:",
+        "- tests_autodev_sandbox.py",
+        "Justification: improves monitoring and avoids repeated completed work.",
+        "",
+        "## idea-3: explain-next-action",
+        "Why useful: adds human-readable justification for why a task/action was chosen.",
+        "Risk: low",
+        "Editable files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required changed files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required diff markers:",
+        "- explain_next_action",
+        "- test_autodev_sandbox_explains_next_action_with_evidence",
+        "Targeted tests:",
+        "- tests_autodev_sandbox.py",
+        "Justification: improves transparency and Codex/Claude-style reasoning reports.",
+        "",
+        "## idea-4: group-work-items-by-status",
+        "Why useful: gives the planner a structured state view before selecting work.",
+        "Risk: low",
+        "Editable files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required changed files:",
+        "- nova_improvement_lab\autodev_sandbox.py",
+        "- tests_autodev_sandbox.py",
+        "Required diff markers:",
+        "- group_work_items_by_status",
+        "- test_autodev_sandbox_groups_items_by_status",
+        "Targeted tests:",
+        "- tests_autodev_sandbox.py",
+        "Justification: improves planning context and task monitoring.",
+        "",
+        "Promotion rule:",
+        "- Only promote one idea at a time into ApprovedRecoveryTasks.",
+        "- Never allow idea-pool text alone to trigger edits.",
+        "- Every promoted idea must pass preflight localization before live execution."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Task idea pool report: $Path"
+    return $Path
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
@@ -2089,6 +2188,7 @@ if ($PreflightOnly) {
 Clean-GeneratedNoise
 Assert-CleanGit
 Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
+Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"

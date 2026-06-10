@@ -345,3 +345,25 @@ def test_task_loop_includes_tiny_autodev_sort_priority_task():
     assert "tests_autodev_sandbox.py" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_writes_task_idea_pool_report():
+    text = _runner_text()
+    assert "function Write-TaskIdeaPoolReport" in text
+    assert "NOVA_TASK_IDEA_POOL_LATEST.md" in text
+    assert "Candidate ideas:" in text
+    assert "select_next_work_item" in text
+    assert "actionable_work_items" in text
+    assert "explain_next_action" in text
+    assert "group_work_items_by_status" in text
+    assert "Promotion rule:" in text
+    assert "Write-TaskIdeaPoolReport -Path" in text
+
+
+def test_task_loop_idea_pool_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-TaskIdeaPoolReport")
+    call_pos = text.find("Write-TaskIdeaPoolReport -Path")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
