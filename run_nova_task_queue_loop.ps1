@@ -2241,7 +2241,132 @@ function Write-IdeaPromotionCandidateReport {
 
 
 
-function Write-IdeaPromotionTaskDraft {
+
+function Test-SafeIdeaCandidatePath {
+    param(
+        [string]$Path,
+        [switch]$TestOnly
+    )
+
+    $normal = ([string]$Path).Trim() -replace '/', '\'
+
+    if ([string]::IsNullOrWhiteSpace($normal)) {
+        return $false
+    }
+
+    if ([System.IO.Path]::IsPathRooted($normal)) {
+        return $false
+    }
+
+    if ($normal -match '(^|\\)\.\.($|\\)') {
+        return $false
+    }
+
+    if ($normal -match '(^|\\)\.git($|\\)') {
+        return $false
+    }
+
+    if ($TestOnly) {
+        return ($normal -like 'tests_*.py' -or $normal -like 'tests\*.py')
+    }
+
+    return (
+        $normal -like 'nova_improvement_lab\*.py' -or
+        $normal -like 'tests_*.py' -or
+        $normal -like 'tests\*.py'
+    )
+}
+
+
+function Test-IdeaPromotionTaskCandidate {
+    param(
+        [object]$Candidate,
+        [hashtable]$SeenIds
+    )
+
+    $errors = @()
+
+    $id = ([string]$Candidate.Id).Trim()
+    if ([string]::IsNullOrWhiteSpace($id)) {
+        $errors += "missing Id"
+    } elseif ($id -match '\s') {
+        $errors += "Id must be one token with no whitespace"
+    } elseif ($id -notmatch '^[A-Za-z0-9._-]+$') {
+        $errors += "Id contains unsupported characters"
+    } elseif ($SeenIds.ContainsKey($id)) {
+        $errors += "duplicate Id"
+    }
+
+    $goal = ([string]$Candidate.Goal).Trim()
+    if ([string]::IsNullOrWhiteSpace($goal)) {
+        $errors += "missing Goal"
+    }
+
+    $editable = @($Candidate.Editable | ForEach-Object { ([string]$_).Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $requiredFiles = @($Candidate.RequiredChangedFiles | ForEach-Object { ([string]$_).Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $requiredDiff = @($Candidate.RequiredDiffContains | ForEach-Object { ([string]$_).Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $tests = @($Candidate.Tests | ForEach-Object { ([string]$_).Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+
+    if (@($editable).Count -eq 0) {
+        $errors += "missing Editable"
+    }
+
+    if (@($requiredFiles).Count -eq 0) {
+        $errors += "missing RequiredChangedFiles"
+    }
+
+    if (@($requiredDiff).Count -eq 0) {
+        $errors += "missing RequiredDiffContains"
+    }
+
+    if (@($tests).Count -eq 0) {
+        $errors += "missing Tests"
+    }
+
+    foreach ($file in $editable) {
+        if (!(Test-SafeIdeaCandidatePath -Path $file)) {
+            $errors += "unsafe Editable path: $file"
+        }
+    }
+
+    foreach ($file in $requiredFiles) {
+        if (!(Test-SafeIdeaCandidatePath -Path $file)) {
+            $errors += "unsafe RequiredChangedFiles path: $file"
+        }
+
+        if ($editable -notcontains $file) {
+            $errors += "required changed file not listed as editable: $file"
+        }
+    }
+
+    foreach ($marker in $requiredDiff) {
+        if ($marker.Length -gt 120) {
+            $errors += "RequiredDiffContains marker too long: $marker"
+        }
+    }
+
+    foreach ($test in $tests) {
+        if (!(Test-SafeIdeaCandidatePath -Path $test -TestOnly)) {
+            $errors += "unsafe Tests path: $test"
+        }
+    }
+
+    return [pscustomobject]@{
+        Valid = (@($errors).Count -eq 0)
+        Id = $id
+        Errors = $errors
+        Task = [ordered]@{
+            Id = $id
+            Goal = $goal
+            Editable = $editable
+            RequiredChangedFiles = $requiredFiles
+            RequiredDiffContains = $requiredDiff
+            Tests = $tests
+        }
+    }
+}
+
+`nfunction Write-IdeaPromotionTaskDraft {
     param(
         [string]$CandidatePath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md",
         [string]$Path = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md",
@@ -2294,19 +2419,31 @@ function Write-IdeaPromotionTaskDraft {
             }
 
             if (@($loadedCandidates).Count -gt 0) {
-                $draftCandidates = @()
+                $seenCandidateIds = @{}
+                $validatedCandidates = @()
+                $rejectedCandidateCount = 0
+
                 foreach ($candidate in $loadedCandidates) {
-                    $draftCandidates += [ordered]@{
-                        Id = [string]$candidate.Id
-                        Goal = [string]$candidate.Goal
-                        Editable = @($candidate.Editable | ForEach-Object { [string]$_ })
-                        RequiredChangedFiles = @($candidate.RequiredChangedFiles | ForEach-Object { [string]$_ })
-                        RequiredDiffContains = @($candidate.RequiredDiffContains | ForEach-Object { [string]$_ })
-                        Tests = @($candidate.Tests | ForEach-Object { [string]$_ })
+                    $validation = Test-IdeaPromotionTaskCandidate -Candidate $candidate -SeenIds $seenCandidateIds
+                    if ($validation.Valid) {
+                        $validatedCandidates += $validation.Task
+                        $seenCandidateIds[$validation.Id] = $true
+                    } else {
+                        $rejectedCandidateCount += 1
+                        $reason = @($validation.Errors) -join "; "
+                        Add-Summary "Idea promotion task draft rejected invalid candidate: $($validation.Id) :: $reason"
                     }
                 }
-                Add-Summary "Idea promotion task draft loaded candidate config: $CandidateConfigPath"
-                Add-Summary "Idea promotion task draft loaded candidate count: $(@($draftCandidates).Count)"
+
+                Add-Summary "Idea promotion task draft candidate validation accepted: $(@($validatedCandidates).Count); rejected: $rejectedCandidateCount"
+
+                if (@($validatedCandidates).Count -gt 0) {
+                    $draftCandidates = @($validatedCandidates)
+                    Add-Summary "Idea promotion task draft loaded candidate config: $CandidateConfigPath"
+                    Add-Summary "Idea promotion task draft loaded candidate count: $(@($draftCandidates).Count)"
+                } else {
+                    Add-Summary "Idea promotion task draft external candidate validation rejected all candidates; using built-in fallback candidates"
+                }
             } else {
                 Add-Summary "Idea promotion task draft candidate config empty; using built-in fallback candidates"
             }

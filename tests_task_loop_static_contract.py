@@ -598,4 +598,26 @@ def test_task_loop_external_candidate_loader_flattens_json_array():
     assert "foreach ($candidateGroup in @($rawCandidates))" in text
     assert "foreach ($candidate in @($candidateGroup))" in text
     assert "Idea promotion task draft loaded candidate count" in text
-    assert "$draftCandidates += [ordered]@{" in text
+    assert "$validatedCandidates += $validation.Task" in text
+    assert "$draftCandidates = @($validatedCandidates)" in text
+
+
+def test_task_loop_validates_external_idea_candidate_schema():
+    text = _runner_text()
+    assert "function Test-IdeaPromotionTaskCandidate" in text
+    assert "function Test-SafeIdeaCandidatePath" in text
+    assert "Id must be one token with no whitespace" in text
+    assert "duplicate Id" in text
+    assert "unsafe Editable path" in text
+    assert "required changed file not listed as editable" in text
+    assert "Idea promotion task draft candidate validation accepted" in text
+    assert "Idea promotion task draft rejected invalid candidate" in text
+
+
+def test_task_loop_external_config_contains_fresh_validated_status_line_candidate():
+    config = Path("local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json")
+    assert config.exists()
+    text = config.read_text(encoding="utf-8")
+    assert "tiny-autodev-sandbox-action-plan-status-line-v1" in text
+    assert "render_action_plan_status_line" in text
+    assert "test_autodev_sandbox_renders_action_plan_status_line" in text
