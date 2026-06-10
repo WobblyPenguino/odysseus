@@ -87,3 +87,12 @@ def test_task_loop_enforces_required_changed_files():
     assert "function Assert-TaskRequiredChangedFiles" in text
     assert "Rejected required-file contract breach" in text
     assert "Assert-TaskRequiredChangedFiles -Task $task" in text
+
+
+def test_task_loop_enforces_required_diff_markers():
+    text = _runner_text()
+    assert "lab-risk-contract-source-test-v3" in text
+    assert "RequiredDiffContains" in text
+    assert "function Assert-TaskRequiredDiffContains" in text
+    assert "Rejected required-diff contract breach" in text
+    assert "Assert-TaskRequiredDiffContains -Task $task -DiffText $bad" in text

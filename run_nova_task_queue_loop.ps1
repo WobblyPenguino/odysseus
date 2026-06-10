@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "lab-risk-contract-source-test-v3"
+        Goal = "Improve only the isolated Nova improvement lab by adding explicit risk-level contract behaviour. You must modify BOTH nova_improvement_lab\text_tools.py and tests_improvement_lab_contract.py. Add a test named test_score_candidate_improvement_rejects_unknown_risk. Add or update source behaviour so unknown risk levels are rejected clearly, while existing low/high tests still pass. Do not edit broad Nova runtime files."
+        Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
+        RequiredChangedFiles = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
+        RequiredDiffContains = @("test_score_candidate_improvement_rejects_unknown_risk", "ValueError")
+        Tests = @("tests_improvement_lab_contract.py")
+    },
+
+    @{
         Id = "lab-source-test-improvement-v2"
         Goal = "Improve only the isolated Nova improvement lab with one small behaviour change. You must modify BOTH nova_improvement_lab\text_tools.py and tests_improvement_lab_contract.py. Do not make a test-only patch. Do not edit broad Nova runtime files. Keep the change small, reversible, and validated by tests_improvement_lab_contract.py."
         Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
@@ -1057,6 +1066,46 @@ function Assert-TaskRequiredChangedFiles {
 }
 
 
+
+function Get-TaskRequiredDiffContains {
+    param($Task)
+
+    if (!$Task) { return @() }
+
+    if ($Task -is [hashtable] -and $Task.ContainsKey("RequiredDiffContains")) {
+        return @($Task["RequiredDiffContains"])
+    }
+
+    $prop = $Task.PSObject.Properties["RequiredDiffContains"]
+    if ($prop) {
+        return @($prop.Value)
+    }
+
+    return @()
+}
+
+function Assert-TaskRequiredDiffContains {
+    param(
+        $Task,
+        [string]$DiffText
+    )
+
+    $required = @(Get-TaskRequiredDiffContains -Task $Task)
+    if (!$required -or $required.Count -eq 0) { return }
+
+    $missing = @()
+    foreach ($needle in $required) {
+        if (!$DiffText.Contains([string]$needle)) {
+            $missing += [string]$needle
+        }
+    }
+
+    if ($missing.Count -gt 0) {
+        throw "Rejected required-diff contract breach for task '$($Task.Id)': missing required diff marker(s): $($missing -join ', ')."
+    }
+}
+
+
 function Test-DiffLineLooksExecutable {
     param([string]$Line)
 
@@ -1229,6 +1278,7 @@ function Validate-Diff {
     $addedLines = Get-AddedDiffLines -DiffText $bad
     $removedLines = Get-RemovedDiffLines -DiffText $bad
     Assert-TaskRequiredChangedFiles -Task $task
+    Assert-TaskRequiredDiffContains -Task $task -DiffText $bad
     if (!(Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines))) {
         throw "Rejected documentation/comment-only patch with no executable code change."
     }
