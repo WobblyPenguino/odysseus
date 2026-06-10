@@ -1353,6 +1353,22 @@ function Resolve-TaskScore {
     return $null
 }
 
+
+function Resolve-SelectedTaskScoreFromSummary {
+    if (!(Test-Path $SummaryLatest)) {
+        return $null
+    }
+
+    $lines = @(Get-Content $SummaryLatest -ErrorAction SilentlyContinue)
+    foreach ($line in @($lines | Select-Object -Last 80)) {
+        if ($line -match "Selected task .+?: score=(-?\d+)") {
+            try { return [int]$Matches[1] } catch {}
+        }
+    }
+
+    return $null
+}
+
 function Write-TaskPoolExhaustedReport {
     param(
         $Task,
@@ -1416,6 +1432,9 @@ if ($PreflightOnly) {
     Add-Summary "Targeted tests: $($task.Tests -join ', ')"
     Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
     $preflightTaskScore = Resolve-TaskScore -Task $task
+    if ($null -eq $preflightTaskScore) {
+        $preflightTaskScore = Resolve-SelectedTaskScoreFromSummary
+    }
     if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
         Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
         Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
@@ -1566,6 +1585,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
     )
 
     $taskScoreForProductivity = Resolve-TaskScore -Task $task
+    if ($null -eq $taskScoreForProductivity) {
+        $taskScoreForProductivity = Resolve-SelectedTaskScoreFromSummary
+    }
     if ($null -ne $taskScoreForProductivity -and $taskScoreForProductivity -lt $MinProductiveTaskScore) {
         Write-TaskPoolExhaustedReport -Task $task -Phase "live" -Score $taskScoreForProductivity | Out-Null
         break
