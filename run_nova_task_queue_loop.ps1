@@ -580,12 +580,12 @@ function Pick-Task {
 
         $quarantined = $false
         $quarantineReason = ""
-        if ($effectiveFailures -ge $MaxRecentTaskFailures) {
+        if ($signals.RevertedSuccess -gt 0) {
+            $quarantined = $true
+            $quarantineReason = "quarantined after $($signals.RevertedSuccess) reverted accepted commit(s)"
+        } elseif ($effectiveFailures -ge $MaxRecentTaskFailures) {
             $quarantined = $true
             $quarantineReason = "quarantined after $effectiveFailures effective recent failure(s)"
-        } elseif (($signals.RevertedSuccess -gt 0) -and ($signals.NoChange -gt 0)) {
-            $quarantined = $true
-            $quarantineReason = "quarantined after reverted accepted commit plus no-change outcome"
         } elseif ($signals.LowValue -ge ($MaxRecentTaskFailures + 1)) {
             $quarantined = $true
             $quarantineReason = "quarantined after $($signals.LowValue) recent low-value/no-change outcome(s)"
