@@ -142,7 +142,7 @@ def test_task_loop_includes_research_only_repo_inspiration_task():
     assert "docs\\research\\NOVA_AGENT_REPO_INSPIRATION_LATEST.md" in text
     assert "No source code copied" in text
     assert "RequiredChangedFiles" in text
-    assert "RequiredDiffContains" in text
+    assert "RequiredFinalFileContains" in text
 
 
 def test_task_loop_rejects_double_dot_loopback_url_typo():
@@ -158,3 +158,12 @@ def test_research_only_planning_language_is_narrowly_allowed():
     assert 'StartsWith("docs\\research\\")' in text or 'StartsWith("docs\research\")' in text
     assert "Research-only planning fallback: allowed planning language" in text
     assert "Rejected placeholder/speculative patch language." in text
+
+
+def test_task_loop_enforces_required_final_file_contains():
+    text = _runner_text()
+    assert "function Assert-TaskRequiredFinalFileContains" in text
+    assert "Rejected required-final-file contract breach" in text
+    assert "Assert-TaskRequiredFinalFileContains -Task $task" in text
+    assert "$hasResearchOnlyPlanningDiff" in text
+    assert "Research-only executable fallback: accepted docs/research planning diff" in text

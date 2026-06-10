@@ -615,7 +615,9 @@ $ApprovedRecoveryTasks = @(
         Goal = "Research-only planning task. Do not edit Nova runtime source. Create or update docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md with repo/article-inspired ideas for safer Nova autonomous development. The report must include: source names, licence/risk notes, no-copy warning, ranked ideas, suggested RequiredChangedFiles/RequiredDiffContains for the top idea, and validation commands. Do not clone repos or copy external code."
         Editable = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
         RequiredChangedFiles = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
-        RequiredDiffContains = @("Research-only", "No source code copied", "RequiredChangedFiles", "RequiredDiffContains")
+        RequiredFinalFileContains = @{
+            "docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md" = @("Research-only", "No source code copied", "RequiredChangedFiles", "RequiredDiffContains")
+        }
         Tests = @("tests_task_loop_static_contract.py")
     },
 
@@ -1134,6 +1136,46 @@ function Assert-TaskRequiredDiffContains {
 
 
 
+
+function Get-TaskRequiredFinalFileContains {
+    param($Task)
+
+    if (!$Task) { return $null }
+
+    if ($Task -is [hashtable] -and $Task.ContainsKey("RequiredFinalFileContains")) {
+        return $Task["RequiredFinalFileContains"]
+    }
+
+    $prop = $Task.PSObject.Properties["RequiredFinalFileContains"]
+    if ($prop) {
+        return $prop.Value
+    }
+
+    return $null
+}
+
+function Assert-TaskRequiredFinalFileContains {
+    param($Task)
+
+    $contracts = Get-TaskRequiredFinalFileContains -Task $Task
+    if (!$contracts) { return }
+
+    foreach ($path in $contracts.Keys) {
+        $normalisedPath = ([string]$path).Replace("/", "\")
+        if (!(Test-Path -LiteralPath $normalisedPath -PathType Leaf)) {
+            throw "Rejected required-final-file contract breach for task '$($Task.Id)': missing file $normalisedPath."
+        }
+
+        $content = Get-Content -LiteralPath $normalisedPath -Raw -ErrorAction Stop
+        foreach ($marker in @($contracts[$path])) {
+            if (!$content.Contains([string]$marker)) {
+                throw "Rejected required-final-file contract breach for task '$($Task.Id)': file $normalisedPath missing marker '$marker'."
+            }
+        }
+    }
+}
+
+
 function Test-ResearchOnlyPlanningDiff {
     param($Task)
 
@@ -1344,16 +1386,22 @@ function Validate-Diff {
     $removedLines = Get-RemovedDiffLines -DiffText $bad
     Assert-TaskRequiredChangedFiles -Task $task
     Assert-TaskRequiredDiffContains -Task $task -DiffText $bad
+    Assert-TaskRequiredFinalFileContains -Task $task
 
     $hasRequiredDiffContract = @(Get-TaskRequiredDiffContains -Task $task).Count -gt 0
+    $hasResearchOnlyPlanningDiff = Test-ResearchOnlyPlanningDiff -Task $task
     $hasExecutableChange = Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines)
 
-    if (!$hasExecutableChange -and !$hasRequiredDiffContract) {
+    if (!$hasExecutableChange -and !$hasRequiredDiffContract -and !$hasResearchOnlyPlanningDiff) {
         throw "Rejected documentation/comment-only patch with no executable code change."
     }
 
     if (!$hasExecutableChange -and $hasRequiredDiffContract) {
         Add-Summary "Executable classifier fallback: accepted required diff contract after required changed files and required diff markers passed."
+    }
+
+    if (!$hasExecutableChange -and $hasResearchOnlyPlanningDiff) {
+        Add-Summary "Research-only executable fallback: accepted docs/research planning diff without executable source changes."
     }
 
     $deadAddedVariable = Get-DeadAddedVariableName -AddedLines $addedLines
