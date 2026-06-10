@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -214,3 +214,36 @@ def test_autodev_sandbox_renders_action_plan_status_line():
     assert "Total: 1" in idle_line
     assert "Actionable: 0" in idle_line
     assert "Next item: idle" in idle_line
+
+
+def test_autodev_sandbox_builds_action_plan_debug_dict():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    debug_dict = build_action_plan_debug_dict(items)
+    summary = summarise_action_plan(items)
+
+    # Basic fields match the summary
+    assert debug_dict["total"] == summary["total"]
+    assert debug_dict["actionable"] == summary["actionable"]
+    assert debug_dict["next_title"] == summary["next_title"]
+    assert debug_dict["next_status"] == summary["next_status"]
+    assert debug_dict["next_score"] == summary["next_score"]
+
+    # has_next reflects presence of a next item
+    expected_has_next = summary["next_title"] is not None
+    assert debug_dict["has_next"] == expected_has_next
+
+    # status_line should match the rendered single‑line status
+    assert debug_dict["status_line"] == render_action_plan_status_line(items)
+
+    # Test when no actionable items remain
+    idle_items = [WorkItem("done_item", status="done")]
+    idle_debug = build_action_plan_debug_dict(idle_items)
+    assert idle_debug["next_title"] is None
+    assert idle_debug["has_next"] is False
+    assert "idle" in idle_debug["status_line"]

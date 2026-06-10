@@ -248,3 +248,36 @@ def render_action_plan_status_line(items: Iterable[WorkItem]) -> str:
         f"Actionable: {summary['actionable']}; "
         f"Next item: {next_part}"
     )
+
+
+# New function added for the task
+def build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object]:
+    """
+    Build a stable debug dictionary for an action plan.
+
+    The dictionary contains:
+      - total (int)
+      - actionable (int)
+      - next_title (str | None)
+      - next_status (str | None)
+      - next_score (int | None)
+      - has_next (bool) – True if there is a next item
+      - status_line (str) – the single‑line status from render_action_plan_status_line
+
+    This function simply aggregates data from :func:`summarise_action_plan`
+    and :func:`render_action_plan_status_line` to provide a convenient
+    debugging view.
+    """
+    summary = summarise_action_plan(items)
+    status_line = render_action_plan_status_line(items)
+    has_next = summary["next_title"] is not None
+
+    return {
+        "total": summary["total"],
+        "actionable": summary["actionable"],
+        "next_title": summary["next_title"],
+        "next_status": summary["next_status"],
+        "next_score": summary["next_score"],
+        "has_next": has_next,
+        "status_line": status_line,
+    }
