@@ -192,3 +192,37 @@ def format_action_plan_summary(summary: Mapping[str, object]) -> str:
         next_part = f"{next_title} (status={next_status}, score={next_score})"
 
     return f"Total: {total}; Actionable: {actionable}; Next item: {next_part}"
+
+
+def render_action_plan_markdown(items: Iterable[WorkItem]) -> str:
+    """
+    Render a small Markdown summary of the action plan.
+
+    The function uses :func:`summarise_action_plan` and
+    :func:`format_action_plan_summary` to obtain a stable textual
+    representation, then formats that information into a Markdown block
+    with a heading and bullet lines for total, actionable, next title,
+    next status, and next score.  The output is deterministic and
+    suitable for display in the Nova UI.
+    """
+    summary = summarise_action_plan(items)
+    # Ensure format_action_plan_summary is used as required by the task spec.
+    _ = format_action_plan_summary(summary)
+
+    lines = [
+        "## Action Plan",
+        f"- Total: {summary['total']}",
+        f"- Actionable: {summary['actionable']}",
+    ]
+
+    if summary["next_title"] is None:
+        # No actionable items – represent as idle.
+        lines.append("- Next title: idle")
+        lines.append("- Next status:")
+        lines.append("- Next score:")
+    else:
+        lines.append(f"- Next title: {summary['next_title']}")
+        lines.append(f"- Next status: {summary['next_status']}")
+        lines.append(f"- Next score: {summary['next_score']}")
+
+    return "\n".join(lines)

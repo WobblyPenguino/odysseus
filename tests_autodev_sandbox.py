@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -167,3 +167,28 @@ def test_autodev_sandbox_formats_action_plan_summary():
         assert str(summary["next_score"]) in formatted
     else:
         assert "idle" in formatted
+
+
+def test_autodev_sandbox_renders_action_plan_markdown():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    markdown = render_action_plan_markdown(items)
+    # The Markdown should start with the heading
+    assert markdown.startswith("## Action Plan")
+    # It should contain bullet lines for total, actionable, next title, next status and next score
+    assert "- Total: 4" in markdown
+    assert "- Actionable: 3" in markdown
+    assert "- Next title: b" in markdown
+    assert "- Next status: blocked" in markdown
+    assert f"- Next score: {priority_score(WorkItem('b', status='blocked'))}" in markdown
+
+    # When there are no actionable items, the next lines should indicate idle
+    idle_markdown = render_action_plan_markdown([WorkItem("done_item", status="done")])
+    assert "- Next title: idle" in idle_markdown
+    assert "- Next status:" in idle_markdown
+    assert "- Next score:" in idle_markdown
