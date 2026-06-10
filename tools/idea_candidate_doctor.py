@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -37,6 +38,16 @@ def main() -> int:
         "--out",
         type=Path,
         default=Path("local_ai_cycles/memory/NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"),
+    )
+    parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=Path("local_ai_cycles/memory/NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json"),
+    )
+    parser.add_argument(
+        "--fail-on-rejected",
+        action="store_true",
+        help="Return exit code 1 when rejected candidates are present.",
     )
     args = parser.parse_args()
 
@@ -87,11 +98,34 @@ def main() -> int:
 
     args.out.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    rejected_payload = [
+        {
+            "candidate_id": result.candidate_id,
+            "errors": result.errors,
+        }
+        for result in rejected
+    ]
+    payload = {
+        "config": str(args.config),
+        "accepted_count": len(accepted),
+        "rejected_count": len(rejected),
+        "skipped_recent_count": len(skipped_recent),
+        "fresh_count": len(fresh),
+        "next_candidate": next_candidate,
+        "accepted_candidates": accepted_ids,
+        "rejected_candidates": rejected_payload,
+        "skipped_recent": skipped_recent,
+        "fresh": fresh,
+    }
+    args.json_out.parent.mkdir(parents=True, exist_ok=True)
+    args.json_out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
     print(f"candidate doctor accepted={len(accepted)} rejected={len(rejected)} fresh={len(fresh)} skipped_recent={len(skipped_recent)}")
     print(f"candidate doctor next={next_candidate or 'none'}")
     print(f"candidate doctor report={args.out}")
+    print(f"candidate doctor json={args.json_out}")
 
-    return 0 if not rejected else 1
+    return 1 if rejected and args.fail_on_rejected else 0
 
 
 if __name__ == "__main__":

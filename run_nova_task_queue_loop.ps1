@@ -2611,14 +2611,36 @@ if ($PreflightOnly) {
     Add-Summary "## Preflight task selection"
     Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 
+$externalCandidatePoolFresh = $true
+
 if (Test-Path ".\tools\idea_candidate_doctor.py") {
     Run-Cmd "python .\tools\idea_candidate_doctor.py"
     Add-Summary "Idea candidate doctor report: .\local_ai_cycles\memory\NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"
+
+    $doctorJson = ".\local_ai_cycles\memory\NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json"
+    if (Test-Path $doctorJson) {
+        try {
+            $doctorState = Get-Content $doctorJson -Raw | ConvertFrom-Json
+            $freshCount = [int]$doctorState.fresh_count
+            $nextCandidate = [string]$doctorState.next_candidate
+            Add-Summary "Idea candidate doctor fresh count: $freshCount"
+            Add-Summary "Idea candidate doctor next candidate: $($nextCandidate -replace '^$', 'none')"
+            if ($freshCount -le 0) {
+                $externalCandidatePoolFresh = $false
+            }
+        } catch {
+            Add-Summary "Idea candidate doctor JSON parse failed: $($_.Exception.Message)"
+        }
+    }
 }
 
-Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
-Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
-Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+if ($externalCandidatePoolFresh) {
+    Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
+    Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+    Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+} else {
+    Add-Summary "Idea promotion skipped: external candidate pool exhausted"
+}
     $task = Pick-Task
     if (!$task) {
         Add-Summary "Result: manual-review-needed"
@@ -2657,9 +2679,37 @@ Clean-GeneratedNoise
 Assert-CleanGit
 Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
 Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
-Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
-Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
-Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+
+$externalCandidatePoolFresh = $true
+
+if (Test-Path ".\tools\idea_candidate_doctor.py") {
+    Run-Cmd "python .\tools\idea_candidate_doctor.py"
+    Add-Summary "Idea candidate doctor report: .\local_ai_cycles\memory\NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"
+
+    $doctorJson = ".\local_ai_cycles\memory\NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json"
+    if (Test-Path $doctorJson) {
+        try {
+            $doctorState = Get-Content $doctorJson -Raw | ConvertFrom-Json
+            $freshCount = [int]$doctorState.fresh_count
+            $nextCandidate = [string]$doctorState.next_candidate
+            Add-Summary "Idea candidate doctor fresh count: $freshCount"
+            Add-Summary "Idea candidate doctor next candidate: $($nextCandidate -replace '^$', 'none')"
+            if ($freshCount -le 0) {
+                $externalCandidatePoolFresh = $false
+            }
+        } catch {
+            Add-Summary "Idea candidate doctor JSON parse failed: $($_.Exception.Message)"
+        }
+    }
+}
+
+if ($externalCandidatePoolFresh) {
+    Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
+    Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+    Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+} else {
+    Add-Summary "Idea promotion skipped: external candidate pool exhausted"
+}
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"

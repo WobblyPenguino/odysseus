@@ -672,3 +672,13 @@ def test_task_loop_does_not_write_stale_external_json_draft_when_pool_exhausted(
     assert "Result: external-candidate-pool-exhausted" in text
     assert "Idea promotion task draft built-in freshness fallback reused candidate:" in text
     assert "Idea promotion task draft freshness fallback reused candidate:" not in text
+
+
+def test_task_loop_reads_candidate_doctor_json_and_skips_exhausted_external_pool():
+    text = _runner_text()
+    assert "NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json" in text
+    assert "$doctorState = Get-Content $doctorJson -Raw | ConvertFrom-Json" in text
+    assert "Idea candidate doctor fresh count:" in text
+    assert "Idea candidate doctor next candidate:" in text
+    assert "if ($freshCount -le 0)" in text
+    assert "Idea promotion skipped: external candidate pool exhausted" in text
