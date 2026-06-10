@@ -1356,6 +1356,90 @@ Assert-CleanGit
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
 
+
+$MaxAiderEditableFileBytes = 120000
+
+function Write-TaskLargeFileSnippetContext {
+    param(
+        [hashtable]$Task,
+        [string]$Path
+    )
+
+    $output = @(
+        "# Nova large-file targeted snippets",
+        "",
+        "Generated because one or more task editable files may be too large for safe full-context Aider editing.",
+        "Large files are provided as read-only excerpts. Prefer small helper modules or targeted tests instead of broad large-file edits.",
+        ""
+    )
+
+    $goal = [string]($Task.Goal)
+    $goalTerms = @($goal -split "[^A-Za-z0-9_]+" | Where-Object { $_.Length -ge 5 } | Select-Object -Unique -First 25)
+    $baseTerms = @(
+        "def ", "class ", "function ", "return ", "raise ", "import ",
+        "render", "load", "build", "validate", "status", "context",
+        "timeout", "evidence", "project", "task", "continue", "readiness",
+        "failure", "summary", "aider", "large", "snippet"
+    )
+    $terms = @($baseTerms + $goalTerms | Select-Object -Unique)
+
+    $largeFilesFound = 0
+
+    foreach ($target in @($Task.Editable)) {
+        if (!(Test-Path $target)) { continue }
+
+        $item = Get-Item $target
+        if ($item.Length -le $MaxAiderEditableFileBytes) { continue }
+
+        $largeFilesFound += 1
+        $allLines = @(Get-Content $target)
+        $include = New-Object 'System.Collections.Generic.HashSet[int]'
+
+        for ($idx = 0; $idx -lt $allLines.Count; $idx++) {
+            $line = [string]$allLines[$idx]
+            $matched = $false
+            foreach ($term in $terms) {
+                if ($line.IndexOf([string]$term, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                    $matched = $true
+                    break
+                }
+            }
+
+            if ($matched) {
+                $start = [Math]::Max(0, $idx - 15)
+                $end = [Math]::Min($allLines.Count - 1, $idx + 25)
+                for ($j = $start; $j -le $end; $j++) {
+                    [void]$include.Add([int]$j)
+                }
+            }
+        }
+
+        if ($include.Count -eq 0) {
+            for ($j = 0; $j -lt [Math]::Min(120, $allLines.Count); $j++) {
+                [void]$include.Add([int]$j)
+            }
+        }
+
+        $output += ""
+        $output += "## $target"
+        $output += "Size: $($item.Length) bytes. Full file intentionally not added as editable context."
+        $output += ""
+
+        $selected = @($include | Sort-Object | Select-Object -First 700)
+        foreach ($lineNumber in $selected) {
+            $output += ("{0,5}: {1}" -f ([int]$lineNumber + 1), $allLines[[int]$lineNumber])
+        }
+    }
+
+    if ($largeFilesFound -gt 0) {
+        Set-Content -Path $Path -Value $output -Encoding UTF8
+        return $Path
+    }
+
+    return ""
+}
+
+
 for ($i = 1; $i -le $Cycles; $i++) {
     Write-Host ""
     Write-Host "===== NOVA TASK QUEUE CYCLE $i / $Cycles ====="
@@ -1403,11 +1487,29 @@ for ($i = 1; $i -le $Cycles; $i++) {
         "--map-tokens", "0"
     )
 
+    $snippetContext = Write-TaskLargeFileSnippetContext -Task $task -Path (Join-Path "local_ai_cycles" ("task_large_file_snippets_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".md"))
+    $largeEditableFiles = @()
+
     foreach ($f in $task.Editable) {
+        if ((Test-Path $f) -and ((Get-Item $f).Length -gt $MaxAiderEditableFileBytes)) {
+            $largeEditableFiles += $f
+            continue
+        }
         $aiderArgs += $f
     }
 
-    $denyInput = "don't`n" + ((1..400 | ForEach-Object { "skip" }) -join "`n") + "`n"
+    if ($snippetContext) {
+        $aiderArgs += "--read"
+        $aiderArgs += $snippetContext
+        Add-Summary "Large-file snippet context: $snippetContext"
+    }
+
+    if ($largeEditableFiles.Count -gt 0) {
+        Add-Summary "Skipped huge editable file(s), provided snippets instead: $($largeEditableFiles -join ', ')"
+        Write-Host "Large editable file(s) skipped and excerpted for context: $($largeEditableFiles -join ', ')"
+    }
+
+    $denyInput = "D`n" + ((1..600 | ForEach-Object { "skip" }) -join "`n") + "`n"
     Add-Summary "Aider output log: $out"
 Write-Host "Aider output is being saved to: $out"
 $denyInput | & $Aider @aiderArgs *> $out
