@@ -11,35 +11,35 @@ Build a local-first iterative development pipeline that can safely improve an ex
 ## Recommended staged pipeline
 
 1. Snapshot current HEAD, branch, dirty state, tags, failures.
-2. Select one narrow task with explicit source files and tests.
+2. Select one narrow source+test task.
 3. Write a localization report before mutation.
 4. Write a task contract before mutation.
 5. Run baseline prechecks.
-6. Let Aider or another mutator edit only allowed files.
+6. Let Aider edit only allowed files.
 7. Generate a local CodeRabbit-style patch review report.
-8. Run static analysis.
+8. Run static analysis/tool status checks.
 9. Run targeted tests.
 10. Run baseline regression tests.
 11. Run invariant checks.
 12. Commit or revert.
 13. Record result in memory.
 14. Reduce scores for repeated failures and cooldown recent successes.
-15. Require human approval for broad/risky changes.
+15. Require human approval for broad or risky changes.
 
-## Tools to consider
+## Tool buckets
 
-### Agent architecture inspiration
+Agent architecture:
 - OpenHands
 - SWE-agent
 - Aider
-- RepoReviewer
+- RepoReviewer-style review pipelines
 
-### Code review inspiration
-- CodeRabbit-style diff review
+Code review:
+- CodeRabbit-style patch summaries
 - Qodo-style contextual review
-- reviewdog-style inline comments
+- reviewdog-style comments
 
-### Static analysis
+Static analysis:
 - ruff
 - mypy or pyright
 - semgrep
@@ -49,40 +49,38 @@ Build a local-first iterative development pipeline that can safely improve an ex
 - vulture
 - radon
 
-### Testing
+Testing:
 - pytest
 - pytest-cov
 - pytest-randomly
 - mutmut
 - hypothesis
 
-### Repo understanding
+Repo understanding:
 - ripgrep
 - ast-grep
 - tree-sitter
-- import/dependency graph reports
+- import graph reports
 
-## Highest-value next local task
+## Highest-value next local implementation
 
-Add a local patch review report stage:
+Add a local patch review report:
 
 Path:
 - local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md
 
-Suggested helper:
+Helper:
 - Write-PatchReviewReport
 
-Suggested tests:
-- test_task_loop_writes_patch_review_report
-- test_task_loop_patch_review_report_mentions_unexpected_files
-- test_task_loop_patch_review_report_mentions_validation_commands
+It should include:
+- task id
+- changed files
+- allowed files
+- unexpected files
+- required files
+- required diff markers
+- targeted tests
+- risk notes
+- reviewer verdict
 
-Suggested RequiredDiffContains:
-- Write-PatchReviewReport
-- NOVA_PATCH_REVIEW_LATEST.md
-- test_task_loop_writes_patch_review_report
-
-Acceptance:
-- Report is generated before commit.
-- Report includes changed files, allowed files, unexpected files, risk notes, test commands, and reviewer verdict.
-- It does not replace validation; it informs validation.
+This report does not replace validation. It gives Nova and the user a patch-review checkpoint before commit.
