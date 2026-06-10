@@ -367,3 +367,14 @@ def test_task_loop_idea_pool_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_writes_idea_pool_during_preflight():
+    text = _runner_text()
+    preflight_pos = text.find("if ($PreflightOnly) {")
+    call_pos = text.find("Write-TaskIdeaPoolReport -Path", preflight_pos)
+    pick_pos = text.find("$task = Pick-Task", preflight_pos)
+    assert preflight_pos != -1
+    assert call_pos != -1
+    assert pick_pos != -1
+    assert preflight_pos < call_pos < pick_pos

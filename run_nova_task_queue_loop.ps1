@@ -2151,6 +2151,7 @@ function Write-TaskIdeaPoolReport {
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
+    Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
     $task = Pick-Task
     if (!$task) {
         Add-Summary "Result: manual-review-needed"
