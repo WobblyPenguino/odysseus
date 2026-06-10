@@ -1306,6 +1306,10 @@ function Validate-Diff {
         throw "Rejected invalid loopback URL typo 127.0.0-1; use 127.0.0.1."
     }
 
+    if ($bad.Contains("127.0.0..11434")) {
+        throw "Rejected invalid loopback URL typo 127.0.0..11434; use 127.0.0.1:11434."
+    }
+
     $addedLines = Get-AddedDiffLines -DiffText $bad
     $removedLines = Get-RemovedDiffLines -DiffText $bad
     Assert-TaskRequiredChangedFiles -Task $task

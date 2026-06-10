@@ -143,3 +143,9 @@ def test_task_loop_includes_research_only_repo_inspiration_task():
     assert "No source code copied" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_rejects_double_dot_loopback_url_typo():
+    text = _runner_text()
+    assert "Rejected invalid loopback URL typo 127.0.0..11434" in text
+    assert "127.0.0.1:11434" in text
