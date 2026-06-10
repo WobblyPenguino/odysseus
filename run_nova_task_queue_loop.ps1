@@ -7,6 +7,7 @@ param(
     [int]$MaxRecentTaskFailures = 2,
     [int]$MaxRecoveryCandidates = 3,
     [switch]$FailOnNoHealthyTask,
+    [switch]$AllowLowValueRecovery,
     [Alias("DryRun")]
     [switch]$PreflightOnly
 )
@@ -585,6 +586,7 @@ function Invoke-TaskRecoveryCheck {
     } else {
         if ($Row.Reasons -match "reverted-success") { return $false }
         if ($Row.Reasons -match "protected-file|context/protected|recursive /command-verify|full command output capture") { return $false }
+        if ((-not $AllowLowValueRecovery) -and ($Row.Reasons -match "low-value|no-change")) { return $false }
     }
 
     $task = $Row.Task
@@ -785,10 +787,16 @@ function Pick-Task {
         Add-Summary "Skipping task $($row.Id): $($row.QuarantineReason)."
     }
 
-    $eligible = @($rows | Where-Object { -not $_.Quarantined })
+    $eligible = @($rows | Where-Object {
+        (-not $_.Quarantined) -and
+        (-not $RunTaskCooldown.Contains([string]$_.Task.Id))
+    })
     if (!$eligible) {
         Add-Summary "No eligible task before recovery; checking quarantined tasks with targeted tests."
-        $strictCandidates = @($rows | Where-Object { $_.Quarantined } | Sort-Object Score -Descending | Select-Object -First $MaxRecoveryCandidates)
+        $strictCandidates = @($rows | Where-Object {
+            $_.Quarantined -and
+            (-not $RunTaskCooldown.Contains([string]$_.Task.Id))
+        } | Sort-Object Score -Descending | Select-Object -First $MaxRecoveryCandidates)
         foreach ($row in $strictCandidates) {
             if (Invoke-TaskRecoveryCheck -Row $row) {
                 $row.Quarantined = $false
@@ -799,10 +807,16 @@ function Pick-Task {
             }
         }
 
-        $eligible = @($rows | Where-Object { -not $_.Quarantined })
+        $eligible = @($rows | Where-Object {
+        (-not $_.Quarantined) -and
+        (-not $RunTaskCooldown.Contains([string]$_.Task.Id))
+    })
         if (!$eligible) {
             Add-Summary "Strict recovery found no task; trying relaxed stale-quarantine recovery for up to $MaxRecoveryCandidates candidate(s)."
-            $relaxedCandidates = @($rows | Where-Object { $_.Quarantined } | Sort-Object Score -Descending | Select-Object -First $MaxRecoveryCandidates)
+            $relaxedCandidates = @($rows | Where-Object {
+                $_.Quarantined -and
+                (-not $RunTaskCooldown.Contains([string]$_.Task.Id))
+            } | Sort-Object Score -Descending | Select-Object -First $MaxRecoveryCandidates)
             foreach ($row in $relaxedCandidates) {
                 if (Invoke-TaskRecoveryCheck -Row $row -Relaxed) {
                     $row.Quarantined = $false
@@ -821,7 +835,10 @@ function Pick-Task {
         Add-Summary "- $($row.Id): score=$($row.Score), state=$state, reasons=$($row.Reasons)"
     }
 
-    $eligible = @($rows | Where-Object { -not $_.Quarantined })
+    $eligible = @($rows | Where-Object {
+        (-not $_.Quarantined) -and
+        (-not $RunTaskCooldown.Contains([string]$_.Task.Id))
+    })
     if (!$eligible) {
         Write-NoHealthyTaskReviewNote -Rows $rows
         Add-Summary "Result: blocked"
@@ -1162,6 +1179,7 @@ Add-Summary "MinChangedLines: $MinChangedLines"
 Add-Summary "MaxRecentTaskFailures: $MaxRecentTaskFailures"
 Add-Summary "MaxRecoveryCandidates: $MaxRecoveryCandidates"
 Add-Summary "FailOnNoHealthyTask: $FailOnNoHealthyTask"
+Add-Summary "AllowLowValueRecovery: $AllowLowValueRecovery"
 Add-Summary "PreflightOnly: $PreflightOnly"
 Ensure-RevertedSuccessEvents
 
