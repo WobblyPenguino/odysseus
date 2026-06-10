@@ -105,6 +105,16 @@ def test_model_chat_defaults_to_config_model_when_no_model_passed() -> None:
             router.ollama_chat = old_ollama_chat
 
 
+def test_model_context_pack_includes_prompt_named_python_file_preview() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_py_") as tmp:
+        root = Path(tmp)
+        (root / "script.py").write_text("print('hello')", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "script.py" in pack.text
+        assert "print('hello')" in pack.text
+
+
 def run_all(verbose: bool = False) -> None:
     tests = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_") and callable(fn)]
     for name, fn in tests:

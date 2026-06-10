@@ -55,6 +55,20 @@ def _first_json_file(folder: Path, patterns: list[str]) -> Path | None:
         return candidates[-1]
 
 
+def _prompt_named_files(prompt: str, workspace: Path) -> list[tuple[str, str]]:
+    """Return a list of (filename, preview) for small top‑level files explicitly named in the prompt."""
+    named_files = []
+    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
+        candidate = (workspace / match).resolve()
+        try:
+            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
+                if candidate.exists() and candidate.is_file():
+                    named_files.append((match, _safe_read_text(candidate, limit=2200)))
+        except Exception:
+            continue
+    return named_files
+
+
 def _workspace_summary(workspace: Path, prompt: str) -> dict[str, Any]:
     summary: dict[str, Any] = {"path": str(workspace), "exists": workspace.exists()}
     if not workspace.exists() or not workspace.is_dir():
@@ -81,15 +95,7 @@ def _workspace_summary(workspace: Path, prompt: str) -> dict[str, Any]:
     if previews:
         summary["previews"] = previews
     # If the prompt names a file, include a compact preview when it is in workspace.
-    named_files = []
-    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
-        candidate = (workspace / match).resolve()
-        try:
-            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
-                if candidate.exists() and candidate.is_file():
-                    named_files.append((match, _safe_read_text(candidate, limit=2200)))
-        except Exception:
-            continue
+    named_files = _prompt_named_files(prompt, workspace)
     if named_files:
         summary["named_file_previews"] = {name: text for name, text in named_files[:4] if text}
     return summary
@@ -107,7 +113,7 @@ def _active_file_contexts() -> list[dict[str, Any]]:
                 "kind": ctx.kind,
                 "size_bytes": ctx.size_bytes,
                 "summary": ctx.summary,
-                "image_hint": f"Use /image-analyze context:{ctx.context_id} => PROMPT" if ctx.kind == "image" else "",
+                "image_hint": f"Use /image-analyze context:{ctx.context_id} => PROMPT analyzes an uploaded image/photo" if ctx.kind == "image" else "",
             })
         return rows
     except Exception:
@@ -221,7 +227,7 @@ def _build_model_context_pack_cached(
         workspace=workspace,
         allow_mutating_tools=False,
         allow_internet=allow_internet,
-        ollama_url="http://127.0.0.1:11434",
+        ollama_url="http://127.0.0-1:11434",
         model=model,
         chat_model=chat_model,
         planner_model=planner_model,
