@@ -63,7 +63,7 @@ function Add-Summary {
 }
 
 function Clean-GeneratedNoise {
-    git restore -- docs/NOVA_LEGACY_CONTINUITY_CONTRACT.json docs/NOVA_PROJECT_STATE_LATEST.json docs/NOVA_PROJECT_STATE_LATEST.md docs/NOVA_LLM_TRAINING_LAB_LATEST.json docs/NOVA_LLM_TRAINING_LAB_LATEST.md docs/NOVA_MODEL_CALIBRATION_LATEST.json docs/NOVA_MODEL_CALIBRATION_LATEST.md docs/NOVA_RELEASE_READINESS_LATEST.json docs/NOVA_RELEASE_READINESS_LATEST.md logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt 2>$null
+    git restore -- docs/NOVA_LEGACY_CONTINUITY_CONTRACT.json docs/NOVA_PROJECT_STATE_LATEST.json docs/NOVA_PROJECT_STATE_LATEST.md docs/NOVA_LLM_TRAINING_LAB_LATEST.json docs/NOVA_LLM_TRAINING_LAB_LATEST.md docs/NOVA_MODEL_CALIBRATION_LATEST.json docs/NOVA_MODEL_CALIBRATION_LATEST.md docs/NOVA_RELEASE_READINESS_LATEST.json docs/NOVA_RELEASE_READINESS_LATEST.md logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt logs/validation_latest.json logs/validation_latest.txt logs/validation_progress.jsonl 2>$null
     git clean -fd logs/project_state logs/task_evidence code_quality_gates code_reviews codebase_integrity_reports 2>$null
 }
 
@@ -81,7 +81,10 @@ function Clear-GeneratedValidationNoise {
         "docs/NOVA_MODEL_CALIBRATION_LATEST.md",
         "docs/NOVA_RELEASE_READINESS_LATEST.json",
         "docs/NOVA_RELEASE_READINESS_LATEST.md",
-        "logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt"
+        "logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt",
+        "logs/validation_progress.jsonl",
+        "logs/validation_latest.txt",
+        "logs/validation_latest.json"
     )
 
     foreach ($file in $knownFiles) {
