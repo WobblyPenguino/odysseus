@@ -127,7 +127,7 @@ function Run-Cmd {
     $out | Add-Content $SummaryLatest
     $out | Add-Content $TaskMemory
 
-    if ($aiderExitCode -ne 0) {
+    if ($LASTEXITCODE -ne 0) {
         throw "Command failed: $Command"
     }
 }
@@ -1360,7 +1360,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
         continue
     }
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($aiderExitCode -ne 0) {
         Append-Mistake $task.Id "Aider failed" "aider-failed" "aider-run" "reset dirty state, cleaned generated noise, and skipped task" "Aider exited non-zero before a safe diff could be validated."
         "$(Get-Date -Format s) task=$($task.Id) category=aider-failed reason=aider-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
