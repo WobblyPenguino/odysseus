@@ -378,3 +378,19 @@ def test_task_loop_writes_idea_pool_during_preflight():
     assert call_pos != -1
     assert pick_pos != -1
     assert preflight_pos < call_pos < pick_pos
+
+
+def test_task_loop_approved_recovery_tasks_include_select_next_work_item_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 20000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-select-next-work-item-v1"' in approved_text
+    assert "select_next_work_item" in approved_text
+    assert "test_autodev_sandbox_selects_highest_priority_item" in approved_text
+    assert "sort_work_items_by_priority" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text
