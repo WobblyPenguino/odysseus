@@ -815,8 +815,10 @@ function Pick-Task {
             $reasons += "$($signals.NoChange) recent no-change outcome(s)"
         }
         if ($signals.RecentSuccess -gt 0) {
-            $score -= 12 * $signals.RecentSuccess
-            $reasons += "$($signals.RecentSuccess) recent success cooldown(s)"
+            $recentSuccessesForPenalty = [Math]::Min([int]$signals.RecentSuccess, 3)
+            $successCooldownPenalty = 45 * $recentSuccessesForPenalty
+            $score -= $successCooldownPenalty
+            $reasons += "$($signals.RecentSuccess) recent success cooldown(s); success cooldown penalty=$successCooldownPenalty"
         }
         if ($signals.Recoveries -gt 0) {
             if ($usableRecoveries -gt 0) {
