@@ -37,8 +37,11 @@ function New-Tab {
 
 $statusBox = New-Tab "Status"
 $summaryBox = New-Tab "Summary"
+$eventsBox = New-Tab "Task Events"
+$traceBox = New-Tab "Mistake Traces"
 $aiderBox = New-Tab "Latest Aider Output"
 $mistakeBox = New-Tab "Mistakes"
+$reviewBox = New-Tab "Manual Review"
 
 $form.Controls.Add($tabs)
 
@@ -75,14 +78,107 @@ function Run-GitText {
     }
 }
 
+function Read-JsonlTail {
+    param(
+        [string]$Path,
+        [int]$Lines = 40
+    )
+
+    if (!(Test-Path $Path)) {
+        return @()
+    }
+
+    $rows = @()
+    foreach ($line in (Get-Content $Path -Tail $Lines -ErrorAction SilentlyContinue)) {
+        if (!$line) { continue }
+        try {
+            $rows += ($line | ConvertFrom-Json -ErrorAction Stop)
+        }
+        catch {}
+    }
+    return $rows
+}
+
+function Format-ValueList {
+    param($Value)
+
+    if ($null -eq $Value) { return "" }
+    if ($Value -is [array]) { return (($Value | Where-Object { $_ }) -join ", ") }
+    return [string]$Value
+}
+
+function Format-LoopEvent {
+    param($Event)
+
+    if ($null -eq $Event) {
+        return "(none)"
+    }
+
+    $parts = @(
+        "Created: $($Event.created_at)",
+        "Task: $($Event.task)",
+        "Result: $($Event.result)",
+        "Category: $($Event.category)",
+        "Stage: $($Event.stage)",
+        "Model: $($Event.model)",
+        "Head: $($Event.head)",
+        "Before: $($Event.before)",
+        "After: $($Event.after)",
+        "Reason: $($Event.reason)",
+        "Message: $($Event.message)",
+        "Action taken: $($Event.action_taken)",
+        "Changed files: $(Format-ValueList $Event.changed_files)",
+        "Validation gates: $(Format-ValueList $Event.validation_gates)",
+        "Validation commands: $(Format-ValueList $Event.validation_commands)",
+        "Audit note: $($Event.audit_note)",
+        "Diff/stat:",
+        "$($Event.diff_stat)"
+    )
+    return ($parts -join [Environment]::NewLine).Trim()
+}
+
+function Format-LoopEvents {
+    param(
+        [string]$Title,
+        [object[]]$Rows
+    )
+
+    if (!$Rows -or $Rows.Count -eq 0) {
+        return "$Title`r`n(no JSONL rows found)"
+    }
+
+    $nl = [Environment]::NewLine
+    $chunks = @($Title, "")
+    foreach ($row in ($Rows | Select-Object -Last 20)) {
+        $chunks += Format-LoopEvent $row
+        $chunks += ("-" * 80)
+    }
+    return $chunks -join $nl
+}
+
+function Format-CompactEvent {
+    param($Event)
+
+    if ($null -eq $Event) { return "(none)" }
+    $stage = if ($Event.stage) { " stage=$($Event.stage)" } else { "" }
+    return "$($Event.created_at) task=$($Event.task) result=$($Event.result) category=$($Event.category)$stage model=$($Event.model) head=$($Event.head)"
+}
+
 function Refresh-NovaMonitor {
     $nl = [Environment]::NewLine
     $memory = Join-Path $Repo "local_ai_cycles\memory"
     $summary = Join-Path $memory "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
     $mistakes = Join-Path $memory "MISTAKE_MEMORY.md"
+    $events = Join-Path $memory "TASK_LOOP_EVENTS.jsonl"
+    $mistakeTraces = Join-Path $memory "MISTAKES.jsonl"
+    $manualReview = Join-Path $memory "NOVA_TASK_LOOP_MANUAL_REVIEW_LATEST.md"
 
     $gitStatus = Run-GitText @("status", "--short")
     $head = Run-GitText @("log", "--oneline", "-8")
+    $eventRows = @(Read-JsonlTail $events 80)
+    $mistakeRows = @(Read-JsonlTail $mistakeTraces 80)
+    $latestEvent = $eventRows | Select-Object -Last 1
+    $latestMistake = $mistakeRows | Select-Object -Last 1
 
     $latestAider = Get-ChildItem (Join-Path $Repo "local_ai_cycles") -Filter "task_aider_*.out.txt" -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime -Descending |
@@ -101,6 +197,15 @@ function Refresh-NovaMonitor {
         "Git status:",
         $gitStatus,
         "",
+        "Latest structured event:",
+        (Format-CompactEvent $latestEvent),
+        "",
+        "Latest structured mistake:",
+        (Format-CompactEvent $latestMistake),
+        "",
+        "Manual review note:",
+        $manualReview,
+        "",
         "Recent commits:",
         $head,
         "",
@@ -115,8 +220,11 @@ function Refresh-NovaMonitor {
 
     $statusBox.Text = $statusLines -join $nl
     $summaryBox.Text = Read-Tail $summary 260
+    $eventsBox.Text = Format-LoopEvents "Structured Task Events" $eventRows
+    $traceBox.Text = Format-LoopEvents "Structured Mistake Traces" $mistakeRows
     $aiderBox.Text = $aiderText
     $mistakeBox.Text = Read-Tail $mistakes 220
+    $reviewBox.Text = Read-Tail $manualReview 220
 }
 
 $timer = New-Object System.Windows.Forms.Timer
