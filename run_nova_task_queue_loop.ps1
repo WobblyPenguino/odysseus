@@ -747,6 +747,10 @@ function Validate-AiderClaimsAgainstDiff {
             throw "Rejected Aider claim/diff mismatch: claimed HTTP response body capture but diff does not use body in error recording."
         }
     }
+
+    if ($plain -match "(?is)doesn.?t alter functionality|does not alter functionality|no functionality change") {
+        throw "Rejected cosmetic-only patch: Aider described the change as not altering functionality."
+    }
 }
 
 function Validate-Diff {
@@ -908,6 +912,18 @@ function Write-TaskPrompt {
     $flat | Set-Content $Path
 }
 
+function Get-TaskSanityCommands {
+    param([hashtable]$Task)
+
+    if ($Task.Id -eq "project-state-continuity") {
+        return @(
+            'python -c "import tempfile; from winlocalassistant.project_state import build_continue_context_reply, build_project_state_snapshot, render_project_state_command; tmp = tempfile.mkdtemp(); payload = build_project_state_snapshot(tmp, write=False); assert payload.get(''current_version''); assert payload.get(''latest_json''); assert ''Nova Continue / Next Step'' in render_project_state_command(''--next'', root=tmp); assert build_continue_context_reply(tmp).strip()"'
+        )
+    }
+
+    return @()
+}
+
 function Append-Mistake {
     param([string]$TaskId, [string]$Reason, [string]$Category = "")
 
@@ -1052,6 +1068,10 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
         Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
         Run-Cmd "python -m pytest -q $($task.Tests -join ' ')"
+        $taskSanityCommands = @(Get-TaskSanityCommands -Task $task)
+        foreach ($sanityCommand in $taskSanityCommands) {
+            Run-Cmd $sanityCommand
+        }
         Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
     }
     catch {
@@ -1085,9 +1105,11 @@ for ($i = 1; $i -le $Cycles; $i++) {
     $after = git rev-parse --short HEAD
     $linesChanged = Get-ChangedLineCount -Before $before -After $after
     $changedFiles = @(Get-ChangedFilesBetween -Before $before -After $after)
+    $taskSanityCommands = @(Get-TaskSanityCommands -Task $task)
     $validationCommands = @(
         "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py",
-        "python -m pytest -q $($task.Tests -join ' ')",
+        "python -m pytest -q $($task.Tests -join ' ')"
+    ) + $taskSanityCommands + @(
         "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
     )
     $auditNote = "Manual audit needed if this commit is later reverted or judged weak: $after"
