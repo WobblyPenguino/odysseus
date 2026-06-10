@@ -2621,7 +2621,7 @@ Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_
 Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
 Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
 
-Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+Run-Cmd "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
 
 
@@ -2842,7 +2842,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
             continue
         }
 
-        $validationGateResults += Run-GateCmd "compile" "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+        $validationGateResults += Run-GateCmd "compile" "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py"
         $validationGateResults += Run-GateCmd "targeted tests" "python -m pytest -q $($task.Tests -join ' ')"
         $taskSanityCommands = @(Get-TaskSanityCommands -Task $task)
         foreach ($sanityCommand in $taskSanityCommands) {
@@ -2920,7 +2920,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
                 $validationGateResults = @()
                 $validationCommands = @()
 
-                $compileCommand = "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+                $compileCommand = "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py"
                 $validationGateResults += Run-GateCmd "compile" $compileCommand
                 $validationCommands += $compileCommand
 
@@ -2992,7 +2992,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     $changedFiles = @(Get-ChangedFilesBetween -Before $before -After $after)
     $taskSanityCommands = @(Get-TaskSanityCommands -Task $task)
     $validationCommands = @(
-        "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py",
+        "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py",
         "python -m pytest -q $($task.Tests -join ' ')"
     ) + $taskSanityCommands + @(
         "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"

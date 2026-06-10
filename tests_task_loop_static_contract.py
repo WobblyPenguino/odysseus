@@ -637,3 +637,9 @@ def test_validation_gate_runs_external_candidate_validator_probe():
     assert "NOVA_IDEA_PROMOTION_CANDIDATES.json --probe" in text
     assert "tests_idea_promotion_candidate_validator.py" in text
     assert "Candidate validation probe failed" in text
+
+
+def test_task_loop_live_compile_gate_includes_improvement_lab():
+    text = _runner_text()
+    assert "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py" in text
+    assert "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py" not in text
