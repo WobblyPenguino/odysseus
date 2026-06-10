@@ -603,7 +603,7 @@ function Get-RecentTaskFailureCount {
 # Approved recovery tasks are injected here because NOVA_AGENT_TASK_QUEUE.md is currently
 # documentation/backlog only; the live loop selects from the in-script $Tasks list.
 $ApprovedRecoveryTasks = @(
-    [pscustomobject]@{
+    @{
         Id = "loop-generated-task-proposals"
         Editable = @("run_nova_task_queue_loop.ps1")
         Tests = @(
@@ -618,7 +618,7 @@ Improve the task loop's exhausted-queue behavior. When all current tasks are qua
 "@
     }
 
-    [pscustomobject]@{
+    @{
         Id = "loop-reset-stale-success-cooldown"
         Editable = @("run_nova_task_queue_loop.ps1")
         Tests = @(
@@ -633,7 +633,7 @@ Improve stale quarantine handling. Success-cooldown and reverted-success quarant
 "@
     }
 
-    [pscustomobject]@{
+    @{
         Id = "loop-task-queue-health-command"
         Editable = @("run_nova_task_queue_loop.ps1", "run_nova_task_queue_loop_with_monitor.ps1")
         Tests = @(
