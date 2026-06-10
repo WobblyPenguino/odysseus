@@ -292,3 +292,17 @@ def test_task_loop_has_placeholder_false_positive_contract_override():
     assert "$testChanges.Count -gt 0" in text
     assert "validation-gate-after-placeholder-override" in text
     assert "Placeholder/speculative rejection override validation gates passed." in text
+
+
+
+
+def test_task_loop_placeholder_override_has_uncorrupted_nested_test_patterns():
+    text = _runner_text()
+    assert "$sourceChanges = @(" in text
+    assert "$testChanges = @(" in text
+    assert "tests_*.py" in text
+    assert "-notmatch" in text
+    assert "-match" in text
+    assert "Placeholder/speculative rejection override" in text
+    assert "*     ests" not in text
+    assert "*        ests" not in text

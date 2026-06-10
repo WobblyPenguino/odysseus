@@ -2263,14 +2263,14 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
             $sourceChanges = @(
                 $normalisedChanged | Where-Object {
                     $_ -like "*.py" -and
-                    $_ -notlike "tests_*.py" -and
-                    $_ -notlike "*	ests\*.py"
+                    $_ -notmatch "\\tests\\"
+                    $_ -notmatch "\\tests\\"
                 }
             )
             $testChanges = @(
                 $normalisedChanged | Where-Object {
                     $_ -like "tests_*.py" -or
-                    $_ -like "*	ests\*.py"
+                    $_ -match "\\tests\\"
                 }
             )
 
