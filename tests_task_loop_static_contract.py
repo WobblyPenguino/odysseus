@@ -226,3 +226,12 @@ def test_task_loop_writes_static_tool_status_report():
     assert "pip-audit" in text
     assert "detect-secrets" in text
     assert "Write-StaticToolStatusReport -Path" in text
+
+
+def test_task_loop_defines_static_tool_status_helper_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-StaticToolStatusReport")
+    call_pos = text.find("Write-StaticToolStatusReport -Path")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
