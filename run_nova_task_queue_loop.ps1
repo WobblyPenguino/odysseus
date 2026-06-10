@@ -609,6 +609,8 @@ function Get-RecentTaskFailureCount {
 
 # Approved fresh Nova source-backed tasks. These are used when the old task queue is exhausted.
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
+$script:RuntimeApprovedRecoveryTasks = @()
+
 $ApprovedRecoveryTasks = @(
     @{
         Id = "tiny-autodev-sandbox-explain-next-action-v1"
@@ -911,6 +913,14 @@ function Write-NoHealthyTaskReviewNote {
 }
 
 function Pick-Task {
+
+    if (@($script:RuntimeApprovedRecoveryTasks).Count -gt 0) {
+        $runtimeIds = @($script:RuntimeApprovedRecoveryTasks | ForEach-Object { $_.Id }) -join ", "
+        Add-Summary "Runtime promoted task candidates visible to picker: $runtimeIds"
+        $ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)
+    }
+
+
     $rows = @()
     foreach ($task in $Tasks) {
         if (!(Test-TaskFilesExist $task)) {
@@ -2305,11 +2315,14 @@ function Register-IdeaPromotionTaskDraft {
 
     $currentTasks = @($currentTasks) + @($task)
 
-    # Update both likely scopes so Pick-Task sees the runtime-registered task.
+    # Store runtime-promoted tasks separately, then Pick-Task explicitly merges them.
+    $script:RuntimeApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($task)
+
+    # Keep older task variables updated too, but do not rely on scope mutation alone.
     Set-Variable -Name ApprovedRecoveryTasks -Value $currentTasks -Scope 1
     $script:ApprovedRecoveryTasks = $currentTasks
 
-    $registeredCount = @($currentTasks | Where-Object { $_.Id -eq $taskId }).Count
+    $registeredCount = @($script:RuntimeApprovedRecoveryTasks | Where-Object { $_.Id -eq $taskId }).Count
     Add-Summary "Idea promotion task registered at runtime: $taskId"
     Add-Summary "Idea promotion task runtime registration count: $registeredCount"
     return $true

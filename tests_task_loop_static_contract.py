@@ -523,3 +523,11 @@ def test_task_loop_runtime_registration_updates_parent_task_scope():
     assert "$script:ApprovedRecoveryTasks = $currentTasks" in text
     assert "Idea promotion task runtime registration count" in text
     assert "$currentTasks = @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_picker_explicitly_merges_runtime_promoted_tasks():
+    text = _runner_text()
+    assert "$script:RuntimeApprovedRecoveryTasks = @()" in text
+    assert "$script:RuntimeApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($task)" in text
+    assert "Runtime promoted task candidates visible to picker" in text
+    assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text
