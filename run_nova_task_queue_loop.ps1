@@ -2227,11 +2227,59 @@ function Write-IdeaPromotionCandidateReport {
     return $Path
 }
 
+
+function Write-IdeaPromotionTaskDraft {
+    param(
+        [string]$CandidatePath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md",
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $candidateExists = Test-Path $CandidatePath
+
+    $lines = @(
+        "# Nova Idea Promotion Task Draft Latest",
+        "",
+        "Purpose:",
+        "- Draft the next ApprovedRecoveryTasks block from the selected promotion candidate.",
+        "- This is dry-run only.",
+        "- It must not edit run_nova_task_queue_loop.ps1 by itself.",
+        "- Human or a later guarded promotion step must apply the task block.",
+        "",
+        "Candidate source: $CandidatePath",
+        "Candidate found: $candidateExists",
+        "",
+        "Draft task block:",
+        '    @{',
+        '        Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"',
+        '        Goal = "Promote the next safe Nova idea into one tiny source+test improvement. Add group_work_items_by_status(items: Iterable[WorkItem]) -> dict[str, list[WorkItem]] to nova_improvement_lab\autodev_sandbox.py. It must group items by normalise_status(item.status), preserve original item order inside each group, and include done aliases under done. Add a regression test named test_autodev_sandbox_groups_items_by_status in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."',
+        '        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")',
+        '        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")',
+        '        RequiredDiffContains = @("group_work_items_by_status", "test_autodev_sandbox_groups_items_by_status")',
+        '        Tests = @("tests_autodev_sandbox.py")',
+        '    },',
+        "",
+        "Safety gate:",
+        "- This report is not executable.",
+        "- The drafted task must be promoted by a separate validated commit.",
+        "- The promoted task must pass preflight localization before live execution.",
+        "- The idea-promotion task draft alone must never trigger Aider."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Idea promotion task draft: $Path"
+    Add-Summary "Idea promotion task draft candidate: tiny-autodev-sandbox-group-work-items-by-status-v1"
+
+    return $Path
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
     Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
+Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
     $task = Pick-Task
     if (!$task) {
         Add-Summary "Result: manual-review-needed"
@@ -2271,6 +2319,7 @@ Assert-CleanGit
 Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
 Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
+Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
