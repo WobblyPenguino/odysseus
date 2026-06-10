@@ -69,6 +69,25 @@ def _prompt_named_files(prompt: str, workspace: Path) -> list[tuple[str, str]]:
     return named_files
 
 
+def _prompt_named_file_signature(prompt: str, workspace: Path) -> str:
+    """Return a hash that changes when any prompt‑named file content changes."""
+    named = []
+    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
+        candidate = (workspace / match).resolve()
+        try:
+            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
+                if candidate.exists() and candidate.is_file():
+                    # Use full content for signature to detect any change
+                    text = candidate.read_text(encoding="utf-8", errors="replace")
+                    named.append((match, text))
+        except Exception:
+            continue
+    # Sort to ensure deterministic order
+    named.sort(key=lambda x: x[0])
+    sig_str = "".join(f"{name}:{content}" for name, content in named)
+    return sha256(sig_str.encode("utf-8")).hexdigest()
+
+
 def _workspace_summary(workspace: Path, prompt: str) -> dict[str, Any]:
     summary: dict[str, Any] = {"path": str(workspace), "exists": workspace.exists()}
     if not workspace.exists() or not workspace.is_dir():
@@ -222,6 +241,7 @@ def _build_model_context_pack_cached(
     planner_model: str,
     model_provider: str,
     skill_mode: str,
+    prompt_named_file_signature: str,
 ) -> ContextPack:
     config = AssistantConfig(
         workspace=workspace,
@@ -315,6 +335,8 @@ def build_model_context_pack(config: AssistantConfig, messages: list[dict[str, s
             workspace_mtime = workspace.stat().st_mtime
     except Exception:
         workspace_mtime = 0.0
+    # Compute signature of any prompt‑named files to invalidate cache when they change
+    prompt_named_file_signature = _prompt_named_file_signature(prompt_excerpt, workspace)
     return _build_model_context_pack_cached(
         str(workspace),
         workspace_mtime,
@@ -329,6 +351,7 @@ def build_model_context_pack(config: AssistantConfig, messages: list[dict[str, s
         str(getattr(config, "planner_model", "") or getattr(config, "model", "") or ""),
         str(getattr(config, "model_provider", "ollama") or "ollama"),
         str(getattr(config, "skill_mode", "auto") or "auto"),
+        prompt_named_file_signature,
     )
 
 

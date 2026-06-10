@@ -115,6 +115,22 @@ def test_model_context_pack_includes_prompt_named_python_file_preview() -> None:
         assert "print('hello')" in pack.text
 
 
+def test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_py_change_") as tmp:
+        root = Path(tmp)
+        file_path = root / "script.py"
+        file_path.write_text("print('hello')", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        pack1 = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "print('hello')" in pack1.text
+        # Change file content
+        file_path.write_text("print('world')", encoding='utf-8')
+        pack2 = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "print('world')" in pack2.text
+        # Ensure the old content is no longer present
+        assert "print('hello')" not in pack2.text
+
+
 def run_all(verbose: bool = False) -> None:
     tests = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_") and callable(fn)]
     for name, fn in tests:
