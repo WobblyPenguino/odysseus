@@ -27,4 +27,19 @@ Invoke-Checked "python -m compileall -q app.py winlocalassistant nova nova_impro
 Invoke-Checked "python -m pytest -q tests_improvement_lab_contract.py tests_task_loop_static_contract.py tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_command_suggestions.py"
 
 Write-Host ""
+
+$CandidateValidatorCommand = "python .\tools\validate_idea_promotion_candidates.py --config .\local_ai_cycles\config\NOVA_IDEA_PROMOTION_CANDIDATES.json --probe"
+Write-Host "`n>>> $CandidateValidatorCommand"
+& python .\tools\validate_idea_promotion_candidates.py --config .\local_ai_cycles\config\NOVA_IDEA_PROMOTION_CANDIDATES.json --probe
+if ($LASTEXITCODE -ne 0) {
+    throw "Candidate validation probe failed"
+}
+
+$CandidateValidatorTestsCommand = "python -m pytest -q tests_idea_promotion_candidate_validator.py"
+Write-Host "`n>>> $CandidateValidatorTestsCommand"
+& python -m pytest -q tests_idea_promotion_candidate_validator.py
+if ($LASTEXITCODE -ne 0) {
+    throw "Candidate validator tests failed"
+}
+
 Write-Host "Validation passed."

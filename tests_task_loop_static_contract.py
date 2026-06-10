@@ -627,3 +627,13 @@ def test_task_loop_has_no_literal_backtick_n_before_function_keyword():
     text = _runner_text()
     assert "`nfunction " not in text
     assert "`nfunction Write-IdeaPromotionTaskDraft" not in text
+
+
+def test_validation_gate_runs_external_candidate_validator_probe():
+    from pathlib import Path as _Path
+
+    text = _Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "validate_idea_promotion_candidates.py --config" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATES.json --probe" in text
+    assert "tests_idea_promotion_candidate_validator.py" in text
+    assert "Candidate validation probe failed" in text
