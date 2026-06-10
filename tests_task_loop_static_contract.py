@@ -699,3 +699,17 @@ def test_task_loop_avoids_powershell_colon_variable_parse_bug():
     text = _runner_text()
     assert "$taskId: score=" not in text
     assert "${taskId}: score=" in text
+
+
+def test_preflight_checks_productive_threshold_before_selected_task_summary():
+    text = _runner_text()
+    start = text.index("if ($PreflightOnly) {")
+    threshold = text.index(
+        "if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore)",
+        start,
+    )
+    result = text.index('Add-Summary "Result: preflight-only"', start)
+    localization = text.index("Write-TaskLocalizationReport -Task $task", start)
+
+    assert threshold < result
+    assert threshold < localization

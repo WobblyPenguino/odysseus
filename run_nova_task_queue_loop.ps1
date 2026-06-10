@@ -2652,12 +2652,6 @@ if ($externalCandidatePoolFresh) {
         Write-Host "Summary: $SummaryLatest"
         exit 0
     }
-    Add-Summary "Result: preflight-only"
-    Add-Summary "Selected task: $($task.Id)"
-    Add-Summary "Editable files: $($task.Editable -join ', ')"
-    Add-Summary "Targeted tests: $($task.Tests -join ', ')"
-    Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
-    Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
     $preflightTaskScore = Resolve-TaskScore -Task $task
     if ($null -eq $preflightTaskScore) {
         $preflightTaskScore = Resolve-SelectedTaskScoreFromSummary
@@ -2668,6 +2662,13 @@ if ($externalCandidatePoolFresh) {
         Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
         exit 0
     }
+
+    Add-Summary "Result: preflight-only"
+    Add-Summary "Selected task: $($task.Id)"
+    Add-Summary "Editable files: $($task.Editable -join ', ')"
+    Add-Summary "Targeted tests: $($task.Tests -join ', ')"
+    Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
+    Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
     Write-Host "Preflight selected task: $($task.Id)"
     Write-Host "Editable files: $($task.Editable -join ', ')"
     Write-Host "Targeted tests: $($task.Tests -join ', ')"
