@@ -55,17 +55,30 @@ def _first_json_file(folder: Path, patterns: list[str]) -> Path | None:
         return candidates[-1]
 
 
+def _resolve_prompt_named_file(match: str, workspace: Path) -> Path | None:
+    """Resolve a file name from the prompt to an absolute path inside the workspace.
+
+    Returns the resolved Path if it is within the workspace and exists as a file,
+    otherwise returns None.
+    """
+    candidate = (workspace / match).resolve()
+    try:
+        # Ensure the candidate is inside the workspace
+        if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
+            if candidate.exists() and candidate.is_file():
+                return candidate
+    except Exception:
+        pass
+    return None
+
+
 def _prompt_named_files(prompt: str, workspace: Path) -> list[tuple[str, str]]:
     """Return a list of (filename, preview) for small top‑level files explicitly named in the prompt."""
     named_files = []
     for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
-        candidate = (workspace / match).resolve()
-        try:
-            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
-                if candidate.exists() and candidate.is_file():
-                    named_files.append((match, _safe_read_text(candidate, limit=2200)))
-        except Exception:
-            continue
+        candidate = _resolve_prompt_named_file(match, workspace)
+        if candidate is not None:
+            named_files.append((match, _safe_read_text(candidate, limit=2200)))
     return named_files
 
 
@@ -73,15 +86,11 @@ def _prompt_named_file_signature(prompt: str, workspace: Path) -> str:
     """Return a hash that changes when any prompt‑named file content changes."""
     named = []
     for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
-        candidate = (workspace / match).resolve()
-        try:
-            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
-                if candidate.exists() and candidate.is_file():
-                    # Use full content for signature to detect any change
-                    text = candidate.read_text(encoding="utf-8", errors="replace")
-                    named.append((match, text))
-        except Exception:
-            continue
+        candidate = _resolve_prompt_named_file(match, workspace)
+        if candidate is not None:
+            # Use full content for signature to detect any change
+            text = candidate.read_text(encoding="utf-8", errors="replace")
+            named.append((match, text))
     # Sort to ensure deterministic order
     named.sort(key=lambda x: x[0])
     sig_str = "".join(f"{name}:{content}" for name, content in named)

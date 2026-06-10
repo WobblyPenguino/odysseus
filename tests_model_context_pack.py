@@ -131,6 +131,23 @@ def test_model_context_pack_refreshes_prompt_named_file_preview_after_file_chang
         assert "print('hello')" not in pack2.text
 
 
+def test_model_context_pack_rejects_prompt_named_file_outside_workspace() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_outside_") as tmp:
+        root = Path(tmp)
+        # Create a file inside the workspace
+        (root / "inside.txt").write_text("inside", encoding='utf-8')
+        # Create a file outside the workspace in its parent directory
+        outside_path = Path(root.parent) / "outside.txt"
+        outside_path.write_text("outside", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        # Prompt referencing the outside file by relative name (should be rejected)
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": f"review {outside_path.name}"}], desc="quality review")
+        assert "outside.txt" not in pack.text
+        # Prompt referencing the inside file should include its preview
+        pack_inside = build_model_context_pack(cfg, [{"role": "user", "content": "review inside.txt"}], desc="quality review")
+        assert "inside.txt" in pack_inside.text
+
+
 def run_all(verbose: bool = False) -> None:
     tests = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_") and callable(fn)]
     for name, fn in tests:
