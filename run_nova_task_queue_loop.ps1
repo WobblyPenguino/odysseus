@@ -2286,7 +2286,8 @@ function Register-IdeaPromotionTaskDraft {
     }
 
     $taskId = "tiny-autodev-sandbox-group-work-items-by-status-v1"
-    $alreadyRegistered = @($script:ApprovedRecoveryTasks | Where-Object { $_.Id -eq $taskId }).Count -gt 0
+    $currentTasks = @($ApprovedRecoveryTasks)
+    $alreadyRegistered = @($currentTasks | Where-Object { $_.Id -eq $taskId }).Count -gt 0
 
     if ($alreadyRegistered) {
         Add-Summary "Idea promotion task already registered: $taskId"
@@ -2302,8 +2303,15 @@ function Register-IdeaPromotionTaskDraft {
         Tests = @("tests_autodev_sandbox.py")
     }
 
-    $script:ApprovedRecoveryTasks = @($script:ApprovedRecoveryTasks) + @($task)
+    $currentTasks = @($currentTasks) + @($task)
+
+    # Update both likely scopes so Pick-Task sees the runtime-registered task.
+    Set-Variable -Name ApprovedRecoveryTasks -Value $currentTasks -Scope 1
+    $script:ApprovedRecoveryTasks = $currentTasks
+
+    $registeredCount = @($currentTasks | Where-Object { $_.Id -eq $taskId }).Count
     Add-Summary "Idea promotion task registered at runtime: $taskId"
+    Add-Summary "Idea promotion task runtime registration count: $registeredCount"
     return $true
 }
 

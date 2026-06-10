@@ -515,3 +515,11 @@ def test_task_loop_register_draft_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_runtime_registration_updates_parent_task_scope():
+    text = _runner_text()
+    assert "Set-Variable -Name ApprovedRecoveryTasks -Value $currentTasks -Scope 1" in text
+    assert "$script:ApprovedRecoveryTasks = $currentTasks" in text
+    assert "Idea promotion task runtime registration count" in text
+    assert "$currentTasks = @($ApprovedRecoveryTasks)" in text
