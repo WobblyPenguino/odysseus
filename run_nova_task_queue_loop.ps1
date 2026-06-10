@@ -91,6 +91,32 @@ function Run-Cmd {
     }
 }
 
+function Add-GateSummary {
+    param([string]$Name, [string]$Status, [string]$Detail = "")
+
+    $line = if ($Detail) {
+        "Gate: $Name`: $Status - $Detail"
+    } else {
+        "Gate: $Name`: $Status"
+    }
+    Add-Summary $line
+    Write-Host $line
+}
+
+function Run-GateCmd {
+    param([string]$GateName, [string]$Command)
+
+    try {
+        Run-Cmd $Command
+        Add-GateSummary $GateName "PASS" $Command
+        return "$GateName`: PASS"
+    }
+    catch {
+        Add-GateSummary $GateName "FAIL" $_.Exception.Message
+        throw
+    }
+}
+
 function Get-OllamaModelNames {
     try {
         $rows = ollama list 2>$null
@@ -302,6 +328,7 @@ function Record-TaskOutcome {
         [int]$LinesChanged = -1,
         [string[]]$ChangedFiles = @(),
         [string[]]$ValidationCommands = @(),
+        [string[]]$ValidationGates = @(),
         [string]$AuditNote = ""
     )
 
@@ -338,6 +365,7 @@ function Record-TaskOutcome {
         changed_files = @($ChangedFiles)
         diff_stat = $DiffStat
         validation_commands = @($ValidationCommands)
+        validation_gates = @($ValidationGates)
         action_taken = $ActionTaken
         audit_note = $AuditNote
         tests = @($Tests)
@@ -1228,6 +1256,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     git status --short
     git diff --stat
 
+    $validationGateResults = @()
     try {
         $diffResult = Validate-Diff -Task $task -AiderOutputPath $out
         if ($diffResult -eq "no-change") {
@@ -1237,13 +1266,13 @@ for ($i = 1; $i -le $Cycles; $i++) {
             continue
         }
 
-        Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
-        Run-Cmd "python -m pytest -q $($task.Tests -join ' ')"
+        $validationGateResults += Run-GateCmd "compile" "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+        $validationGateResults += Run-GateCmd "targeted tests" "python -m pytest -q $($task.Tests -join ' ')"
         $taskSanityCommands = @(Get-TaskSanityCommands -Task $task)
         foreach ($sanityCommand in $taskSanityCommands) {
-            Run-Cmd $sanityCommand
+            $validationGateResults += Run-GateCmd "task sanity" $sanityCommand
         }
-        Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
+        $validationGateResults += Run-GateCmd "baseline regression + Nova sanity" "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
     }
     catch {
         $category = Get-TaskOutcomeCategory -Reason $_.Exception.Message -Result "rejected"
@@ -1263,17 +1292,22 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Clean-GeneratedNoise
 
     if (!(git status --porcelain)) {
+        Add-GateSummary "generated-noise cleanup" "PASS" "no source diff remained after cleanup"
         Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no source diff after generated-noise cleanup" -Category "generated-noise-dirty-state" -Stage "generated-noise-cleanup" -Message "Generated-noise cleanup removed all diffs, leaving no source change to commit." -ActionTaken "recorded generated-noise no-change and skipped commit" -Tests $task.Tests -Before $before
         Add-Summary "Result: no source diff after cleanup"
         "$(Get-Date -Format s) task=$($task.Id) category=generated-noise-dirty-state reason=no-source-diff-after-cleanup structured_event=1" | Add-Content $NoChangeTargets
         continue
     }
+    Add-GateSummary "generated-noise cleanup" "PASS" "source diff remains after cleanup"
+    $validationGateResults += "generated-noise cleanup: PASS"
 
     git add $($task.Editable)
     git commit -m "Task queue improvement: $($task.Id)"
 
     Clean-GeneratedNoise
     Assert-CleanGit
+    Add-GateSummary "clean git" "PASS" "post-commit generated noise cleaned and git status is clean"
+    $validationGateResults += "clean git: PASS"
 
     $after = git rev-parse --short HEAD
     $linesChanged = Get-ChangedLineCount -Before $before -After $after
@@ -1291,11 +1325,12 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Add-Summary "After: $after"
     Add-Summary "Lines changed: $linesChanged"
     Add-Summary "Changed files: $($changedFiles -join ', ')"
+    Add-Summary "Validation gates passed: $($validationGateResults -join ' | ')"
     Add-Summary "Validation commands passed: $($validationCommands -join ' | ')"
     Add-Summary "Post-commit audit marker: $auditNote"
     Add-Summary "Why beneficial: source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification."
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
-    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Stage "commit" -Message "All validation gates passed and the task-loop committed the accepted patch." -ActionTaken "committed validated task patch" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -AuditNote $auditNote
+    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Stage "commit" -Message "All validation gates passed and the task-loop committed the accepted patch." -ActionTaken "committed validated task patch" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -ValidationGates $validationGateResults -AuditNote $auditNote
     "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
 }
 
