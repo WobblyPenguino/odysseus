@@ -63,6 +63,7 @@ function Add-Summary {
 }
 
 function Clean-GeneratedNoise {
+    Remove-Item .\local_ai_cycles\task_large_file_snippets_*.md -Force -ErrorAction SilentlyContinue
     git restore -- docs/NOVA_LEGACY_CONTINUITY_CONTRACT.json docs/NOVA_PROJECT_STATE_LATEST.json docs/NOVA_PROJECT_STATE_LATEST.md docs/NOVA_LLM_TRAINING_LAB_LATEST.json docs/NOVA_LLM_TRAINING_LAB_LATEST.md docs/NOVA_MODEL_CALIBRATION_LATEST.json docs/NOVA_MODEL_CALIBRATION_LATEST.md docs/NOVA_RELEASE_READINESS_LATEST.json docs/NOVA_RELEASE_READINESS_LATEST.md logs/release_readiness/host_ollama_gpu_probe_evidence.stdout.txt logs/validation_latest.json logs/validation_latest.txt logs/validation_progress.jsonl 2>$null
     git clean -fd logs/project_state logs/task_evidence code_quality_gates code_reviews codebase_integrity_reports 2>$null
 }
@@ -1358,6 +1359,7 @@ Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeou
 
 
 $MaxAiderEditableFileBytes = 120000
+$MinProductiveTaskScore = 35
 
 function Write-TaskLargeFileSnippetContext {
     param(
@@ -1487,6 +1489,30 @@ for ($i = 1; $i -le $Cycles; $i++) {
         "--map-tokens", "0"
     )
 
+    $taskScoreForProductivity = $null
+    if ($task -is [hashtable]) {
+        foreach ($scoreKey in @("Score", "score")) {
+            if ($task.ContainsKey($scoreKey)) {
+                try { $taskScoreForProductivity = [int]$task[$scoreKey] } catch {}
+                break
+            }
+        }
+    }
+    if ($null -eq $taskScoreForProductivity) {
+        $scoreProp = $task.PSObject.Properties["Score"]
+        if ($scoreProp) {
+            try { $taskScoreForProductivity = [int]$scoreProp.Value } catch {}
+        }
+    }
+    if ($null -ne $taskScoreForProductivity -and $taskScoreForProductivity -lt $MinProductiveTaskScore) {
+        $msg = "No sufficiently productive task remained: selected '$($task.Id)' scored $taskScoreForProductivity, below minimum $MinProductiveTaskScore. Refresh task targets or run an explicit workflow-repair pass."
+        Write-Host $msg
+        Add-Summary "Outcome category: task-pool-exhausted"
+        Add-Summary "Result: stopped"
+        Add-Summary "Why: $msg"
+        break
+    }
+
     $snippetContext = Write-TaskLargeFileSnippetContext -Task $task -Path (Join-Path "local_ai_cycles" ("task_large_file_snippets_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".md"))
     $largeEditableFiles = @()
 
@@ -1509,7 +1535,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         Write-Host "Large editable file(s) skipped and excerpted for context: $($largeEditableFiles -join ', ')"
     }
 
-    $denyInput = "D`n" + ((1..600 | ForEach-Object { "skip" }) -join "`n") + "`n"
+    $denyInput = ((1..900 | ForEach-Object { "no" }) -join "`n") + "`n"
     Add-Summary "Aider output log: $out"
 Write-Host "Aider output is being saved to: $out"
 $denyInput | & $Aider @aiderArgs *> $out
