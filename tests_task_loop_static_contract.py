@@ -77,7 +77,7 @@ def test_task_loop_includes_strict_lab_source_test_task():
     assert "lab-source-test-improvement-v2" in text
     assert "You must modify BOTH" in text
     assert "Do not make a test-only patch" in text
-    assert "nova_improvement_lab\\text_tools.py" in text or "nova_improvement_lab\text_tools.py" in text
+    assert "nova_improvement_lab\\text_tools.py" in text
     assert "tests_improvement_lab_contract.py" in text
 
 
@@ -109,7 +109,7 @@ def test_required_diff_contract_can_override_generic_executable_classifier():
 def test_task_loop_includes_real_model_context_named_file_task():
     text = _runner_text()
     assert "real-model-context-named-file-preview-v1" in text
-    assert "winlocalassistant\\model_context.py" in text or "winlocalassistant\model_context.py" in text
+    assert "winlocalassistant\\model_context.py" in text
     assert "tests_model_context_pack.py" in text
     assert "_prompt_named_files" in text
     assert "test_model_context_pack_includes_prompt_named_python_file_preview" in text
