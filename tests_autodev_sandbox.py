@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -247,3 +247,27 @@ def test_autodev_sandbox_builds_action_plan_debug_dict():
     assert idle_debug["next_title"] is None
     assert idle_debug["has_next"] is False
     assert "idle" in idle_debug["status_line"]
+
+
+def test_autodev_sandbox_renders_action_plan_debug_lines():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    debug_lines = render_action_plan_debug_lines(items)
+    assert len(debug_lines) == 7
+
+    summary = summarise_action_plan(items)
+
+    # Verify each line contains the expected value
+    assert f"Total: {summary['total']}" in debug_lines[0]
+    assert f"Actionable: {summary['actionable']}" in debug_lines[1]
+    assert f"Has next: {summary['next_title'] is not None}" in debug_lines[2]
+    assert f"Next title: {summary['next_title']}" in debug_lines[3]
+    assert f"Next status: {summary['next_status']}" in debug_lines[4]
+    assert f"Next score: {summary['next_score']}" in debug_lines[5]
+    # Status line should match the rendered single‑line status
+    assert debug_lines[6] == f"Status line: {render_action_plan_status_line(items)}"

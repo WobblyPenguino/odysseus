@@ -281,3 +281,32 @@ def build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object]
         "has_next": has_next,
         "status_line": status_line,
     }
+
+
+# New helper to render debug lines
+def render_action_plan_debug_lines(items: Iterable[WorkItem]) -> list[str]:
+    """
+    Render a stable, human‑readable list of debug lines for an action plan.
+
+    The function uses :func:`build_action_plan_debug_dict` and returns a
+    deterministic list of strings containing the values for:
+      - total
+      - actionable
+      - has_next
+      - next_title
+      - next_status
+      - next_score
+      - status_line
+
+    Each line is formatted as ``<label>: <value>``.
+    """
+    debug = build_action_plan_debug_dict(items)
+    return [
+        f"Total: {debug['total']}",
+        f"Actionable: {debug['actionable']}",
+        f"Has next: {debug['has_next']}",
+        f"Next title: {debug['next_title']}",
+        f"Next status: {debug['next_status']}",
+        f"Next score: {debug['next_score']}",
+        f"Status line: {debug['status_line']}",
+    ]
