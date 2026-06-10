@@ -206,6 +206,12 @@ function Add-TaskSignal {
         $categoryLower = "test-failed"
     }
 
+    if ($categoryLower -eq "recovered-stale-failure") {
+        $Signals.Recoveries += 1
+        $Signals.Reasons += "category=recovered-stale-failure"
+        return
+    }
+
     if (($categoryLower -eq "success-cooldown") -or ($lower -match "recent-success-cooldown|result:\s*committed|source/test task passed")) {
         $Signals.RecentSuccess += 1
         $Signals.Reasons += "category=success-cooldown"
@@ -394,6 +400,7 @@ function Get-RecentTaskSignals {
         LowValue = 0
         NoChange = 0
         RevertedSuccess = 0
+        Recoveries = 0
         RecentSuccess = 0
         Reasons = @()
     }
@@ -458,6 +465,7 @@ function Get-RecentTaskSignals {
         LowValue = [int]$signals.LowValue
         NoChange = [int]$signals.NoChange
         RevertedSuccess = [int]$signals.RevertedSuccess
+        Recoveries = [int]$signals.Recoveries
         RecentSuccess = [int]$signals.RecentSuccess
         Reasons = (($signals.Reasons | Select-Object -Unique -First 3) -join "; ")
     }
@@ -478,6 +486,45 @@ function Test-TaskFilesExist {
     return $true
 }
 
+function Invoke-TaskRecoveryCheck {
+    param($Row)
+
+    if (!$Row.Quarantined) { return $false }
+    if ($Row.QuarantineReason -notmatch "effective recent failure") { return $false }
+    if ($Row.Reasons -notmatch "category=(test-failed|validation-failed|legacy-failure)") { return $false }
+
+    $task = $Row.Task
+    if (!$task.Tests -or @($task.Tests).Count -eq 0) { return $false }
+
+    $command = "python -m pytest -q $($task.Tests -join ' ')"
+    Add-Summary "Recovery check for task $($Row.Id): $command"
+    $out = powershell -NoProfile -ExecutionPolicy Bypass -Command $command 2>&1
+    $out | Add-Content $SummaryLatest
+    $out | Add-Content $TaskMemory
+    $out | Write-Host
+    Clean-GeneratedNoise
+
+    if ($LASTEXITCODE -ne 0) {
+        Add-Summary "Recovery result for task $($Row.Id): still quarantined; targeted tests failed."
+        return $false
+    }
+
+    $head = git rev-parse --short HEAD
+    $note = "Stale failure quarantine cleared because targeted tests pass on current HEAD."
+    Record-TaskOutcome `
+        -TaskId ([string]$Row.Id) `
+        -Result "recovered" `
+        -Reason $note `
+        -Category "recovered-stale-failure" `
+        -Tests $task.Tests `
+        -Before $head `
+        -After $head `
+        -ValidationCommands @($command) `
+        -AuditNote $note
+    Add-Summary "Recovery result for task $($Row.Id): reopened by targeted tests on current HEAD."
+    return $true
+}
+
 function Pick-Task {
     $rows = @()
     foreach ($task in $Tasks) {
@@ -490,7 +537,7 @@ function Pick-Task {
         $hasSource = @($task.Editable | Where-Object { $_ -notmatch "(^|\\|/)tests_.*\.py$" }).Count -gt 0
         $hasTests = @($task.Tests | Where-Object { Test-Path $_ }).Count -gt 0
         $usedThisRun = $RunTaskCooldown.Contains([string]$task.Id)
-        $successOffsets = [Math]::Min($signals.Failures, $signals.RecentSuccess)
+        $successOffsets = [Math]::Min($signals.Failures, ($signals.RecentSuccess + $signals.Recoveries))
         $effectiveFailures = [Math]::Max(0, $signals.Failures - $successOffsets)
         $score = 50
         $reasons = @()
@@ -522,6 +569,9 @@ function Pick-Task {
         if ($signals.RecentSuccess -gt 0) {
             $score -= 12 * $signals.RecentSuccess
             $reasons += "$($signals.RecentSuccess) recent success cooldown(s)"
+        }
+        if ($signals.Recoveries -gt 0) {
+            $reasons += "$($signals.Recoveries) stale failure recovery event(s)"
         }
         if ($usedThisRun) {
             $score -= 100
@@ -556,6 +606,20 @@ function Pick-Task {
 
     foreach ($row in $rows | Where-Object { $_.Quarantined }) {
         Add-Summary "Skipping task $($row.Id): $($row.QuarantineReason)."
+    }
+
+    $eligible = @($rows | Where-Object { -not $_.Quarantined })
+    if (!$eligible) {
+        Add-Summary "No eligible task before recovery; checking quarantined tasks with targeted tests."
+        foreach ($row in ($rows | Where-Object { $_.Quarantined } | Sort-Object Score -Descending)) {
+            if (Invoke-TaskRecoveryCheck -Row $row) {
+                $row.Quarantined = $false
+                $row.QuarantineReason = ""
+                $row.Score += 10
+                $row.Reasons = "$($row.Reasons); recovered by targeted tests on current HEAD"
+                break
+            }
+        }
     }
 
     Add-Summary "Task selection candidates:"
@@ -880,11 +944,11 @@ if ($PreflightOnly) {
     Add-Summary "Selected task: $($task.Id)"
     Add-Summary "Editable files: $($task.Editable -join ', ')"
     Add-Summary "Targeted tests: $($task.Tests -join ', ')"
-    Add-Summary "No Aider invocation, validation run, commit, or source edit was attempted."
+    Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
     Write-Host "Preflight selected task: $($task.Id)"
     Write-Host "Editable files: $($task.Editable -join ', ')"
     Write-Host "Targeted tests: $($task.Tests -join ', ')"
-    Write-Host "No Aider invocation, validation run, commit, or source edit was attempted."
+    Write-Host "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
     Write-Host "Summary: $SummaryLatest"
     exit 0
 }
