@@ -182,3 +182,23 @@ def test_task_loop_writes_task_localization_report():
     assert "Required final-file markers:" in text
     assert "Files that must not be edited:" in text
     assert "Write-TaskLocalizationReport -Task $task" in text
+
+
+def test_task_loop_writes_localization_report_during_preflight():
+    text = _runner_text()
+    preflight_start = text.find("if ($PreflightOnly)")
+    assert preflight_start != -1
+    preflight_end = text.find("Clean-GeneratedNoise", preflight_start)
+    assert preflight_end != -1
+    preflight_section = text[preflight_start:preflight_end]
+    assert "Write-TaskLocalizationReport -Task $task" in preflight_section
+    assert "NOVA_TASK_LOCALIZATION_LATEST.md" in preflight_section
+
+
+def test_task_loop_defines_localization_helper_before_preflight():
+    text = _runner_text()
+    helper_pos = text.find("function Write-TaskLocalizationReport")
+    preflight_pos = text.find("if ($PreflightOnly)")
+    assert helper_pos != -1
+    assert preflight_pos != -1
+    assert helper_pos < preflight_pos

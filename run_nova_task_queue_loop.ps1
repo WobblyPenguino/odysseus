@@ -1666,50 +1666,6 @@ function Write-TaskPoolExhaustedReport {
     return $path
 }
 
-if ($PreflightOnly) {
-    Add-Summary ""
-    Add-Summary "## Preflight task selection"
-    $task = Pick-Task
-    if (!$task) {
-        Add-Summary "Result: manual-review-needed"
-        Add-Summary "Selected task: none"
-        Add-Summary "No Aider invocation, commit, or source edit was attempted."
-        Write-Host "No healthy task available. Manual review note: $ManualReviewLatest"
-        Write-Host "No Aider invocation, commit, or source edit was attempted."
-        Write-Host "Summary: $SummaryLatest"
-        exit 0
-    }
-    Add-Summary "Result: preflight-only"
-    Add-Summary "Selected task: $($task.Id)"
-    Add-Summary "Editable files: $($task.Editable -join ', ')"
-    Add-Summary "Targeted tests: $($task.Tests -join ', ')"
-    Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
-    $preflightTaskScore = Resolve-TaskScore -Task $task
-    if ($null -eq $preflightTaskScore) {
-        $preflightTaskScore = Resolve-SelectedTaskScoreFromSummary
-    }
-    if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
-        Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
-        Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
-        Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
-        exit 0
-    }
-    Write-Host "Preflight selected task: $($task.Id)"
-    Write-Host "Editable files: $($task.Editable -join ', ')"
-    Write-Host "Targeted tests: $($task.Tests -join ', ')"
-    Write-Host "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
-    Write-Host "Summary: $SummaryLatest"
-    exit 0
-}
-
-Clean-GeneratedNoise
-Assert-CleanGit
-
-Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
-Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
-
-
-
 function Write-TaskLocalizationReport {
     param(
         $Task,
@@ -1794,6 +1750,50 @@ function Write-TaskLocalizationReport {
     Add-Summary "Task localization report: $Path"
     return $Path
 }
+
+if ($PreflightOnly) {
+    Add-Summary ""
+    Add-Summary "## Preflight task selection"
+    $task = Pick-Task
+    if (!$task) {
+        Add-Summary "Result: manual-review-needed"
+        Add-Summary "Selected task: none"
+        Add-Summary "No Aider invocation, commit, or source edit was attempted."
+        Write-Host "No healthy task available. Manual review note: $ManualReviewLatest"
+        Write-Host "No Aider invocation, commit, or source edit was attempted."
+        Write-Host "Summary: $SummaryLatest"
+        exit 0
+    }
+    Add-Summary "Result: preflight-only"
+    Add-Summary "Selected task: $($task.Id)"
+    Add-Summary "Editable files: $($task.Editable -join ', ')"
+    Add-Summary "Targeted tests: $($task.Tests -join ', ')"
+    Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
+    Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
+    $preflightTaskScore = Resolve-TaskScore -Task $task
+    if ($null -eq $preflightTaskScore) {
+        $preflightTaskScore = Resolve-SelectedTaskScoreFromSummary
+    }
+    if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
+        Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
+        Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+        Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+        exit 0
+    }
+    Write-Host "Preflight selected task: $($task.Id)"
+    Write-Host "Editable files: $($task.Editable -join ', ')"
+    Write-Host "Targeted tests: $($task.Tests -join ', ')"
+    Write-Host "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
+    Write-Host "Summary: $SummaryLatest"
+    exit 0
+}
+
+Clean-GeneratedNoise
+Assert-CleanGit
+
+Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
+
 
 
 function Write-TaskLargeFileSnippetContext {
@@ -1957,8 +1957,8 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $denyInput = ((1..900 | ForEach-Object { "no" }) -join "`n") + "`n"
     Add-Summary "Aider output log: $out"
-Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
-Write-Host "Aider output is being saved to: $out"
+    Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
+    Write-Host "Aider output is being saved to: $out"
 $denyInput | & $Aider @aiderArgs *> $out
 $aiderExitCode = $LASTEXITCODE
 Write-Host "Aider output tail:"
