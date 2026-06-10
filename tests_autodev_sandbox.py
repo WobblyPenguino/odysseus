@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -192,3 +192,25 @@ def test_autodev_sandbox_renders_action_plan_markdown():
     assert "- Next title: idle" in idle_markdown
     assert "- Next status:" in idle_markdown
     assert "- Next score:" in idle_markdown
+
+
+def test_autodev_sandbox_renders_action_plan_status_line():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    line = render_action_plan_status_line(items)
+    # The line should contain the total, actionable count and next item details
+    assert "Total: 4" in line
+    assert "Actionable: 3" in line
+    assert "- Next title:" not in line  # single line format
+    assert "Next item: b (status=blocked, score=" in line
+
+    # When there are no actionable items, the next part should be idle
+    idle_line = render_action_plan_status_line([WorkItem("done_item", status="done")])
+    assert "Total: 1" in idle_line
+    assert "Actionable: 0" in idle_line
+    assert "Next item: idle" in idle_line

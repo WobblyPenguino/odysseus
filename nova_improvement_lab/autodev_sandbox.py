@@ -226,3 +226,25 @@ def render_action_plan_markdown(items: Iterable[WorkItem]) -> str:
         lines.append(f"- Next score: {summary['next_score']}")
 
     return "\n".join(lines)
+
+
+def render_action_plan_status_line(items: Iterable[WorkItem]) -> str:
+    """
+    Render a single stable human‑readable line summarising the action plan.
+
+    The output contains the total number of items, the count of actionable
+    items and details about the next item (title, status and score).  If no
+    actionable items remain, the next part is rendered as ``idle``.
+    """
+    summary = summarise_action_plan(items)
+
+    if summary["next_title"] is None:
+        next_part = "idle"
+    else:
+        next_part = f"{summary['next_title']} (status={summary['next_status']}, score={summary['next_score']})"
+
+    return (
+        f"Total: {summary['total']}; "
+        f"Actionable: {summary['actionable']}; "
+        f"Next item: {next_part}"
+    )
