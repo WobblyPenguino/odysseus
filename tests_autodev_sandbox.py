@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -127,3 +127,21 @@ def test_autodev_sandbox_groups_items_by_status():
     assert [i.title for i in grouped["blocked"]] == ["blocked1"]
     assert [i.title for i in grouped["review"]] == ["review1"]
     assert [i.title for i in grouped["done"]] == ["done1", "pass_alias"]
+
+
+def test_autodev_sandbox_summarises_action_plan_with_next_item():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    summary = summarise_action_plan(items)
+    assert summary["total"] == 4
+    # actionable items: a, b, c => 3
+    assert summary["actionable"] == 3
+    # next selected item should be "b" (blocked highest priority)
+    assert summary["next_title"] == "b"
+    assert summary["next_status"] == "blocked"
+    assert summary["next_score"] == priority_score(WorkItem("b", status="blocked"))

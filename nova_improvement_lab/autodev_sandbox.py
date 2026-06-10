@@ -134,3 +134,38 @@ def group_work_items_by_status(items: Iterable[WorkItem]) -> dict[str, list[Work
             grouped[status_key] = []
         grouped[status_key].append(item)
     return grouped
+
+
+def summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object]:
+    """
+    Return a concise summary of the current action plan.
+
+    The returned dictionary contains:
+      - ``total``: total number of items
+      - ``actionable``: count of items that are not normalised to "done"
+      - ``next_title``: title of the highest‑priority actionable item,
+        or ``None`` if no such item exists
+      - ``next_status``: normalised status of that item, or ``None``
+      - ``next_score``: priority score of that item, or ``None``
+    """
+    items_list = list(items)
+    total_count = len(items_list)
+    actionable_items = [i for i in items_list if normalise_status(i.status) != "done"]
+    actionable_count = len(actionable_items)
+    next_item = select_next_work_item(items_list)
+    if next_item:
+        return {
+            "total": total_count,
+            "actionable": actionable_count,
+            "next_title": next_item.title,
+            "next_status": normalise_status(next_item.status),
+            "next_score": priority_score(next_item),
+        }
+    else:
+        return {
+            "total": total_count,
+            "actionable": actionable_count,
+            "next_title": None,
+            "next_status": None,
+            "next_score": None,
+        }
