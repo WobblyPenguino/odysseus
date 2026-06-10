@@ -621,3 +621,9 @@ def test_task_loop_external_config_contains_fresh_validated_status_line_candidat
     assert "tiny-autodev-sandbox-action-plan-status-line-v1" in text
     assert "render_action_plan_status_line" in text
     assert "test_autodev_sandbox_renders_action_plan_status_line" in text
+
+
+def test_task_loop_has_no_literal_backtick_n_before_function_keyword():
+    text = _runner_text()
+    assert "`nfunction " not in text
+    assert "`nfunction Write-IdeaPromotionTaskDraft" not in text

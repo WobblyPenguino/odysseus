@@ -2366,7 +2366,7 @@ function Test-IdeaPromotionTaskCandidate {
     }
 }
 
-`nfunction Write-IdeaPromotionTaskDraft {
+function Write-IdeaPromotionTaskDraft {
     param(
         [string]$CandidatePath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md",
         [string]$Path = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md",
