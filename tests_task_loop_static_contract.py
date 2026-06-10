@@ -682,3 +682,20 @@ def test_task_loop_reads_candidate_doctor_json_and_skips_exhausted_external_pool
     assert "Idea candidate doctor next candidate:" in text
     assert "if ($freshCount -le 0)" in text
     assert "Idea promotion skipped: external candidate pool exhausted" in text
+
+
+def test_task_loop_uses_best_candidate_wording_for_below_minimum_exhaustion():
+    text = _runner_text()
+    assert "Best task candidate $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)" in text
+    assert "Best candidate below productive minimum:" in text
+    assert "No sufficiently productive task remained: best candidate" in text
+    assert "Best candidate: $taskId" in text
+    assert "Best candidate score: $Score" in text
+    assert "Selected task $($choice.Id): score=$($choice.Score)" not in text
+    assert "No sufficiently productive task remained: selected" not in text
+
+
+def test_task_loop_avoids_powershell_colon_variable_parse_bug():
+    text = _runner_text()
+    assert "$taskId: score=" not in text
+    assert "${taskId}: score=" in text

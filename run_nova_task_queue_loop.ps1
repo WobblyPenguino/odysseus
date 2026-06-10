@@ -1078,8 +1078,8 @@ function Pick-Task {
     if (!$available) { $available = $eligible }
 
     $choice = $available | Sort-Object Score -Descending | Select-Object -First 1
-    Add-Summary "Selected task $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)"
-    Write-Host "Selected task $($choice.Id): score=$($choice.Score); $($choice.Reasons)"
+    Add-Summary "Best task candidate $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)"
+    Write-Host "Best task candidate $($choice.Id): score=$($choice.Score); $($choice.Reasons)"
     return $choice.Task
 }
 
@@ -1689,7 +1689,7 @@ function Resolve-SelectedTaskScoreFromSummary {
 
     $lines = @(Get-Content $SummaryLatest -ErrorAction SilentlyContinue)
     foreach ($line in @($lines | Select-Object -Last 80)) {
-        if ($line -match "Selected task .+?: score=(-?\d+)") {
+        if ($line -match "(?:Selected task|Best task candidate) .+?: score=(-?\d+)") {
             try { return [int]$Matches[1] } catch {}
         }
     }
@@ -1713,8 +1713,8 @@ function Write-TaskPoolExhaustedReport {
         "# Nova Task Pool Exhausted",
         "",
         "Phase: $Phase",
-        "Selected task: $taskId",
-        "Selected score: $Score",
+        "Best candidate: $taskId",
+        "Best candidate score: $Score",
         "Minimum productive score: $MinProductiveTaskScore",
         "",
         "Reason:",
@@ -1731,8 +1731,9 @@ function Write-TaskPoolExhaustedReport {
 
     Set-Content -Path $path -Value $lines -Encoding UTF8
 
-    $msg = "No sufficiently productive task remained: selected '$taskId' scored $Score, below minimum $MinProductiveTaskScore. See $path."
+    $msg = "No sufficiently productive task remained: best candidate '$taskId' scored $Score, below minimum $MinProductiveTaskScore. See $path."
     Write-Host $msg
+    Add-Summary "Best candidate below productive minimum: ${taskId}: score=$Score; minimum=$MinProductiveTaskScore"
     Add-Summary "Outcome category: task-pool-exhausted"
     Add-Summary "Result: stopped"
     Add-Summary "Why: $msg"
