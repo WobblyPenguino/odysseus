@@ -108,6 +108,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int = 180) -> dict[str, Any]:
         elapsed = time.perf_counter() - started
         return {"cmd": cmd, "ok": False, "elapsed_sec": round(elapsed, 3), "timeout_sec": timeout, "error": repr(exc), "stdout_tail": _tail(stdout_text), "stderr_tail": _tail(stderr_text), "pytest_plugin_autoload_disabled": pytest_plugin_autoload_disabled}
 
+
 def _progress_path(root: Path) -> Path:
     return root / "logs" / "validation_progress.jsonl"
 
@@ -433,7 +434,6 @@ def _section_summary(section: dict[str, Any]) -> str:
     return f" ({'; '.join(bits)})" if bits else ""
 
 
-
 def load_validation_status(root: Path | str = ".") -> dict[str, Any]:
     """Return a compact, honest snapshot of Nova validation progress.
 
@@ -478,6 +478,13 @@ def load_validation_status(root: Path | str = ".") -> dict[str, Any]:
             warnings.append(f"Ignored {malformed_progress_rows} malformed validation progress row(s)")
     else:
         warnings.append("No logs/validation_progress.jsonl progress log found yet")
+
+    # Detect sections that were started but never completed.
+    started_sections = [e.get("section") for e in events if e.get("event") == "section_started"]
+    completed_sections = [e.get("section") for e in events if e.get("event") == "section_completed"]
+    missing_completions = set(started_sections) - set(completed_sections)
+    for sec in missing_completions:
+        warnings.append(f"Section '{sec}' was started but never completed")
 
     last_started = next((event for event in reversed(events) if event.get("event") == "section_started"), None)
     last_completed = next((event for event in reversed(events) if event.get("event") == "section_completed"), None)
@@ -587,8 +594,8 @@ def main(argv: list[str] | None = None) -> int:
 if __name__ == "__main__":
     # Some optional Nova validation subprocesses/imports can register slow atexit
     # cleanup hooks in this packaged environment even after validation output has
-    # been printed. Flush and exit directly so `python -m winlocalassistant.validate
-    # --all` remains a reliable smoke-test command for launchers and CI.
+    # been printed. File-backed capture avoids the internal reader-thread
+    # join path and lets Nova report the exact command/chunk instead of freezing.
     import os
 
     exit_code = main()
