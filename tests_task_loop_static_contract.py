@@ -485,3 +485,33 @@ def test_task_loop_idea_promotion_task_draft_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_registers_idea_promotion_task_draft():
+    text = _runner_text()
+    assert "function Register-IdeaPromotionTaskDraft" in text
+    assert "Idea promotion task registered at runtime" in text
+    assert "tiny-autodev-sandbox-group-work-items-by-status-v1" in text
+    assert "group_work_items_by_status" in text
+    assert "test_autodev_sandbox_groups_items_by_status" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+    assert "$script:ApprovedRecoveryTasks" in text
+
+
+def test_task_loop_registers_draft_after_draft_report_is_written():
+    text = _runner_text()
+    draft_call = text.find("Write-IdeaPromotionTaskDraft -CandidatePath")
+    register_call = text.find("Register-IdeaPromotionTaskDraft -DraftPath")
+    assert draft_call != -1
+    assert register_call != -1
+    assert draft_call < register_call
+
+
+def test_task_loop_register_draft_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Register-IdeaPromotionTaskDraft")
+    call_pos = text.find("Register-IdeaPromotionTaskDraft -DraftPath")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos

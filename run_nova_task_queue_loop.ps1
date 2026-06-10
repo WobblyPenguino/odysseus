@@ -2274,12 +2274,46 @@ function Write-IdeaPromotionTaskDraft {
     return $Path
 }
 
+
+function Register-IdeaPromotionTaskDraft {
+    param(
+        [string]$DraftPath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md"
+    )
+
+    if (!(Test-Path $DraftPath)) {
+        Add-Summary "Idea promotion task draft registration skipped: missing $DraftPath"
+        return $false
+    }
+
+    $taskId = "tiny-autodev-sandbox-group-work-items-by-status-v1"
+    $alreadyRegistered = @($script:ApprovedRecoveryTasks | Where-Object { $_.Id -eq $taskId }).Count -gt 0
+
+    if ($alreadyRegistered) {
+        Add-Summary "Idea promotion task already registered: $taskId"
+        return $false
+    }
+
+    $task = @{
+        Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"
+        Goal = "Promote the drafted Nova idea-promotion task into one tiny source+test improvement. Add group_work_items_by_status(items: Iterable[WorkItem]) -> dict[str, list[WorkItem]] to nova_improvement_lab\autodev_sandbox.py. It must group items by normalise_status(item.status), preserve original item order inside each group, and include done aliases under done. Add a regression test named test_autodev_sandbox_groups_items_by_status in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredDiffContains = @("group_work_items_by_status", "test_autodev_sandbox_groups_items_by_status")
+        Tests = @("tests_autodev_sandbox.py")
+    }
+
+    $script:ApprovedRecoveryTasks = @($script:ApprovedRecoveryTasks) + @($task)
+    Add-Summary "Idea promotion task registered at runtime: $taskId"
+    return $true
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
     Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
 Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
     $task = Pick-Task
     if (!$task) {
         Add-Summary "Result: manual-review-needed"
@@ -2320,6 +2354,7 @@ Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_ST
 Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
 Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
+Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
