@@ -590,3 +590,12 @@ def test_task_loop_external_idea_promotion_candidate_config_has_fresh_task():
     assert "tiny-autodev-sandbox-render-action-plan-markdown-v1" in text
     assert "render_action_plan_markdown" in text
     assert "test_autodev_sandbox_renders_action_plan_markdown" in text
+
+
+def test_task_loop_external_candidate_loader_flattens_json_array():
+    text = _runner_text()
+    assert "$rawCandidates = Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json" in text
+    assert "foreach ($candidateGroup in @($rawCandidates))" in text
+    assert "foreach ($candidate in @($candidateGroup))" in text
+    assert "Idea promotion task draft loaded candidate count" in text
+    assert "$draftCandidates += [ordered]@{" in text

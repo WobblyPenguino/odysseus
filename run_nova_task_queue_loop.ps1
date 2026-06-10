@@ -2282,19 +2282,31 @@ function Write-IdeaPromotionTaskDraft {
 
     if (Test-Path $CandidateConfigPath) {
         try {
-            $loadedCandidates = @(Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json)
-            if (@($loadedCandidates).Count -gt 0) {
-                $draftCandidates = @($loadedCandidates | ForEach-Object {
-                    [ordered]@{
-                        Id = [string]$_.Id
-                        Goal = [string]$_.Goal
-                        Editable = @($_.Editable | ForEach-Object { [string]$_ })
-                        RequiredChangedFiles = @($_.RequiredChangedFiles | ForEach-Object { [string]$_ })
-                        RequiredDiffContains = @($_.RequiredDiffContains | ForEach-Object { [string]$_ })
-                        Tests = @($_.Tests | ForEach-Object { [string]$_ })
+            $rawCandidates = Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json
+            $loadedCandidates = @()
+
+            foreach ($candidateGroup in @($rawCandidates)) {
+                foreach ($candidate in @($candidateGroup)) {
+                    if ($null -ne $candidate -and ![string]::IsNullOrWhiteSpace([string]$candidate.Id)) {
+                        $loadedCandidates += $candidate
                     }
-                })
+                }
+            }
+
+            if (@($loadedCandidates).Count -gt 0) {
+                $draftCandidates = @()
+                foreach ($candidate in $loadedCandidates) {
+                    $draftCandidates += [ordered]@{
+                        Id = [string]$candidate.Id
+                        Goal = [string]$candidate.Goal
+                        Editable = @($candidate.Editable | ForEach-Object { [string]$_ })
+                        RequiredChangedFiles = @($candidate.RequiredChangedFiles | ForEach-Object { [string]$_ })
+                        RequiredDiffContains = @($candidate.RequiredDiffContains | ForEach-Object { [string]$_ })
+                        Tests = @($candidate.Tests | ForEach-Object { [string]$_ })
+                    }
+                }
                 Add-Summary "Idea promotion task draft loaded candidate config: $CandidateConfigPath"
+                Add-Summary "Idea promotion task draft loaded candidate count: $(@($draftCandidates).Count)"
             } else {
                 Add-Summary "Idea promotion task draft candidate config empty; using built-in fallback candidates"
             }
