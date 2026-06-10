@@ -661,3 +661,14 @@ def test_task_loop_runs_candidate_doctor_before_idea_promotion():
     promotion_index = normal.index(promotion_call, doctor_index)
     assert doctor_index < promotion_index
 
+
+
+def test_task_loop_does_not_write_stale_external_json_draft_when_pool_exhausted():
+    text = _runner_text()
+    assert "$usingExternalCandidateConfig = $false" in text
+    assert "$usingExternalCandidateConfig = $true" in text
+    assert "Idea promotion task draft external candidate pool exhausted; no fresh JSON draft written" in text
+    assert "Remove-Item -Path $JsonPath -Force -ErrorAction SilentlyContinue" in text
+    assert "Result: external-candidate-pool-exhausted" in text
+    assert "Idea promotion task draft built-in freshness fallback reused candidate:" in text
+    assert "Idea promotion task draft freshness fallback reused candidate:" not in text

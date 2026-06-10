@@ -2377,6 +2377,7 @@ function Write-IdeaPromotionTaskDraft {
     New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
 
     $candidateExists = Test-Path $CandidatePath
+    $usingExternalCandidateConfig = $false
 
     $recentLog = ""
     try {
@@ -2439,6 +2440,7 @@ function Write-IdeaPromotionTaskDraft {
 
                 if (@($validatedCandidates).Count -gt 0) {
                     $draftCandidates = @($validatedCandidates)
+                    $usingExternalCandidateConfig = $true
                     Add-Summary "Idea promotion task draft loaded candidate config: $CandidateConfigPath"
                     Add-Summary "Idea promotion task draft loaded candidate count: $(@($draftCandidates).Count)"
                 } else {
@@ -2466,8 +2468,40 @@ function Write-IdeaPromotionTaskDraft {
     }
 
     if ($null -eq $taskDraft) {
+        if ($usingExternalCandidateConfig) {
+            Add-Summary "Idea promotion task draft external candidate pool exhausted; no fresh JSON draft written"
+            if (@($skippedDraftIds).Count -gt 0) {
+                Add-Summary "Idea promotion task draft skipped recent completed candidate(s): $($skippedDraftIds -join ', ')"
+            }
+
+            Remove-Item -Path $JsonPath -Force -ErrorAction SilentlyContinue
+
+            $lines = @(
+                "# Nova Idea Promotion Task Draft Latest",
+                "",
+                "Result: external-candidate-pool-exhausted",
+                "",
+                "Candidate source: $CandidatePath",
+                "Candidate found: $candidateExists",
+                "Structured JSON draft: none",
+                "",
+                "Skipped recent completed candidate(s):"
+            )
+
+            if (@($skippedDraftIds).Count -gt 0) {
+                foreach ($skippedId in $skippedDraftIds) {
+                    $lines += "- $skippedId"
+                }
+            } else {
+                $lines += "- none"
+            }
+
+            $lines | Set-Content -Path $Path -Encoding UTF8
+            return $false
+        }
+
         $taskDraft = $draftCandidates[-1]
-        Add-Summary "Idea promotion task draft freshness fallback reused candidate: $($taskDraft.Id)"
+        Add-Summary "Idea promotion task draft built-in freshness fallback reused candidate: $($taskDraft.Id)"
     } else {
         Add-Summary "Idea promotion task draft freshness selected: $($taskDraft.Id)"
     }
