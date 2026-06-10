@@ -611,15 +611,6 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
-        Id = "real-task-localization-report-v1"
-        Goal = "Improve Nova task-loop reliability with one small source+test behaviour change. Add a helper named Write-TaskLocalizationReport in run_nova_task_queue_loop.ps1 that writes local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md before Aider runs. The report must include task id, editable files, targeted tests, required changed files, required diff markers, required final-file markers, and files that must not be edited. Add a static regression test named test_task_loop_writes_task_localization_report in tests_task_loop_static_contract.py. You must modify BOTH files."
-        Editable = @("run_nova_task_queue_loop.ps1", "tests_task_loop_static_contract.py")
-        RequiredChangedFiles = @("run_nova_task_queue_loop.ps1", "tests_task_loop_static_contract.py")
-        RequiredDiffContains = @("Write-TaskLocalizationReport", "NOVA_TASK_LOCALIZATION_LATEST.md", "test_task_loop_writes_task_localization_report")
-        Tests = @("tests_task_loop_static_contract.py")
-    },
-
-    @{
         Id = "research-only-agent-repo-inspiration-v1"
         Goal = "Research-only planning task. Do not edit Nova runtime source. Create or update docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md with repo/article-inspired ideas for safer Nova autonomous development. The report must include: source names, licence/risk notes, no-copy warning, ranked ideas, suggested RequiredChangedFiles/RequiredDiffContains for the top idea, and validation commands. Do not clone repos or copy external code."
         Editable = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
@@ -1718,6 +1709,93 @@ Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_s
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
 
 
+
+function Write-TaskLocalizationReport {
+    param(
+        $Task,
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $taskId = if ($Task) { [string]$Task.Id } else { "<none>" }
+    $editable = @($Task.Editable)
+    $tests = @($Task.Tests)
+    $requiredChanged = @(Get-TaskRequiredChangedFiles -Task $Task)
+    $requiredDiff = @(Get-TaskRequiredDiffContains -Task $Task)
+    $requiredFinal = Get-TaskRequiredFinalFileContains -Task $Task
+
+    $lines = @(
+        "# Nova Task Localization Report",
+        "",
+        "Task ID: $taskId",
+        "",
+        "Editable files:"
+    )
+
+    foreach ($item in $editable) {
+        $lines += "- $item"
+    }
+
+    $lines += @(
+        "",
+        "Targeted tests:"
+    )
+
+    foreach ($item in $tests) {
+        $lines += "- $item"
+    }
+
+    $lines += @(
+        "",
+        "Required changed files:"
+    )
+
+    foreach ($item in $requiredChanged) {
+        $lines += "- $item"
+    }
+
+    $lines += @(
+        "",
+        "Required diff markers:"
+    )
+
+    foreach ($item in $requiredDiff) {
+        $lines += "- $item"
+    }
+
+    $lines += @(
+        "",
+        "Required final-file markers:"
+    )
+
+    if ($requiredFinal) {
+        foreach ($pathKey in $requiredFinal.Keys) {
+            $lines += "- $pathKey"
+            foreach ($marker in @($requiredFinal[$pathKey])) {
+                $lines += "  - $marker"
+            }
+        }
+    }
+
+    $lines += @(
+        "",
+        "Files that must not be edited:",
+        "- Any file not listed under Editable files or Required changed files.",
+        "- Generated validation noise files under docs/ and logs/ must not be committed.",
+        "",
+        "Purpose:",
+        "- Localize the edit scope before Aider runs.",
+        "- Make collateral damage easier to spot during review.",
+        "- Preserve required task contracts and targeted validation commands."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Task localization report: $Path"
+    return $Path
+}
+
+
 function Write-TaskLargeFileSnippetContext {
     param(
         [hashtable]$Task,
@@ -1879,6 +1957,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $denyInput = ((1..900 | ForEach-Object { "no" }) -join "`n") + "`n"
     Add-Summary "Aider output log: $out"
+Write-TaskLocalizationReport -Task $task -Path ".\local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md" | Out-Null
 Write-Host "Aider output is being saved to: $out"
 $denyInput | & $Aider @aiderArgs *> $out
 $aiderExitCode = $LASTEXITCODE

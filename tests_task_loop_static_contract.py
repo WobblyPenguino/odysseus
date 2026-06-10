@@ -169,11 +169,16 @@ def test_task_loop_enforces_required_final_file_contains():
     assert "Research-only executable fallback: accepted docs/research planning diff" in text
 
 
-def test_task_loop_includes_real_task_localization_report_task():
+
+def test_task_loop_writes_task_localization_report():
     text = _runner_text()
-    assert "real-task-localization-report-v1" in text
-    assert "Write-TaskLocalizationReport" in text
+    assert "function Write-TaskLocalizationReport" in text
     assert "NOVA_TASK_LOCALIZATION_LATEST.md" in text
-    assert "test_task_loop_writes_task_localization_report" in text
-    assert "RequiredChangedFiles" in text
-    assert "RequiredDiffContains" in text
+    assert "Task ID:" in text
+    assert "Editable files:" in text
+    assert "Targeted tests:" in text
+    assert "Required changed files:" in text
+    assert "Required diff markers:" in text
+    assert "Required final-file markers:" in text
+    assert "Files that must not be edited:" in text
+    assert "Write-TaskLocalizationReport -Task $task" in text
