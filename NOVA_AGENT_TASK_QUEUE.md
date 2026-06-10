@@ -80,3 +80,68 @@ Acceptance:
 - Validation tests pass.
 - python -m nova.validate --help works.
 - Nova user sanity tests pass.
+
+## Approved Recovery Tasks
+
+### loop-generated-task-proposals
+Editable:
+- run_nova_task_queue_loop.ps1
+
+Tests:
+- tests_nova_user_sanity.py
+- tests_model_health_timeout.py
+- tests_runtime_usability_release_gate.py
+- tests_validation_reporting.py
+- tests_validation_status_command.py
+
+Goal:
+When all current tasks are quarantined, write a manual-review note proposing 3 new source-backed tasks instead of repeatedly recovering stale no-change tasks.
+
+Acceptance:
+- Does not run Aider on a quarantined no-change task.
+- Summary says task queue is exhausted.
+- Manual review note includes proposed task id, editable files, tests, risk, and reason.
+- Existing baseline tests pass.
+
+
+### loop-reset-stale-success-cooldown
+Editable:
+- run_nova_task_queue_loop.ps1
+
+Tests:
+- tests_nova_user_sanity.py
+- tests_model_health_timeout.py
+- tests_runtime_usability_release_gate.py
+- tests_validation_reporting.py
+- tests_validation_status_command.py
+
+Goal:
+Make success-cooldown and reverted-success quarantine expire after a bounded number of newer successful loop commits, instead of permanently blocking useful areas.
+
+Acceptance:
+- Reverted/old success history is still recorded.
+- A task is not permanently blocked by stale history.
+- Strong failure categories still block unsafe tasks.
+- Existing baseline tests pass.
+
+
+### loop-task-queue-health-command
+Editable:
+- run_nova_task_queue_loop.ps1
+- run_nova_task_queue_loop_with_monitor.ps1
+
+Tests:
+- tests_nova_user_sanity.py
+- tests_model_health_timeout.py
+- tests_runtime_usability_release_gate.py
+- tests_validation_reporting.py
+- tests_validation_status_command.py
+
+Goal:
+Add a preflight/report-only mode that prints task scores, quarantine reasons, and recovery eligibility without invoking Aider.
+
+Acceptance:
+- Command can be run safely before long loop runs.
+- It reports why the loop would stop early.
+- It does not edit source files.
+- Existing baseline tests pass.
