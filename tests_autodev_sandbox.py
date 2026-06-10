@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -90,3 +90,20 @@ def test_autodev_sandbox_filters_done_items_from_actionable_work():
 
     actionable = actionable_work_items(items)
     assert [i.title for i in actionable] == ["a", "d"]
+
+
+def test_autodev_sandbox_explains_next_action_with_evidence():
+    items = [
+        WorkItem("blocker_task", status="blocked"),
+        WorkItem("todo_task", status="todo"),
+    ]
+
+    explanation = explain_next_action(items)
+    # The explanation should contain evidence about the selected item
+    assert "blocker_task" in explanation
+    assert "blocked" in explanation
+    assert str(priority_score(WorkItem("blocker_task", status="blocked"))) in explanation
+
+    # When no actionable items remain, it should return 'idle'
+    idle_explanation = explain_next_action([WorkItem("done_item", status="done")])
+    assert idle_explanation == "idle"

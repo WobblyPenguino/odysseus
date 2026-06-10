@@ -87,6 +87,24 @@ def select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None:
     return sorted_items[0] if sorted_items else None
 
 
+def explain_next_action(items: Iterable[WorkItem]) -> str:
+    """
+    Return a human‑readable explanation of the next action to take.
+
+    The function uses :func:`select_next_work_item` to determine the highest
+    priority actionable item.  If no actionable items remain, ``"idle"``
+    is returned.  Otherwise the string includes evidence about the selected
+    item's title, normalised status and priority score.
+    """
+    next_item = select_next_work_item(items)
+    if not next_item:
+        return "idle"
+    action = suggest_next_action([next_item])
+    # Include evidence in a simple format; tests will check for presence of
+    # the relevant values rather than exact formatting.
+    return f"{action} (title={next_item.title}, status={normalise_status(next_item.status)}, score={priority_score(next_item)})"
+
+
 def actionable_work_items(items: Iterable[WorkItem]) -> list[WorkItem]:
     """
     Return a list of WorkItem objects that are still actionable.
