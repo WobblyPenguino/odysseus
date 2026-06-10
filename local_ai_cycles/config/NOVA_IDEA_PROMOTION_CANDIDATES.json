@@ -1,0 +1,40 @@
+[
+  {
+    "Id": "tiny-autodev-sandbox-format-action-plan-summary-v1",
+    "Goal": "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add format_action_plan_summary(summary: Mapping[str, object]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must format the output of summarise_action_plan into a stable human-readable sentence containing total, actionable, next title, next status, and next score values. Add a regression test named test_autodev_sandbox_formats_action_plan_summary in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "format_action_plan_summary",
+      "test_autodev_sandbox_formats_action_plan_summary"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-render-action-plan-markdown-v1",
+    "Goal": "Promote the next external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_markdown(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use summarise_action_plan(items) and format_action_plan_summary(summary), then return a small Markdown summary with a heading and stable bullet lines for total, actionable, next title, next status, and next score. Add a regression test named test_autodev_sandbox_renders_action_plan_markdown in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_markdown",
+      "test_autodev_sandbox_renders_action_plan_markdown"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  }
+]

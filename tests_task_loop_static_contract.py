@@ -573,3 +573,20 @@ def test_task_loop_json_draft_skips_recent_completed_candidates():
     assert "tiny-autodev-sandbox-format-action-plan-summary-v1" in text
     assert "format_action_plan_summary" in text
     assert "test_autodev_sandbox_formats_action_plan_summary" in text
+
+
+def test_task_loop_loads_external_idea_promotion_candidate_config():
+    text = _runner_text()
+    assert "CandidateConfigPath" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATES.json" in text
+    assert "Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json" in text
+    assert "Idea promotion task draft loaded candidate config" in text
+
+
+def test_task_loop_external_idea_promotion_candidate_config_has_fresh_task():
+    config = Path("local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json")
+    assert config.exists()
+    text = config.read_text(encoding="utf-8")
+    assert "tiny-autodev-sandbox-render-action-plan-markdown-v1" in text
+    assert "render_action_plan_markdown" in text
+    assert "test_autodev_sandbox_renders_action_plan_markdown" in text

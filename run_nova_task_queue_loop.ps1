@@ -2245,7 +2245,8 @@ function Write-IdeaPromotionTaskDraft {
     param(
         [string]$CandidatePath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md",
         [string]$Path = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md",
-        [string]$JsonPath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.json"
+        [string]$JsonPath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.json",
+        [string]$CandidateConfigPath = ".\local_ai_cycles\config\NOVA_IDEA_PROMOTION_CANDIDATES.json"
     )
 
     New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
@@ -2277,6 +2278,32 @@ function Write-IdeaPromotionTaskDraft {
             Tests = @("tests_autodev_sandbox.py")
         }
     )
+
+
+    if (Test-Path $CandidateConfigPath) {
+        try {
+            $loadedCandidates = @(Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json)
+            if (@($loadedCandidates).Count -gt 0) {
+                $draftCandidates = @($loadedCandidates | ForEach-Object {
+                    [ordered]@{
+                        Id = [string]$_.Id
+                        Goal = [string]$_.Goal
+                        Editable = @($_.Editable | ForEach-Object { [string]$_ })
+                        RequiredChangedFiles = @($_.RequiredChangedFiles | ForEach-Object { [string]$_ })
+                        RequiredDiffContains = @($_.RequiredDiffContains | ForEach-Object { [string]$_ })
+                        Tests = @($_.Tests | ForEach-Object { [string]$_ })
+                    }
+                })
+                Add-Summary "Idea promotion task draft loaded candidate config: $CandidateConfigPath"
+            } else {
+                Add-Summary "Idea promotion task draft candidate config empty; using built-in fallback candidates"
+            }
+        } catch {
+            Add-Summary "Idea promotion task draft candidate config load failed; using built-in fallback candidates: $($_.Exception.Message)"
+        }
+    } else {
+        Add-Summary "Idea promotion task draft candidate config missing; using built-in fallback candidates: $CandidateConfigPath"
+    }
 
     $skippedDraftIds = @()
     $taskDraft = $null
