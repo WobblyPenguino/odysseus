@@ -1279,8 +1279,16 @@ function Validate-Diff {
     $removedLines = Get-RemovedDiffLines -DiffText $bad
     Assert-TaskRequiredChangedFiles -Task $task
     Assert-TaskRequiredDiffContains -Task $task -DiffText $bad
-    if (!(Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines))) {
+
+    $hasRequiredDiffContract = @(Get-TaskRequiredDiffContains -Task $task).Count -gt 0
+    $hasExecutableChange = Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines)
+
+    if (!$hasExecutableChange -and !$hasRequiredDiffContract) {
         throw "Rejected documentation/comment-only patch with no executable code change."
+    }
+
+    if (!$hasExecutableChange -and $hasRequiredDiffContract) {
+        Add-Summary "Executable classifier fallback: accepted required diff contract after required changed files and required diff markers passed."
     }
 
     $deadAddedVariable = Get-DeadAddedVariableName -AddedLines $addedLines

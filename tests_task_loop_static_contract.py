@@ -96,3 +96,11 @@ def test_task_loop_enforces_required_diff_markers():
     assert "function Assert-TaskRequiredDiffContains" in text
     assert "Rejected required-diff contract breach" in text
     assert "Assert-TaskRequiredDiffContains -Task $task -DiffText $bad" in text
+
+
+def test_required_diff_contract_can_override_generic_executable_classifier():
+    text = _runner_text()
+    assert "$hasRequiredDiffContract" in text
+    assert "$hasExecutableChange" in text
+    assert "Executable classifier fallback: accepted required diff contract" in text
+    assert "Rejected documentation/comment-only patch with no executable code change." in text
