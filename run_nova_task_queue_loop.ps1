@@ -202,6 +202,10 @@ function Add-TaskSignal {
     $categoryLower = ($Category -as [string]).ToLowerInvariant()
     if (!$lower -and !$categoryLower) { return }
 
+    if (($categoryLower -eq "context-protected-file") -and ($lower -match "command failed: python -m pytest|tests_.*\.py|pytest")) {
+        $categoryLower = "test-failed"
+    }
+
     if (($categoryLower -eq "success-cooldown") -or ($lower -match "recent-success-cooldown|result:\s*committed|source/test task passed")) {
         $Signals.RecentSuccess += 1
         $Signals.Reasons += "category=success-cooldown"
@@ -210,6 +214,12 @@ function Add-TaskSignal {
 
     if (($categoryLower -in @("no-change", "low-significance", "reverted-success")) -or ($lower -match "no-change|no change|low-significance|low significance|only \d+ changed lines")) {
         $Signals.LowValue += 1
+        if ($categoryLower -eq "no-change") {
+            $Signals.NoChange += 1
+        }
+        if ($categoryLower -eq "reverted-success") {
+            $Signals.RevertedSuccess += 1
+        }
         $Signals.Reasons += "category=$($categoryLower -replace '^$', 'low-value')"
     }
 
@@ -230,12 +240,12 @@ function Get-TaskOutcomeCategory {
     if ($lower -match "reverted-success|success commit was later reverted") { return "reverted-success" }
     if ($lower -match "claim/diff mismatch|dead error-body|dead added variable|unreachable error-body|no-op") { return "low-significance" }
     if ($lower -match "low-significance|low significance|only \d+ changed lines") { return "low-significance" }
-    if ($lower -match "context|token|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
     if ($lower -match "aider failed|aider exited") { return "aider-failed" }
     if ($lower -match "command_suggestions|command-suggestions|dangerous command|suggestion") { return "bad-command-suggestion-invention" }
     if ($lower -match "command_verifier|command-verifier|full command output|output_preview|default_command_contracts|/command-verify") { return "command-verifier-output-bloat" }
     if ($lower -match "placeholder|speculative|assert true|magicmock|mock|todo|would be implemented") { return "placeholder-or-speculative" }
     if ($lower -match "command failed: python -m pytest|tests_.*\.py|pytest") { return "test-failed" }
+    if ($lower -match "context/token|token-limit|token limit|protected-file|protected file|added app\.py|added readme\.md|added changelog\.md") { return "context-protected-file" }
     if ($lower -match "validation|compileall|py_compile|rejected") { return "validation-failed" }
     return "unknown-failure"
 }
@@ -382,6 +392,8 @@ function Get-RecentTaskSignals {
     $signals = @{
         Failures = 0
         LowValue = 0
+        NoChange = 0
+        RevertedSuccess = 0
         RecentSuccess = 0
         Reasons = @()
     }
@@ -444,6 +456,8 @@ function Get-RecentTaskSignals {
     return [pscustomobject]@{
         Failures = [int]$signals.Failures
         LowValue = [int]$signals.LowValue
+        NoChange = [int]$signals.NoChange
+        RevertedSuccess = [int]$signals.RevertedSuccess
         RecentSuccess = [int]$signals.RecentSuccess
         Reasons = (($signals.Reasons | Select-Object -Unique -First 3) -join "; ")
     }
@@ -497,6 +511,14 @@ function Pick-Task {
             $score -= 15 * $signals.LowValue
             $reasons += "$($signals.LowValue) recent low-value/no-change outcome(s)"
         }
+        if ($signals.RevertedSuccess -gt 0) {
+            $score -= 35 * $signals.RevertedSuccess
+            $reasons += "$($signals.RevertedSuccess) reverted accepted commit(s)"
+        }
+        if ($signals.NoChange -gt 0) {
+            $score -= 20 * $signals.NoChange
+            $reasons += "$($signals.NoChange) recent no-change outcome(s)"
+        }
         if ($signals.RecentSuccess -gt 0) {
             $score -= 12 * $signals.RecentSuccess
             $reasons += "$($signals.RecentSuccess) recent success cooldown(s)"
@@ -511,6 +533,9 @@ function Pick-Task {
         if ($effectiveFailures -ge $MaxRecentTaskFailures) {
             $quarantined = $true
             $quarantineReason = "quarantined after $effectiveFailures effective recent failure(s)"
+        } elseif (($signals.RevertedSuccess -gt 0) -and ($signals.NoChange -gt 0)) {
+            $quarantined = $true
+            $quarantineReason = "quarantined after reverted accepted commit plus no-change outcome"
         } elseif ($signals.LowValue -ge ($MaxRecentTaskFailures + 1)) {
             $quarantined = $true
             $quarantineReason = "quarantined after $($signals.LowValue) recent low-value/no-change outcome(s)"
@@ -533,6 +558,12 @@ function Pick-Task {
         Add-Summary "Skipping task $($row.Id): $($row.QuarantineReason)."
     }
 
+    Add-Summary "Task selection candidates:"
+    foreach ($row in ($rows | Sort-Object Score -Descending)) {
+        $state = if ($row.Quarantined) { "quarantined" } elseif ($row.UsedThisRun) { "cooldown" } else { "eligible" }
+        Add-Summary "- $($row.Id): score=$($row.Score), state=$state, reasons=$($row.Reasons)"
+    }
+
     $eligible = @($rows | Where-Object { -not $_.Quarantined })
     if (!$eligible) {
         throw "No healthy task available. All tasks are missing files or quarantined by recent failures/low-value outcomes."
@@ -540,12 +571,6 @@ function Pick-Task {
 
     $available = @($eligible | Where-Object { -not $_.UsedThisRun })
     if (!$available) { $available = $eligible }
-
-    Add-Summary "Task selection candidates:"
-    foreach ($row in ($rows | Sort-Object Score -Descending)) {
-        $state = if ($row.Quarantined) { "quarantined" } elseif ($row.UsedThisRun) { "cooldown" } else { "eligible" }
-        Add-Summary "- $($row.Id): score=$($row.Score), state=$state, reasons=$($row.Reasons)"
-    }
 
     $choice = $available | Sort-Object Score -Descending | Select-Object -First 1
     Add-Summary "Selected task $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)"
