@@ -333,3 +333,15 @@ def test_task_loop_subagent_review_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_includes_tiny_autodev_sort_priority_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-sort-priority-v1" in text
+    assert "sort_work_items_by_priority" in text
+    assert "test_autodev_sandbox_sorts_items_by_priority_stably" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
