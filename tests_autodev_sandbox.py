@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -41,3 +41,19 @@ def test_autodev_sandbox_prioritises_blockers_before_completed_work():
     # Review items should outrank todo items but be lower than blocked
     assert priority_score(review_item) > priority_score(todo_item)
     assert priority_score(blocked_item) > priority_score(review_item)
+
+
+def test_autodev_sandbox_sorts_items_by_priority_stably():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="todo"),
+        WorkItem("e", status="blocked"),
+    ]
+
+    sorted_items = sort_work_items_by_priority(items)
+    # Expected order: blocked items first in original order (b, e), then review (c),
+    # then todo items in original order (a, d)
+    expected_titles = ["b", "e", "c", "a", "d"]
+    assert [i.title for i in sorted_items] == expected_titles

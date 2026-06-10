@@ -63,3 +63,12 @@ def priority_score(item: WorkItem) -> int:
     # Assign numeric values: larger number = higher priority
     score_map = {"blocked": 3, "review": 2, "todo": 1, "done": 0}
     return score_map.get(status, 0)
+
+
+def sort_work_items_by_priority(items: Iterable[WorkItem]) -> list[WorkItem]:
+    """
+    Return a new list of WorkItem objects sorted from highest to lowest priority
+    using the priority_score function. The sort is stable so that items with
+    equal priority retain their original relative order.
+    """
+    return sorted(items, key=lambda item: priority_score(item), reverse=True)
