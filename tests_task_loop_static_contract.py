@@ -268,3 +268,15 @@ def test_task_loop_includes_tiny_autodev_sandbox_task():
     assert "tests_autodev_sandbox.py" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_includes_tiny_autodev_sandbox_priority_v2_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-priority-v2" in text
+    assert "priority_score" in text
+    assert "test_autodev_sandbox_prioritises_blockers_before_completed_work" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text

@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "tiny-autodev-sandbox-priority-v2"
+        Goal = "Improve the tiny autonomous development sandbox with one small source+test change. Add a priority_score(item: WorkItem) helper to nova_improvement_lab\autodev_sandbox.py. The helper should return a higher score for blocked work than review work, a higher score for review work than todo work, and the lowest score for done work. Add a regression test named test_autodev_sandbox_prioritises_blockers_before_completed_work in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredDiffContains = @("priority_score", "test_autodev_sandbox_prioritises_blockers_before_completed_work")
+        Tests = @("tests_autodev_sandbox.py")
+    },
+
+    @{
         Id = "tiny-autodev-sandbox-priority-v1"
         Goal = "Improve the tiny autonomous development sandbox with one small source+test change. Add a priority_score(item: WorkItem) helper to nova_improvement_lab\autodev_sandbox.py so blocked work ranks above review work, review ranks above todo work, and done work ranks lowest. Add a regression test named test_autodev_sandbox_prioritises_blockers_before_polish in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
         Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
