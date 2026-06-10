@@ -713,7 +713,7 @@ function Pick-Task {
     $eligible = @($rows | Where-Object { -not $_.Quarantined })
     if (!$eligible) {
         Write-NoHealthyTaskReviewNote -Rows $rows
-        throw "No healthy task available. All tasks are missing files or quarantined by recent failures/low-value outcomes."
+        return $null
     }
 
     $available = @($eligible | Where-Object { -not $_.UsedThisRun })
@@ -1039,6 +1039,15 @@ if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
     $task = Pick-Task
+    if (!$task) {
+        Add-Summary "Result: manual-review-needed"
+        Add-Summary "Selected task: none"
+        Add-Summary "No Aider invocation, commit, or source edit was attempted."
+        Write-Host "No healthy task available. Manual review note: $ManualReviewLatest"
+        Write-Host "No Aider invocation, commit, or source edit was attempted."
+        Write-Host "Summary: $SummaryLatest"
+        exit 0
+    }
     Add-Summary "Result: preflight-only"
     Add-Summary "Selected task: $($task.Id)"
     Add-Summary "Editable files: $($task.Editable -join ', ')"
@@ -1066,6 +1075,15 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Assert-CleanGit
 
     $task = Pick-Task
+    if (!$task) {
+        Add-Summary ""
+        Add-Summary "## Cycle $i"
+        Add-Summary "Result: manual-review-needed"
+        Add-Summary "Selected task: none"
+        Add-Summary "Why: no healthy task available after scoring, quarantine checks, and recovery checks."
+        Write-Host "No healthy task available. Manual review note: $ManualReviewLatest"
+        break
+    }
     [void]$RunTaskCooldown.Add([string]$task.Id)
     $before = git rev-parse --short HEAD
     $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
