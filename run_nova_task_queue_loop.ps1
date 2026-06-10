@@ -2576,6 +2576,12 @@ if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
     Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
+
+if (Test-Path ".\tools\idea_candidate_doctor.py") {
+    Run-Cmd "python .\tools\idea_candidate_doctor.py"
+    Add-Summary "Idea candidate doctor report: .\local_ai_cycles\memory\NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"
+}
+
 Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
 Write-IdeaPromotionTaskDraft -CandidatePath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null
 Register-IdeaPromotionTaskDraft -DraftPath ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" | Out-Null

@@ -643,3 +643,21 @@ def test_task_loop_live_compile_gate_includes_improvement_lab():
     text = _runner_text()
     assert "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py" in text
     assert "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py" not in text
+
+
+def test_task_loop_runs_candidate_doctor_before_idea_promotion():
+    text = _runner_text()
+    normal = text.replace("\\", "/")
+
+    doctor = 'Run-Cmd "python ./tools/idea_candidate_doctor.py"'
+    report = "Idea candidate doctor report: ./local_ai_cycles/memory/NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"
+    promotion_call = 'Write-IdeaPromotionCandidateReport -IdeaPoolPath "./local_ai_cycles/memory/NOVA_TASK_IDEA_POOL_LATEST.md"'
+
+    assert doctor in normal
+    assert report in normal
+    assert promotion_call in normal
+
+    doctor_index = normal.index(doctor)
+    promotion_index = normal.index(promotion_call, doctor_index)
+    assert doctor_index < promotion_index
+
