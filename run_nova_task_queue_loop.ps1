@@ -614,6 +614,7 @@ $ApprovedRecoveryTasks = @(
         Id = "lab-source-test-improvement-v2"
         Goal = "Improve only the isolated Nova improvement lab with one small behaviour change. You must modify BOTH nova_improvement_lab\text_tools.py and tests_improvement_lab_contract.py. Do not make a test-only patch. Do not edit broad Nova runtime files. Keep the change small, reversible, and validated by tests_improvement_lab_contract.py."
         Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
+        RequiredChangedFiles = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
         Tests = @("tests_improvement_lab_contract.py")
     },
 
@@ -1010,6 +1011,52 @@ function Get-RemovedDiffLines {
 }
 
 
+
+function Get-ChangedDiffPaths {
+    $paths = @(git diff --name-only 2>$null)
+    return @($paths | ForEach-Object { ([string]$_).Replace("/", "\") })
+}
+
+function Get-TaskRequiredChangedFiles {
+    param($Task)
+
+    if (!$Task) { return @() }
+
+    if ($Task -is [hashtable] -and $Task.ContainsKey("RequiredChangedFiles")) {
+        return @($Task["RequiredChangedFiles"])
+    }
+
+    $prop = $Task.PSObject.Properties["RequiredChangedFiles"]
+    if ($prop) {
+        return @($prop.Value)
+    }
+
+    return @()
+}
+
+function Assert-TaskRequiredChangedFiles {
+    param($Task)
+
+    $required = @(Get-TaskRequiredChangedFiles -Task $Task)
+    if (!$required -or $required.Count -eq 0) { return }
+
+    $changed = @(Get-ChangedDiffPaths)
+    $changedLower = @($changed | ForEach-Object { ([string]$_).ToLowerInvariant() })
+
+    $missing = @()
+    foreach ($requiredPath in $required) {
+        $normalised = ([string]$requiredPath).Replace("/", "\")
+        if ($changedLower -notcontains $normalised.ToLowerInvariant()) {
+            $missing += $normalised
+        }
+    }
+
+    if ($missing.Count -gt 0) {
+        throw "Rejected required-file contract breach for task '$($Task.Id)': missing required changed file(s): $($missing -join ', '). Changed file(s): $($changed -join ', ')."
+    }
+}
+
+
 function Test-DiffLineLooksExecutable {
     param([string]$Line)
 
@@ -1181,6 +1228,7 @@ function Validate-Diff {
 
     $addedLines = Get-AddedDiffLines -DiffText $bad
     $removedLines = Get-RemovedDiffLines -DiffText $bad
+    Assert-TaskRequiredChangedFiles -Task $task
     if (!(Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines))) {
         throw "Rejected documentation/comment-only patch with no executable code change."
     }

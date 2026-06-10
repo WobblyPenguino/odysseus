@@ -79,3 +79,11 @@ def test_task_loop_includes_strict_lab_source_test_task():
     assert "Do not make a test-only patch" in text
     assert "nova_improvement_lab\\text_tools.py" in text or "nova_improvement_lab\text_tools.py" in text
     assert "tests_improvement_lab_contract.py" in text
+
+
+def test_task_loop_enforces_required_changed_files():
+    text = _runner_text()
+    assert "RequiredChangedFiles" in text
+    assert "function Assert-TaskRequiredChangedFiles" in text
+    assert "Rejected required-file contract breach" in text
+    assert "Assert-TaskRequiredChangedFiles -Task $task" in text
