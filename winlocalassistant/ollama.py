@@ -257,10 +257,10 @@ def ollama_vision_chat(
 ) -> str | None:
     """Call Ollama vision-capable models through /api/chat using image inputs.
 
-    This uses the same single-prompt lock as text generation. Ollama vision-capable
-    models accept base64-encoded images in the message `images` field. If the
+    This uses the same single-prompt lock as text generation. Ollama vision‑capable
+    models accept base64‑encoded images in the message `images` field. If the
     selected model is not a vision model, Ollama will usually return an error or
-    an unhelpful response; callers should surface that clearly rather than hiding
+    unhelpful response; callers should surface that clearly rather than hiding
     the problem.
     """
     global _OLLAMA_BUSY_SINCE, _OLLAMA_BUSY_DESC, _OLLAMA_BUSY_REQUEST_ID, _OLLAMA_COOLDOWN_UNTIL
