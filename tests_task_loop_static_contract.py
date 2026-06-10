@@ -62,3 +62,11 @@ def test_validation_helper_checks_external_command_exit_codes():
     assert "throw" in text
     assert "tests_improvement_lab_contract.py" in text
     assert "Validation passed." in text
+
+
+def test_diff_classifier_accepts_control_flow_and_assertions():
+    text = _runner_text()
+    assert "function Test-DiffLineLooksExecutable" in text
+    assert "^(if|elif|else|for|while|try|except|finally|with|match|case)" in text
+    assert "return|raise|yield|assert|break|continue|pass" in text
+    assert "Test-DiffLineLooksExecutable -Line" in text
