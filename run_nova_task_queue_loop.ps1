@@ -624,9 +624,9 @@ $ApprovedRecoveryTasks = @(
     },
 
     @{
-        Id = "fresh-command-timeout-status"
-        Goal = "Improve Nova command-timeout status/help clarity with a small source-backed source+test patch, only if a real behaviour gap exists."
-        Editable = @("winlocalassistant\core.py", "tests_model_health_timeout.py")
+        Id = "fresh-model-health-guidance"
+        Goal = "Improve Nova model-health reporting, Ollama readiness guidance, or timeout/fallback diagnostics with a small source-backed source+test patch, only if a real behaviour gap exists. Do not edit winlocalassistant/core.py."
+        Editable = @("winlocalassistant\model_health.py", "winlocalassistant\ollama.py", "tests_model_health_timeout.py")
         Tests = @("tests_model_health_timeout.py")
     },
 
