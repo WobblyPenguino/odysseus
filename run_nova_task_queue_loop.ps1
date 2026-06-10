@@ -1002,32 +1002,48 @@ function Get-RemovedDiffLines {
         ForEach-Object { $_.Substring(1) })
 }
 
+
+function Test-DiffLineLooksExecutable {
+    param([string]$Line)
+
+    $lineText = [string]$Line
+    if (!$lineText) { return $false }
+
+    $trimmed = $lineText.Trim()
+    if (!$trimmed) { return $false }
+    if ($trimmed.StartsWith("#")) { return $false }
+
+    $patterns = @(
+        '^(if|elif|else|for|while|try|except|finally|with|match|case)\b',
+        '^(return|raise|yield|assert|break|continue|pass)\b',
+        '^(def|class|import|from)\b',
+        '^[A-Za-z_][A-Za-z0-9_]*\s*=',
+        '^[A-Za-z_][A-Za-z0-9_]*\(',
+        '\)\s*->',
+        '\band\b|\bor\b|\bnot\b',
+        '==|!=|<=|>=',
+        '\.append\(|\.extend\(|\.add\(|\.remove\('
+    )
+
+    foreach ($pattern in $patterns) {
+        if ($trimmed -match $pattern) { return $true }
+    }
+
+    return $false
+}
+
 function Test-DiffHasExecutableCodeChange {
     param([string[]]$ChangedLines)
 
     foreach ($line in $ChangedLines) {
-        $trimmed = ($line -as [string]).Trim()
-        if (!$trimmed) { continue }
-        if ($trimmed.StartsWith("#")) { continue }
-
-        # Ignore docstring delimiter lines, but allow string literals in lists/dicts.
-        if ($trimmed -match '^(["]{3}|['']{3})') { continue }
-
-        if ($trimmed -match '^(def|class|if|elif|else:|for|while|with|try:|except|finally:|return|raise|import|from|assert|yield|break|continue)\b') {
-            return $true
-        }
-
-        if ($trimmed -match '^[rRuUbBfF]*["'']') {
-            return $true
-        }
-
-        if ($trimmed -match '[=\(\)\[\]\{\}]') {
+        if (Test-DiffLineLooksExecutable -Line $line) {
             return $true
         }
     }
 
     return $false
 }
+
 
 function Get-DeadAddedVariableName {
     param([string[]]$AddedLines)
