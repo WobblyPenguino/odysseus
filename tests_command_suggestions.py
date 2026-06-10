@@ -104,3 +104,10 @@ def test_tool_planning_prompt_suggests_tool_aware_routes() -> None:
     commands = _commands("ensure planning is adaptive and not a rigid template when it chooses tools")
     assert any(cmd.startswith("/tool-use-plan") for cmd in commands)
     assert any(cmd.startswith("/pipeline-route") or cmd.startswith("/role-router") for cmd in commands)
+
+def test_reset_project_command_is_disallowed() -> None:
+    from winlocalassistant.command_suggestions import _is_disallowed
+
+    assert _is_disallowed("/reset-project")
+    assert _is_disallowed("please run /reset-project before continuing")
+

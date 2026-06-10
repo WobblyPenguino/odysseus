@@ -162,5 +162,6 @@ def _is_disallowed(command: str) -> bool:
         "/allow-internet on",
         "/internet-fetch",
         "/self-improve automatically",
+        "/reset-project",
     ]
     return any(term in low for term in blocked)
