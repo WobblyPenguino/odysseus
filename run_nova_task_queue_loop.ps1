@@ -2166,10 +2166,63 @@ function Write-TaskIdeaPoolReport {
     return $Path
 }
 
+
+function Write-IdeaPromotionCandidateReport {
+    param(
+        [string]$IdeaPoolPath = ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md",
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $poolExists = Test-Path $IdeaPoolPath
+
+    $lines = @(
+        "# Nova Idea Promotion Candidate Latest",
+        "",
+        "Purpose:",
+        "- Select the safest next idea to promote into a contracted task.",
+        "- This report is advisory only.",
+        "- It must not edit files or inject tasks by itself.",
+        "",
+        "Source idea pool: $IdeaPoolPath",
+        "Idea pool found: $poolExists",
+        "",
+        "Selected idea: idea-3: explain-next-action",
+        "Candidate task id: tiny-autodev-sandbox-explain-next-action-v1",
+        "",
+        "Why selected:",
+        "- Low-risk tiny source+test task.",
+        "- Builds on actionable_work_items, select_next_work_item, priority_score, and sort_work_items_by_priority.",
+        "- Improves transparent autonomous task choice.",
+        "- Keeps edits inside the tiny sandbox.",
+        "",
+        "Proposed contract:",
+        'Id = "tiny-autodev-sandbox-explain-next-action-v1"',
+        'Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")',
+        'RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")',
+        'RequiredDiffContains = @("explain_next_action", "test_autodev_sandbox_explains_next_action_with_evidence")',
+        'Tests = @("tests_autodev_sandbox.py")',
+        "",
+        "Promotion gate:",
+        "- A future patch may promote this candidate into ApprovedRecoveryTasks.",
+        "- The promoted task must pass static validation.",
+        "- The promoted task must pass preflight localization before live execution.",
+        "- The idea-promotion report alone must never trigger Aider."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Idea promotion candidate report: $Path"
+    Add-Summary "Idea promotion candidate: tiny-autodev-sandbox-explain-next-action-v1"
+
+    return $Path
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
     Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
+Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
     $task = Pick-Task
     if (!$task) {
         Add-Summary "Result: manual-review-needed"
@@ -2208,6 +2261,7 @@ Clean-GeneratedNoise
 Assert-CleanGit
 Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
 Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
+Write-IdeaPromotionCandidateReport -IdeaPoolPath ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" -Path ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" | Out-Null
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
 Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"

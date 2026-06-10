@@ -409,3 +409,33 @@ def test_task_loop_approved_recovery_tasks_include_actionable_work_items_task():
     assert "tests_autodev_sandbox.py" in approved_text
     assert "RequiredChangedFiles" in approved_text
     assert "RequiredDiffContains" in approved_text
+
+
+def test_task_loop_writes_idea_promotion_candidate_report():
+    text = _runner_text()
+    assert "function Write-IdeaPromotionCandidateReport" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" in text
+    assert "Selected idea: idea-3: explain-next-action" in text
+    assert "tiny-autodev-sandbox-explain-next-action-v1" in text
+    assert "explain_next_action" in text
+    assert "test_autodev_sandbox_explains_next_action_with_evidence" in text
+    assert "Promotion gate:" in text
+    assert "The idea-promotion report alone must never trigger Aider." in text
+
+
+def test_task_loop_idea_promotion_candidate_runs_after_idea_pool():
+    text = _runner_text()
+    idea_call = text.find("Write-TaskIdeaPoolReport -Path")
+    candidate_call = text.find("Write-IdeaPromotionCandidateReport -IdeaPoolPath")
+    assert idea_call != -1
+    assert candidate_call != -1
+    assert idea_call < candidate_call
+
+
+def test_task_loop_idea_promotion_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-IdeaPromotionCandidateReport")
+    call_pos = text.find("Write-IdeaPromotionCandidateReport -IdeaPoolPath")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
