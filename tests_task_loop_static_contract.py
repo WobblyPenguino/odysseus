@@ -121,3 +121,14 @@ def test_task_loop_rejects_invalid_loopback_url_typo():
     text = _runner_text()
     assert "Rejected invalid loopback URL typo 127.0.0-1" in text
     assert "127.0.0.1" in text
+
+
+def test_task_loop_includes_real_model_context_named_file_cache_task():
+    text = _runner_text()
+    assert "real-model-context-named-file-cache-freshness-v1" in text
+    assert "winlocalassistant\\model_context.py" in text
+    assert "tests_model_context_pack.py" in text
+    assert "_prompt_named_file_signature" in text
+    assert "test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text

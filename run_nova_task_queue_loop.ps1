@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "real-model-context-named-file-cache-freshness-v1"
+        Goal = "Improve Nova model context continuity with one small source+test behaviour change. Ensure prompt-named file previews refresh when the named file content changes, instead of reusing stale cached context. Add or update a helper named _prompt_named_file_signature in winlocalassistant\model_context.py and add a regression test named test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change in tests_model_context_pack.py. You must modify BOTH files. Do not edit broad Nova runtime files."
+        Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredChangedFiles = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredDiffContains = @("_prompt_named_file_signature", "test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change")
+        Tests = @("tests_model_context_pack.py")
+    },
+
+    @{
         Id = "real-model-context-named-file-preview-v1"
         Goal = "Improve Nova model context continuity with one small source+test behaviour change. Add a helper named _prompt_named_files in winlocalassistant\model_context.py so the context pack can reliably identify small top-level files explicitly named in the user prompt, and add a regression test named test_model_context_pack_includes_prompt_named_python_file_preview in tests_model_context_pack.py. You must modify BOTH files. Keep previews bounded and do not edit broad Nova runtime files."
         Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
