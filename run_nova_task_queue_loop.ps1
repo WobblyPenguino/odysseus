@@ -964,6 +964,42 @@ function Get-AddedDiffLines {
         ForEach-Object { $_.Substring(1) })
 }
 
+
+function Get-RemovedDiffLines {
+    param([string]$DiffText)
+
+    return @($DiffText -split "`r?`n" |
+        Where-Object { $_ -match "^\-" -and $_ -notmatch "^\-\-\-" } |
+        ForEach-Object { $_.Substring(1) })
+}
+
+function Test-DiffHasExecutableCodeChange {
+    param([string[]]$ChangedLines)
+
+    foreach ($line in $ChangedLines) {
+        $trimmed = ($line -as [string]).Trim()
+        if (!$trimmed) { continue }
+        if ($trimmed.StartsWith("#")) { continue }
+
+        # Ignore docstring delimiter lines, but allow string literals in lists/dicts.
+        if ($trimmed -match '^(["]{3}|['']{3})') { continue }
+
+        if ($trimmed -match '^(def|class|if|elif|else:|for|while|with|try:|except|finally:|return|raise|import|from|assert|yield|break|continue)\b') {
+            return $true
+        }
+
+        if ($trimmed -match '^[rRuUbBfF]*["'']') {
+            return $true
+        }
+
+        if ($trimmed -match '[=\(\)\[\]\{\}]') {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Get-DeadAddedVariableName {
     param([string[]]$AddedLines)
 
@@ -1092,6 +1128,11 @@ function Validate-Diff {
     Validate-AiderClaimsAgainstDiff -OutputPath $AiderOutputPath -DiffText $bad
 
     $addedLines = Get-AddedDiffLines -DiffText $bad
+    $removedLines = Get-RemovedDiffLines -DiffText $bad
+    if (!(Test-DiffHasExecutableCodeChange -ChangedLines @($addedLines + $removedLines))) {
+        throw "Rejected documentation/comment-only patch with no executable code change."
+    }
+
     $deadAddedVariable = Get-DeadAddedVariableName -AddedLines $addedLines
     if ($deadAddedVariable) {
         throw "Rejected dead added variable '$deadAddedVariable' with no read in the added diff."
