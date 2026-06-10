@@ -125,3 +125,11 @@ def run_all(verbose: bool = False) -> None:
 
 if __name__ == "__main__":
     run_all(verbose=True)
+
+
+def test_model_context_static_defaults_keep_valid_loopback_url() -> None:
+    source = Path("winlocalassistant/model_context.py").read_text(encoding="utf-8")
+    assert 'ollama_url="http://127.0.0.1:11434"' in source
+    assert "127.0.0-1" not in source
+    assert '".[truncated]"' not in source
+    assert '"...[truncated]"' in source

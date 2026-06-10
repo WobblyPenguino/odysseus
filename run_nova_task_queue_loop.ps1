@@ -1284,6 +1284,10 @@ function Validate-Diff {
     $bad = git diff
     Validate-AiderClaimsAgainstDiff -OutputPath $AiderOutputPath -DiffText $bad
 
+    if ($bad.Contains("127.0.0-1")) {
+        throw "Rejected invalid loopback URL typo 127.0.0-1; use 127.0.0.1."
+    }
+
     $addedLines = Get-AddedDiffLines -DiffText $bad
     $removedLines = Get-RemovedDiffLines -DiffText $bad
     Assert-TaskRequiredChangedFiles -Task $task

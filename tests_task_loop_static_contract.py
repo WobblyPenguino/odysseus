@@ -115,3 +115,9 @@ def test_task_loop_includes_real_model_context_named_file_task():
     assert "test_model_context_pack_includes_prompt_named_python_file_preview" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_rejects_invalid_loopback_url_typo():
+    text = _runner_text()
+    assert "Rejected invalid loopback URL typo 127.0.0-1" in text
+    assert "127.0.0.1" in text

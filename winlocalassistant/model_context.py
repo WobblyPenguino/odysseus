@@ -227,7 +227,7 @@ def _build_model_context_pack_cached(
         workspace=workspace,
         allow_mutating_tools=False,
         allow_internet=allow_internet,
-        ollama_url="http://127.0.0-1:11434",
+        ollama_url="http://127.0.0.1:11434",
         model=model,
         chat_model=chat_model,
         planner_model=planner_model,
