@@ -439,3 +439,20 @@ def test_task_loop_idea_promotion_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_approved_recovery_tasks_include_explain_next_action_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 24000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-explain-next-action-v1"' in approved_text
+    assert "explain_next_action" in approved_text
+    assert "test_autodev_sandbox_explains_next_action_with_evidence" in approved_text
+    assert "select_next_work_item" in approved_text
+    assert "priority_score" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text

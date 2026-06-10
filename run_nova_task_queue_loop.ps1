@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "tiny-autodev-sandbox-explain-next-action-v1"
+        Goal = "Promote the selected Nova idea-promotion candidate into one tiny source+test improvement. Add explain_next_action(items: Iterable[WorkItem]) -> str to nova_improvement_lab\autodev_sandbox.py. It must use select_next_work_item(items), include evidence about the selected item's title, normalised status, and priority_score, and return an idle/no-action explanation when no actionable work remains. Add a regression test named test_autodev_sandbox_explains_next_action_with_evidence in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredDiffContains = @("explain_next_action", "test_autodev_sandbox_explains_next_action_with_evidence")
+        Tests = @("tests_autodev_sandbox.py")
+    },
+
+    @{
         Id = "tiny-autodev-sandbox-actionable-work-items-v1"
         Goal = "Promote idea-2 from the Nova task idea pool into one tiny source+test improvement. Add actionable_work_items(items: Iterable[WorkItem]) -> list[WorkItem] to nova_improvement_lab\autodev_sandbox.py. It must return only unfinished/actionable items by excluding work whose normalised status is done, including passed aliases. Preserve original order. Add a regression test named test_autodev_sandbox_filters_done_items_from_actionable_work in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
         Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
