@@ -85,3 +85,14 @@ def select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None:
     actionable = [i for i in items if normalise_status(i.status) != "done"]
     sorted_items = sort_work_items_by_priority(actionable)
     return sorted_items[0] if sorted_items else None
+
+
+def actionable_work_items(items: Iterable[WorkItem]) -> list[WorkItem]:
+    """
+    Return a list of WorkItem objects that are still actionable.
+
+    Items whose normalised status is "done" (including aliases such as
+    "passed") are excluded. The original order of the remaining items is
+    preserved.
+    """
+    return [i for i in items if normalise_status(i.status) != "done"]

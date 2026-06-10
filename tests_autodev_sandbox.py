@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -78,3 +78,15 @@ def test_autodev_sandbox_selects_highest_priority_item():
         WorkItem("y", status="passed"),
     ]
     assert select_next_work_item(done_only) is None
+
+
+def test_autodev_sandbox_filters_done_items_from_actionable_work():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="passed"),   # alias for done
+        WorkItem("c", status="done"),
+        WorkItem("d", status="blocked"),
+    ]
+
+    actionable = actionable_work_items(items)
+    assert [i.title for i in actionable] == ["a", "d"]
