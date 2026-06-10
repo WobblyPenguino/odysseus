@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -145,3 +145,25 @@ def test_autodev_sandbox_summarises_action_plan_with_next_item():
     assert summary["next_title"] == "b"
     assert summary["next_status"] == "blocked"
     assert summary["next_score"] == priority_score(WorkItem("b", status="blocked"))
+
+
+def test_autodev_sandbox_formats_action_plan_summary():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    summary = summarise_action_plan(items)
+    formatted = format_action_plan_summary(summary)
+
+    # The formatted string should contain the key values from the summary
+    assert f"Total: {summary['total']}" in formatted
+    assert f"Actionable: {summary['actionable']}" in formatted
+    if summary["next_title"] is not None:
+        assert summary["next_title"] in formatted
+        assert summary["next_status"] in formatted
+        assert str(summary["next_score"]) in formatted
+    else:
+        assert "idle" in formatted

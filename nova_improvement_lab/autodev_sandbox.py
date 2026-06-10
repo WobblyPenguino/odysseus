@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Mapping
 
 
 @dataclass(frozen=True)
@@ -169,3 +169,26 @@ def summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object]:
             "next_status": None,
             "next_score": None,
         }
+
+
+def format_action_plan_summary(summary: Mapping[str, object]) -> str:
+    """
+    Format the dictionary returned by :func:`summarise_action_plan` into a
+    stable human‑readable sentence.
+
+    The output contains the total number of items, the count of actionable
+    items and details about the next item (title, status and score).  If no
+    actionable items remain, the next part is rendered as ``idle``.
+    """
+    total = summary.get("total", 0)
+    actionable = summary.get("actionable", 0)
+    next_title = summary.get("next_title")
+    next_status = summary.get("next_status")
+    next_score = summary.get("next_score")
+
+    if next_title is None:
+        next_part = "idle"
+    else:
+        next_part = f"{next_title} (status={next_status}, score={next_score})"
+
+    return f"Total: {total}; Actionable: {actionable}; Next item: {next_part}"
