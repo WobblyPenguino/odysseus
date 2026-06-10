@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "tiny-autodev-sandbox-actionable-work-items-v1"
+        Goal = "Promote idea-2 from the Nova task idea pool into one tiny source+test improvement. Add actionable_work_items(items: Iterable[WorkItem]) -> list[WorkItem] to nova_improvement_lab\autodev_sandbox.py. It must return only unfinished/actionable items by excluding work whose normalised status is done, including passed aliases. Preserve original order. Add a regression test named test_autodev_sandbox_filters_done_items_from_actionable_work in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredDiffContains = @("actionable_work_items", "test_autodev_sandbox_filters_done_items_from_actionable_work")
+        Tests = @("tests_autodev_sandbox.py")
+    },
+
+    @{
         Id = "tiny-autodev-sandbox-select-next-work-item-v1"
         Goal = "Promote idea-1 from the Nova task idea pool into one tiny source+test improvement. Add select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None to nova_improvement_lab\autodev_sandbox.py. It must ignore completed/done work, select the highest-priority remaining item using sort_work_items_by_priority(items), and preserve stable priority ordering. If no actionable work remains, return None. Add a regression test named test_autodev_sandbox_selects_highest_priority_item in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
         Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")

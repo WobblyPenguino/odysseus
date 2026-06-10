@@ -394,3 +394,18 @@ def test_task_loop_approved_recovery_tasks_include_select_next_work_item_task():
     assert "tests_autodev_sandbox.py" in approved_text
     assert "RequiredChangedFiles" in approved_text
     assert "RequiredDiffContains" in approved_text
+
+
+def test_task_loop_approved_recovery_tasks_include_actionable_work_items_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 22000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-actionable-work-items-v1"' in approved_text
+    assert "actionable_work_items" in approved_text
+    assert "test_autodev_sandbox_filters_done_items_from_actionable_work" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text
