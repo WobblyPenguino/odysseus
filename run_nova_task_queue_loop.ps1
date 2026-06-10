@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "real-task-localization-report-v1"
+        Goal = "Improve Nova task-loop reliability with one small source+test behaviour change. Add a helper named Write-TaskLocalizationReport in run_nova_task_queue_loop.ps1 that writes local_ai_cycles\memory\NOVA_TASK_LOCALIZATION_LATEST.md before Aider runs. The report must include task id, editable files, targeted tests, required changed files, required diff markers, required final-file markers, and files that must not be edited. Add a static regression test named test_task_loop_writes_task_localization_report in tests_task_loop_static_contract.py. You must modify BOTH files."
+        Editable = @("run_nova_task_queue_loop.ps1", "tests_task_loop_static_contract.py")
+        RequiredChangedFiles = @("run_nova_task_queue_loop.ps1", "tests_task_loop_static_contract.py")
+        RequiredDiffContains = @("Write-TaskLocalizationReport", "NOVA_TASK_LOCALIZATION_LATEST.md", "test_task_loop_writes_task_localization_report")
+        Tests = @("tests_task_loop_static_contract.py")
+    },
+
+    @{
         Id = "research-only-agent-repo-inspiration-v1"
         Goal = "Research-only planning task. Do not edit Nova runtime source. Create or update docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md with repo/article-inspired ideas for safer Nova autonomous development. The report must include: source names, licence/risk notes, no-copy warning, ranked ideas, suggested RequiredChangedFiles/RequiredDiffContains for the top idea, and validation commands. Do not clone repos or copy external code."
         Editable = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")
