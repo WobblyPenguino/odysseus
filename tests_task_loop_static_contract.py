@@ -355,7 +355,7 @@ def test_task_loop_writes_task_idea_pool_report():
     assert "select_next_work_item" in text
     assert "actionable_work_items" in text
     assert "explain_next_action" in text
-    assert "group_work_items_by_status" in text
+    assert "summarise_action_plan" in text
     assert "Promotion rule:" in text
     assert "Write-TaskIdeaPoolReport -Path" in text
 
@@ -462,9 +462,9 @@ def test_task_loop_writes_idea_promotion_task_draft():
     text = _runner_text()
     assert "function Write-IdeaPromotionTaskDraft" in text
     assert "NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" in text
-    assert "tiny-autodev-sandbox-group-work-items-by-status-v1" in text
-    assert "group_work_items_by_status" in text
-    assert "test_autodev_sandbox_groups_items_by_status" in text
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
     assert "This is dry-run only." in text
     assert "The idea-promotion task draft alone must never trigger Aider." in text
 
@@ -491,9 +491,9 @@ def test_task_loop_registers_idea_promotion_task_draft():
     text = _runner_text()
     assert "function Register-IdeaPromotionTaskDraft" in text
     assert "Idea promotion task registered at runtime" in text
-    assert "tiny-autodev-sandbox-group-work-items-by-status-v1" in text
-    assert "group_work_items_by_status" in text
-    assert "test_autodev_sandbox_groups_items_by_status" in text
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
     assert "$script:ApprovedRecoveryTasks" in text
@@ -554,3 +554,11 @@ def test_task_loop_registers_idea_promotion_task_from_json_draft():
     assert preflight_start != -1
     register_text = text[register_start:preflight_start]
     assert 'Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"' not in register_text
+
+
+def test_task_loop_json_draft_uses_fresh_action_plan_summary_task():
+    text = _runner_text()
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
+    assert "tiny-autodev-sandbox-group-work-items-by-status-v1" not in text[text.find("function Write-IdeaPromotionTaskDraft"):text.find("function Register-IdeaPromotionTaskDraft")]

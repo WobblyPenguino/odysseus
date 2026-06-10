@@ -2170,8 +2170,8 @@ function Write-TaskIdeaPoolReport {
         "- nova_improvement_lab\autodev_sandbox.py",
         "- tests_autodev_sandbox.py",
         "Required diff markers:",
-        "- group_work_items_by_status",
-        "- test_autodev_sandbox_groups_items_by_status",
+        "- summarise_action_plan",
+        "- test_autodev_sandbox_summarises_action_plan_with_next_item",
         "Targeted tests:",
         "- tests_autodev_sandbox.py",
         "Justification: improves planning context and task monitoring.",
@@ -2253,11 +2253,11 @@ function Write-IdeaPromotionTaskDraft {
     $candidateExists = Test-Path $CandidatePath
 
     $taskDraft = [ordered]@{
-        Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"
-        Goal = "Promote the next safe Nova idea into one tiny source+test improvement. Add group_work_items_by_status(items: Iterable[WorkItem]) -> dict[str, list[WorkItem]] to nova_improvement_lab\autodev_sandbox.py. It must group items by normalise_status(item.status), preserve original item order inside each group, and include done aliases under done. Add a regression test named test_autodev_sandbox_groups_items_by_status in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Id = "tiny-autodev-sandbox-action-plan-summary-v1"
+        Goal = "Promote the next safe Nova idea into one tiny source+test improvement. Add summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object] to nova_improvement_lab\autodev_sandbox.py. It must return a small summary containing total item count, actionable item count, next selected item title, next selected item normalised status, and next selected item priority score. Add a regression test named test_autodev_sandbox_summarises_action_plan_with_next_item in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
         Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
         RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
-        RequiredDiffContains = @("group_work_items_by_status", "test_autodev_sandbox_groups_items_by_status")
+        RequiredDiffContains = @("summarise_action_plan", "test_autodev_sandbox_summarises_action_plan_with_next_item")
         Tests = @("tests_autodev_sandbox.py")
     }
 
