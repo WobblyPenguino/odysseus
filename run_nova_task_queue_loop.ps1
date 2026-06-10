@@ -1343,6 +1343,13 @@ if ($PreflightOnly) {
     Add-Summary "Editable files: $($task.Editable -join ', ')"
     Add-Summary "Targeted tests: $($task.Tests -join ', ')"
     Add-Summary "No Aider invocation, commit, or source edit was attempted. Targeted recovery tests may run only to clear stale quarantine."
+    $preflightTaskScore = Resolve-TaskScore -Task $task
+    if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
+        Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
+        Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+        Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+        break
+    }
     Write-Host "Preflight selected task: $($task.Id)"
     Write-Host "Editable files: $($task.Editable -join ', ')"
     Write-Host "Targeted tests: $($task.Tests -join ', ')"
@@ -1355,11 +1362,82 @@ Clean-GeneratedNoise
 Assert-CleanGit
 
 Run-Cmd "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
-Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
+Run-Cmd "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py tests_task_loop_static_contract.py"
 
 
 $MaxAiderEditableFileBytes = 120000
 $MinProductiveTaskScore = 35
+
+
+function Resolve-TaskScore {
+    param($Task)
+
+    if ($Task -is [hashtable]) {
+        foreach ($scoreKey in @("Score", "score")) {
+            if ($Task.ContainsKey($scoreKey)) {
+                try { return [int]$Task[$scoreKey] } catch {}
+            }
+        }
+    }
+
+    $scoreProp = $Task.PSObject.Properties["Score"]
+    if ($scoreProp) {
+        try { return [int]$scoreProp.Value } catch {}
+    }
+
+    $scoreProp = $Task.PSObject.Properties["score"]
+    if ($scoreProp) {
+        try { return [int]$scoreProp.Value } catch {}
+    }
+
+    return $null
+}
+
+function Write-TaskPoolExhaustedReport {
+    param(
+        $Task,
+        [string]$Phase,
+        $Score
+    )
+
+    New-Item -ItemType Directory -Force .\local_ai_cycles\memory | Out-Null
+
+    $path = ".\local_ai_cycles\memory\NOVA_TASK_POOL_EXHAUSTED_LATEST.md"
+    $taskId = if ($Task) { [string]$Task.Id } else { "<none>" }
+
+    $lines = @(
+        "# Nova Task Pool Exhausted",
+        "",
+        "Phase: $Phase",
+        "Selected task: $taskId",
+        "Selected score: $Score",
+        "Minimum productive score: $MinProductiveTaskScore",
+        "",
+        "Reason:",
+        "- The best available task is below the productive threshold.",
+        "- Running Aider now would likely waste tokens or produce no-change/comment-only edits.",
+        "",
+        "Recommended next actions:",
+        "1. Add new narrow source+test tasks with real behavioural acceptance criteria.",
+        "2. Use task-loop self-tests before touching broad Nova files.",
+        "3. If the blocker is the workflow itself, run an explicit workflow-repair pass rather than allowing automatic runner rewrites.",
+        "4. Prefer small modules and targeted tests over broad edits to large files.",
+        ""
+    )
+
+    Set-Content -Path $path -Value $lines -Encoding UTF8
+
+    $msg = "No sufficiently productive task remained: selected '$taskId' scored $Score, below minimum $MinProductiveTaskScore. See $path."
+    Write-Host $msg
+    Add-Summary "Outcome category: task-pool-exhausted"
+    Add-Summary "Result: stopped"
+    Add-Summary "Why: $msg"
+    Add-Summary "Task-pool exhaustion report: $path"
+
+    return $path
+}
+
+
 
 function Write-TaskLargeFileSnippetContext {
     param(
@@ -1489,27 +1567,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
         "--map-tokens", "0"
     )
 
-    $taskScoreForProductivity = $null
-    if ($task -is [hashtable]) {
-        foreach ($scoreKey in @("Score", "score")) {
-            if ($task.ContainsKey($scoreKey)) {
-                try { $taskScoreForProductivity = [int]$task[$scoreKey] } catch {}
-                break
-            }
-        }
-    }
-    if ($null -eq $taskScoreForProductivity) {
-        $scoreProp = $task.PSObject.Properties["Score"]
-        if ($scoreProp) {
-            try { $taskScoreForProductivity = [int]$scoreProp.Value } catch {}
-        }
-    }
+    $taskScoreForProductivity = Resolve-TaskScore -Task $task
     if ($null -ne $taskScoreForProductivity -and $taskScoreForProductivity -lt $MinProductiveTaskScore) {
-        $msg = "No sufficiently productive task remained: selected '$($task.Id)' scored $taskScoreForProductivity, below minimum $MinProductiveTaskScore. Refresh task targets or run an explicit workflow-repair pass."
-        Write-Host $msg
-        Add-Summary "Outcome category: task-pool-exhausted"
-        Add-Summary "Result: stopped"
-        Add-Summary "Why: $msg"
+        Write-TaskPoolExhaustedReport -Task $task -Phase "live" -Score $taskScoreForProductivity | Out-Null
         break
     }
 
