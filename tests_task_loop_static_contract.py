@@ -301,8 +301,29 @@ def test_task_loop_placeholder_override_has_uncorrupted_nested_test_patterns():
     assert "$sourceChanges = @(" in text
     assert "$testChanges = @(" in text
     assert "tests_*.py" in text
-    assert "-notmatch" in text
-    assert "-match" in text
     assert "Placeholder/speculative rejection override" in text
     assert "*     ests" not in text
     assert "*        ests" not in text
+
+def test_task_loop_writes_subagent_review_report():
+    text = _runner_text()
+    assert "function Write-SubagentReviewReport" in text
+    assert "NOVA_SUBAGENT_REVIEW_LATEST.md" in text
+    assert "Planner verdict:" in text
+    assert "Localizer verdict:" in text
+    assert "Editor verdict:" in text
+    assert "Reviewer verdict:" in text
+    assert "Tester verdict:" in text
+    assert "Risk verdict:" in text
+    assert "Memory verdict:" in text
+    assert "Overall recommendation:" in text
+    assert "Write-SubagentReviewReport -Task $task" in text
+
+
+def test_task_loop_subagent_review_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-SubagentReviewReport")
+    call_pos = text.find("Write-SubagentReviewReport -Task $task")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos

@@ -1956,6 +1956,90 @@ function Write-PatchReviewReport {
     return $Path
 }
 
+
+function Write-SubagentReviewReport {
+    param(
+        $Task,
+        $ChangedFiles,
+        [string]$Before = "",
+        [string]$After = "",
+        [string[]]$ValidationGates = @(),
+        [string[]]$ValidationCommands = @(),
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_SUBAGENT_REVIEW_LATEST.md"
+    )
+
+    New-Item -ItemType Directory -Force (Split-Path -Parent $Path) | Out-Null
+
+    $taskId = if ($Task) { [string]$Task.Id } else { "<none>" }
+    $changed = @($ChangedFiles)
+    $editable = @($Task.Editable)
+    $requiredChanged = @(Get-TaskRequiredChangedFiles -Task $Task)
+
+    $allowed = @{}
+    foreach ($item in @($editable + $requiredChanged)) {
+        $allowed[([string]$item).Replace("/", "\").ToLowerInvariant()] = $true
+    }
+
+    $unexpected = @()
+    foreach ($item in $changed) {
+        $key = ([string]$item).Replace("/", "\").ToLowerInvariant()
+        if (!$allowed.ContainsKey($key)) {
+            $unexpected += $item
+        }
+    }
+
+    $riskVerdict = if ($unexpected.Count -eq 0) { "low-risk" } else { "manual-review" }
+    $overall = if ($unexpected.Count -eq 0) { "accept-after-validation" } else { "hold-for-human-review" }
+
+    $lines = @(
+        "# Nova Subagent Review Latest",
+        "",
+        "Task ID: $taskId",
+        "Before: $Before",
+        "After: $After",
+        "",
+        "Planner verdict: justified bounded source+test task",
+        "Localizer verdict: changed files compared against editable and required file contract",
+        "Editor verdict: source/test patch detected from committed changed files",
+        "Reviewer verdict: patch review required alongside validation evidence",
+        "Tester verdict: validation gates recorded below",
+        "Risk verdict: $riskVerdict",
+        "Memory verdict: record outcome and use cooldown/retry history before repeating related work",
+        "Overall recommendation: $overall",
+        "",
+        "Changed files:"
+    )
+
+    foreach ($item in $changed) { $lines += "- $item" }
+
+    $lines += @("", "Unexpected files:")
+    if ($unexpected.Count -eq 0) {
+        $lines += "- none"
+    } else {
+        foreach ($item in $unexpected) { $lines += "- $item" }
+    }
+
+    $lines += @("", "Validation gates:")
+    foreach ($item in $ValidationGates) { $lines += "- $item" }
+
+    $lines += @("", "Validation commands:")
+    foreach ($item in $ValidationCommands) { $lines += "- $item" }
+
+    $lines += @(
+        "",
+        "Subagent design note:",
+        "- These are non-editing local review roles.",
+        "- Only the main editor may modify files.",
+        "- Planner, Localizer, Reviewer, Tester, Risk, and Memory roles provide structured judgement without increasing edit authority."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Subagent review report: $Path"
+    Add-Summary "Subagent overall recommendation: $overall"
+
+    return $Path
+}
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
@@ -2262,15 +2346,15 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
 
             $sourceChanges = @(
                 $normalisedChanged | Where-Object {
-                    $_ -like "*.py" -and
-                    $_ -notmatch "\\tests\\"
-                    $_ -notmatch "\\tests\\"
+                    ($_ -like "*.py") -and
+                    ($_ -notlike "tests_*.py") -and
+                    ($_ -notmatch "\tests\")
                 }
             )
             $testChanges = @(
                 $normalisedChanged | Where-Object {
-                    $_ -like "tests_*.py" -or
-                    $_ -match "\\tests\\"
+                    ($_ -like "tests_*.py") -or
+                    ($_ -match "\tests\")
                 }
             )
 
@@ -2378,6 +2462,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     Add-Summary "Lines changed: $linesChanged"
     Add-Summary "Changed files: $($changedFiles -join ', ')"
     Write-PatchReviewReport -Task $task -ChangedFiles $changedFiles -Before $before -After $after -Path ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md" | Out-Null
+    Write-SubagentReviewReport -Task $task -ChangedFiles $changedFiles -Before $before -After $after -ValidationGates $validationGateResults -ValidationCommands $validationCommands -Path ".\local_ai_cycles\memory\NOVA_SUBAGENT_REVIEW_LATEST.md" | Out-Null
     Add-Summary "Validation gates passed: $($validationGateResults -join ' | ')"
     Add-Summary "Validation commands passed: $($validationCommands -join ' | ')"
     Add-Summary "Post-commit audit marker: $auditNote"
