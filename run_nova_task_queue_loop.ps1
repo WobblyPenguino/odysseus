@@ -611,6 +611,13 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "lab-source-test-improvement-v2"
+        Goal = "Improve only the isolated Nova improvement lab with one small behaviour change. You must modify BOTH nova_improvement_lab\text_tools.py and tests_improvement_lab_contract.py. Do not make a test-only patch. Do not edit broad Nova runtime files. Keep the change small, reversible, and validated by tests_improvement_lab_contract.py."
+        Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
+        Tests = @("tests_improvement_lab_contract.py")
+    },
+
+    @{
         Id = "lab-small-source-test-improvement"
         Goal = "Improve only the isolated Nova improvement lab with one small source+test behaviour improvement. Do not edit broad Nova runtime files. Add or improve a test in tests_improvement_lab_contract.py and keep the change reversible."
         Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")

@@ -70,3 +70,12 @@ def test_diff_classifier_accepts_control_flow_and_assertions():
     assert "^(if|elif|else|for|while|try|except|finally|with|match|case)" in text
     assert "return|raise|yield|assert|break|continue|pass" in text
     assert "Test-DiffLineLooksExecutable -Line" in text
+
+
+def test_task_loop_includes_strict_lab_source_test_task():
+    text = _runner_text()
+    assert "lab-source-test-improvement-v2" in text
+    assert "You must modify BOTH" in text
+    assert "Do not make a test-only patch" in text
+    assert "nova_improvement_lab\\text_tools.py" in text or "nova_improvement_lab\text_tools.py" in text
+    assert "tests_improvement_lab_contract.py" in text
