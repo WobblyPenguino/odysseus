@@ -631,15 +631,22 @@ $ApprovedRecoveryTasks = @(
     },
 
     @{
-        Id = "fresh-project-memory-continuity"
-        Goal = "Improve Nova project memory/context continuity with a small source-backed source+test patch, only if a real behaviour gap exists."
-        Editable = @("winlocalassistant\project_state.py", "tests_project_state_continuity.py", "tests_model_context_pack.py")
-        Tests = @("tests_project_state_continuity.py", "tests_model_context_pack.py")
+        Id = "fresh-model-context-pack-dedup"
+        Goal = "Improve Nova model context-pack continuity, deduplication, or context-injection safety with a small executable source+test patch, only if a real behaviour gap exists. Do not make documentation/comment-only changes."
+        Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        Tests = @("tests_model_context_pack.py")
+    },
+
+    @{
+        Id = "fresh-task-evidence-continuity-contract"
+        Goal = "Improve Nova project-state task evidence compatibility, continue-readiness, or next-action continuity with a small executable source+test patch, only if a real behaviour gap exists. Do not make documentation/comment-only changes."
+        Editable = @("winlocalassistant\project_state.py", "tests_project_state_continuity.py")
+        Tests = @("tests_project_state_continuity.py")
     },
 
     @{
         Id = "fresh-validation-status-progress"
-        Goal = "Improve Nova validation progress/status reporting with a small source-backed source+test patch, only if a real behaviour gap exists."
+        Goal = "Improve Nova validation progress/status reporting with one small executable source+test patch. Start from a targeted test expectation; do not make documentation/comment-only changes."
         Editable = @("winlocalassistant\validate.py", "nova\validate.py", "tests_validation_status_command.py", "tests_validation_reporting.py")
         Tests = @("tests_validation_status_command.py", "tests_validation_reporting.py")
     }
@@ -1400,7 +1407,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
         $aiderArgs += $f
     }
 
-    $denyInput = ((1..200 | ForEach-Object { "skip" }) -join "`n") + "`n"
+    $denyInput = "don't`n" + ((1..400 | ForEach-Object { "skip" }) -join "`n") + "`n"
     Add-Summary "Aider output log: $out"
 Write-Host "Aider output is being saved to: $out"
 $denyInput | & $Aider @aiderArgs *> $out
