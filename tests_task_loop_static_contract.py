@@ -46,3 +46,10 @@ def test_task_loop_has_productivity_floor_for_live_and_preflight():
 def test_task_loop_runs_static_contract_before_live_cycles():
     text = _runner_text()
     assert "tests_task_loop_static_contract.py" in text
+
+
+def test_task_loop_includes_improvement_lab_task():
+    text = _runner_text()
+    assert "lab-small-source-test-improvement" in text
+    assert "nova_improvement_lab\\text_tools.py" in text
+    assert "tests_improvement_lab_contract.py" in text
