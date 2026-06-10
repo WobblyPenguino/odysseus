@@ -44,8 +44,9 @@ $SummaryLatest = Join-Path $MemoryDir "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
 $NoChangeTargets = Join-Path $MemoryDir "NO_CHANGE_TARGETS.md"
 $MistakeMemory = Join-Path $MemoryDir "MISTAKE_MEMORY.md"
 $TaskEventMemory = Join-Path $MemoryDir "TASK_LOOP_EVENTS.jsonl"
+$ManualReviewLatest = Join-Path $MemoryDir "NOVA_TASK_LOOP_MANUAL_REVIEW_LATEST.md"
 
-foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory, $TaskEventMemory)) {
+foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory, $TaskEventMemory, $ManualReviewLatest)) {
     if (!(Test-Path $f)) {
         New-Item -ItemType File -Force $f | Out-Null
     }
@@ -526,6 +527,81 @@ function Invoke-TaskRecoveryCheck {
     return $true
 }
 
+function Get-ManualReviewEvidenceHint {
+    param($Row)
+
+    $reasons = [string]$Row.Reasons
+    if ($reasons -match "reverted-success") {
+        return "Audit the reverted commit pattern and approve a narrower source-backed task before allowing another edit."
+    }
+    if ($reasons -match "low-value|no-change") {
+        return "Provide or approve a concrete source-backed behavior gap; passing tests alone do not clear low-value history."
+    }
+    if ($Row.QuarantineReason -match "effective recent failure") {
+        return "Inspect the latest failure output, identify the exact fix strategy, then rerun targeted tests on current HEAD."
+    }
+    return "Review the task history and approve a specific recovery plan before the loop edits code."
+}
+
+function Write-NoHealthyTaskReviewNote {
+    param([object[]]$Rows)
+
+    $sorted = @($Rows | Sort-Object Score -Descending)
+    $closest = $sorted | Select-Object -First 1
+    $head = ""
+    try { $head = (git rev-parse --short HEAD) } catch {}
+    $stamp = Get-Date -Format s
+    $reason = "No healthy task available after scoring, quarantine checks, and targeted recovery checks."
+
+    $lines = @(
+        "# Nova Task Loop Manual Review Latest",
+        "",
+        "Created: $stamp",
+        "HEAD: $head",
+        "Mode: $Mode",
+        "Model: $Model",
+        "",
+        "## Stop Reason",
+        $reason,
+        "",
+        "## Closest Recoverable Task"
+    )
+
+    if ($closest) {
+        $lines += @(
+            "- Task: $($closest.Id)",
+            "- Score: $($closest.Score)",
+            "- Quarantine: $($closest.QuarantineReason)",
+            "- Reasons: $($closest.Reasons)",
+            "- Evidence needed: $(Get-ManualReviewEvidenceHint -Row $closest)"
+        )
+    } else {
+        $lines += "- No task rows were available."
+    }
+
+    $lines += @(
+        "",
+        "## Candidate State"
+    )
+    foreach ($row in $sorted) {
+        $state = if ($row.Quarantined) { "quarantined" } elseif ($row.UsedThisRun) { "cooldown" } else { "eligible" }
+        $lines += "- $($row.Id): score=$($row.Score); state=$state; quarantine=$($row.QuarantineReason); reasons=$($row.Reasons)"
+    }
+
+    $lines += @(
+        "",
+        "## Required Human Decision",
+        "- Do not run another live edit cycle until Daniel approves a specific recovery target or adds a new source-backed task.",
+        "- Prefer a source + test task with an explicit behavior gap, targeted validation command, and no protected-file expansion.",
+        "- If external knowledge or a dependency is needed, add a research note before editing."
+    )
+
+    $lines | Set-Content $ManualReviewLatest
+    Add-Summary "Manual review note written: $ManualReviewLatest"
+    Write-Host "Manual review note written: $ManualReviewLatest"
+    Record-TaskOutcome -TaskId "__task_queue__" -Result "blocked" -Reason $reason -Category "manual-review-needed" -AuditNote $ManualReviewLatest
+}
+
 function Pick-Task {
     $rows = @()
     foreach ($task in $Tasks) {
@@ -636,6 +712,7 @@ function Pick-Task {
 
     $eligible = @($rows | Where-Object { -not $_.Quarantined })
     if (!$eligible) {
+        Write-NoHealthyTaskReviewNote -Rows $rows
         throw "No healthy task available. All tasks are missing files or quarantined by recent failures/low-value outcomes."
     }
 
