@@ -256,3 +256,15 @@ def test_task_loop_patch_review_helper_defined_before_use():
     assert helper_pos != -1
     assert call_pos != -1
     assert helper_pos < call_pos
+
+
+def test_task_loop_includes_tiny_autodev_sandbox_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-priority-v1" in text
+    assert "priority_score" in text
+    assert "test_autodev_sandbox_prioritises_blockers_before_polish" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text

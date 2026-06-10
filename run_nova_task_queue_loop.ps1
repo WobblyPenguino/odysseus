@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "tiny-autodev-sandbox-priority-v1"
+        Goal = "Improve the tiny autonomous development sandbox with one small source+test change. Add a priority_score(item: WorkItem) helper to nova_improvement_lab\autodev_sandbox.py so blocked work ranks above review work, review ranks above todo work, and done work ranks lowest. Add a regression test named test_autodev_sandbox_prioritises_blockers_before_polish in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+        RequiredDiffContains = @("priority_score", "test_autodev_sandbox_prioritises_blockers_before_polish")
+        Tests = @("tests_autodev_sandbox.py")
+    },
+
+    @{
         Id = "real-model-context-prompt-file-path-safety-v1"
         Goal = "Improve Nova model context safety with one small source+test behaviour change. Ensure prompt-named file previews only include files inside the configured workspace and reject path traversal or absolute paths outside the workspace. Add or update a helper named _resolve_prompt_named_file in winlocalassistant\model_context.py and add a regression test named test_model_context_pack_rejects_prompt_named_file_outside_workspace in tests_model_context_pack.py. You must modify BOTH files. Do not edit broad Nova runtime files."
         Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
