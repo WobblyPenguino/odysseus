@@ -624,10 +624,24 @@ $ApprovedRecoveryTasks = @(
     },
 
     @{
-        Id = "fresh-command-suggestion-safety"
-        Goal = "Improve Nova command suggestion safety or usefulness only with a real source-backed behaviour gap."
-        Editable = @("winlocalassistant\command_suggestions.py", "tests_command_suggestions.py")
-        Tests = @("tests_command_suggestions.py")
+        Id = "fresh-command-timeout-status"
+        Goal = "Improve Nova command-timeout status/help clarity with a small source-backed source+test patch, only if a real behaviour gap exists."
+        Editable = @("winlocalassistant\core.py", "tests_model_health_timeout.py")
+        Tests = @("tests_model_health_timeout.py")
+    },
+
+    @{
+        Id = "fresh-project-memory-continuity"
+        Goal = "Improve Nova project memory/context continuity with a small source-backed source+test patch, only if a real behaviour gap exists."
+        Editable = @("winlocalassistant\project_state.py", "tests_project_state_continuity.py", "tests_model_context_pack.py")
+        Tests = @("tests_project_state_continuity.py", "tests_model_context_pack.py")
+    },
+
+    @{
+        Id = "fresh-validation-status-progress"
+        Goal = "Improve Nova validation progress/status reporting with a small source-backed source+test patch, only if a real behaviour gap exists."
+        Editable = @("winlocalassistant\validate.py", "nova\validate.py", "tests_validation_status_command.py", "tests_validation_reporting.py")
+        Tests = @("tests_validation_status_command.py", "tests_validation_reporting.py")
     }
 )
 
