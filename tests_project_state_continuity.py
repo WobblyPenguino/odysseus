@@ -122,5 +122,3 @@ def test_project_state_contract_function(tmp_path: Path):
     record_task_evidence(tmp_path, action="verify", result="PASS", verification_passed=True)
     message = check_project_state_contract(tmp_path)
     assert "Project-state snapshot written" in message
-
-
