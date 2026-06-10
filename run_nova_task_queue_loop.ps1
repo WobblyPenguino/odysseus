@@ -1133,6 +1133,36 @@ function Assert-TaskRequiredDiffContains {
 }
 
 
+
+function Test-ResearchOnlyPlanningDiff {
+    param($Task)
+
+    if (!$Task) { return $false }
+
+    $taskId = ""
+    if ($Task -is [hashtable] -and $Task.ContainsKey("Id")) {
+        $taskId = [string]$Task["Id"]
+    } else {
+        $prop = $Task.PSObject.Properties["Id"]
+        if ($prop) { $taskId = [string]$prop.Value }
+    }
+
+    if (!$taskId.StartsWith("research-only-")) { return $false }
+
+    $changed = @(Get-ChangedDiffPaths)
+    if (!$changed -or $changed.Count -eq 0) { return $false }
+
+    foreach ($path in $changed) {
+        $normalised = ([string]$path).Replace("/", "\").ToLowerInvariant()
+        if (!$normalised.StartsWith("docs\research\")) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+
 function Test-DiffLineLooksExecutable {
     param([string]$Line)
 
@@ -1332,7 +1362,11 @@ function Validate-Diff {
     }
 
     if ($bad -match "TODO|placeholder|would be implemented|assert True|MagicMock|Mock|should be present|should be included") {
-        throw "Rejected placeholder/speculative patch language."
+        if (Test-ResearchOnlyPlanningDiff -Task $task) {
+            Add-Summary "Research-only planning fallback: allowed planning language because only docs/research files changed."
+        } else {
+            throw "Rejected placeholder/speculative patch language."
+        }
     }
 
     if ($bad.Contains("-def default_command_contracts")) {

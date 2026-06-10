@@ -149,3 +149,12 @@ def test_task_loop_rejects_double_dot_loopback_url_typo():
     text = _runner_text()
     assert "Rejected invalid loopback URL typo 127.0.0..11434" in text
     assert "127.0.0.1:11434" in text
+
+
+def test_research_only_planning_language_is_narrowly_allowed():
+    text = _runner_text()
+    assert "function Test-ResearchOnlyPlanningDiff" in text
+    assert 'StartsWith("research-only-")' in text
+    assert 'StartsWith("docs\\research\\")' in text or 'StartsWith("docs\research\")' in text
+    assert "Research-only planning fallback: allowed planning language" in text
+    assert "Rejected placeholder/speculative patch language." in text
