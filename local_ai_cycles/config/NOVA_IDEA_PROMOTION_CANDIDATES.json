@@ -55,5 +55,24 @@
     "Tests": [
       "tests_autodev_sandbox.py"
     ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-dict-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object] to nova_improvement_lab\\autodev_sandbox.py. It must use summarise_action_plan(items) and return a stable debug dictionary containing total, actionable, next_title, next_status, next_score, has_next, and status_line from render_action_plan_status_line(items). Add a regression test named test_autodev_sandbox_builds_action_plan_debug_dict in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "build_action_plan_debug_dict",
+      "test_autodev_sandbox_builds_action_plan_debug_dict"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
   }
 ]
