@@ -32,9 +32,15 @@ def test_task_loop_has_productivity_floor_for_live_and_preflight():
     live_idx = text.index("$snippetContext = Write-TaskLargeFileSnippetContext")
     assert text.rfind("Resolve-TaskScore -Task $task", 0, live_idx) != -1
 
+    preflight_block_idx = text.index("if ($PreflightOnly)")
+    assert text.index("$MinProductiveTaskScore = 35") < preflight_block_idx
+    assert text.index("function Resolve-TaskScore") < preflight_block_idx
+    assert text.index("function Write-TaskPoolExhaustedReport") < preflight_block_idx
+
     preflight_idx = text.index("Preflight selected task:")
     assert text.rfind('-Phase "preflight"', 0, preflight_idx) != -1
     assert "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted." in text
+    assert "exit 0" in text[text.rfind('-Phase "preflight"', 0, preflight_idx):preflight_idx]
 
 
 def test_task_loop_runs_static_contract_before_live_cycles():
