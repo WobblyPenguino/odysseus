@@ -300,10 +300,16 @@ def test_task_loop_placeholder_override_has_uncorrupted_nested_test_patterns():
     text = _runner_text()
     assert "$sourceChanges = @(" in text
     assert "$testChanges = @(" in text
-    assert "tests_*.py" in text
+    assert '$pathForKind = ([string]$_).Replace("\\", "/")' in text
+    assert '($pathForKind -notlike "tests_*.py")' in text
+    assert '($pathForKind -notlike "*/tests/*")' in text
+    assert '($pathForKind -like "tests_*.py")' in text
+    assert '($pathForKind -like "*/tests/*")' in text
     assert "Placeholder/speculative rejection override" in text
     assert "*     ests" not in text
     assert "*        ests" not in text
+    assert '-notmatch "\\tests\\"' not in text
+    assert '-match "\\tests\\"' not in text
 
 def test_task_loop_writes_subagent_review_report():
     text = _runner_text()

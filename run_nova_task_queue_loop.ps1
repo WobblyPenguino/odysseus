@@ -2346,15 +2346,17 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
 
             $sourceChanges = @(
                 $normalisedChanged | Where-Object {
-                    ($_ -like "*.py") -and
-                    ($_ -notlike "tests_*.py") -and
-                    ($_ -notmatch "\tests\")
+                    $pathForKind = ([string]$_).Replace("\", "/")
+                    ($pathForKind -like "*.py") -and
+                    ($pathForKind -notlike "tests_*.py") -and
+                    ($pathForKind -notlike "*/tests/*")
                 }
             )
             $testChanges = @(
                 $normalisedChanged | Where-Object {
-                    ($_ -like "tests_*.py") -or
-                    ($_ -match "\tests\")
+                    $pathForKind = ([string]$_).Replace("\", "/")
+                    ($pathForKind -like "tests_*.py") -or
+                    ($pathForKind -like "*/tests/*")
                 }
             )
 
