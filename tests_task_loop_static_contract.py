@@ -562,3 +562,14 @@ def test_task_loop_json_draft_uses_fresh_action_plan_summary_task():
     assert "summarise_action_plan" in text
     assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
     assert "tiny-autodev-sandbox-group-work-items-by-status-v1" not in text[text.find("function Write-IdeaPromotionTaskDraft"):text.find("function Register-IdeaPromotionTaskDraft")]
+
+
+def test_task_loop_json_draft_skips_recent_completed_candidates():
+    text = _runner_text()
+    assert "git --no-pager log --oneline -80" in text
+    assert "$draftCandidates = @(" in text
+    assert "Idea promotion task draft freshness selected" in text
+    assert "Idea promotion task draft skipped recent completed candidate" in text
+    assert "tiny-autodev-sandbox-format-action-plan-summary-v1" in text
+    assert "format_action_plan_summary" in text
+    assert "test_autodev_sandbox_formats_action_plan_summary" in text

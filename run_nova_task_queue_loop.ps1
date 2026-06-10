@@ -2252,13 +2252,52 @@ function Write-IdeaPromotionTaskDraft {
 
     $candidateExists = Test-Path $CandidatePath
 
-    $taskDraft = [ordered]@{
-        Id = "tiny-autodev-sandbox-action-plan-summary-v1"
-        Goal = "Promote the next safe Nova idea into one tiny source+test improvement. Add summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object] to nova_improvement_lab\autodev_sandbox.py. It must return a small summary containing total item count, actionable item count, next selected item title, next selected item normalised status, and next selected item priority score. Add a regression test named test_autodev_sandbox_summarises_action_plan_with_next_item in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
-        Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
-        RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
-        RequiredDiffContains = @("summarise_action_plan", "test_autodev_sandbox_summarises_action_plan_with_next_item")
-        Tests = @("tests_autodev_sandbox.py")
+    $recentLog = ""
+    try {
+        $recentLog = git --no-pager log --oneline -80 2>$null | Out-String
+    } catch {
+        $recentLog = ""
+    }
+
+    $draftCandidates = @(
+        [ordered]@{
+            Id = "tiny-autodev-sandbox-action-plan-summary-v1"
+            Goal = "Promote the next safe Nova idea into one tiny source+test improvement. Add summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object] to nova_improvement_lab\autodev_sandbox.py. It must return a small summary containing total item count, actionable item count, next selected item title, next selected item normalised status, and next selected item priority score. Add a regression test named test_autodev_sandbox_summarises_action_plan_with_next_item in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+            Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+            RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+            RequiredDiffContains = @("summarise_action_plan", "test_autodev_sandbox_summarises_action_plan_with_next_item")
+            Tests = @("tests_autodev_sandbox.py")
+        }
+        [ordered]@{
+            Id = "tiny-autodev-sandbox-format-action-plan-summary-v1"
+            Goal = "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add format_action_plan_summary(summary: Mapping[str, object]) -> str to nova_improvement_lab\autodev_sandbox.py. It must format the output of summarise_action_plan into a stable human-readable sentence containing total, actionable, next title, next status, and next score values. Add a regression test named test_autodev_sandbox_formats_action_plan_summary in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files."
+            Editable = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+            RequiredChangedFiles = @("nova_improvement_lab\autodev_sandbox.py", "tests_autodev_sandbox.py")
+            RequiredDiffContains = @("format_action_plan_summary", "test_autodev_sandbox_formats_action_plan_summary")
+            Tests = @("tests_autodev_sandbox.py")
+        }
+    )
+
+    $skippedDraftIds = @()
+    $taskDraft = $null
+    foreach ($candidate in $draftCandidates) {
+        if ($recentLog -match [regex]::Escape($candidate.Id)) {
+            $skippedDraftIds += $candidate.Id
+            continue
+        }
+        $taskDraft = $candidate
+        break
+    }
+
+    if ($null -eq $taskDraft) {
+        $taskDraft = $draftCandidates[-1]
+        Add-Summary "Idea promotion task draft freshness fallback reused candidate: $($taskDraft.Id)"
+    } else {
+        Add-Summary "Idea promotion task draft freshness selected: $($taskDraft.Id)"
+    }
+
+    if (@($skippedDraftIds).Count -gt 0) {
+        Add-Summary "Idea promotion task draft skipped recent completed candidate(s): $($skippedDraftIds -join ', ')"
     }
 
     $taskDraft | ConvertTo-Json -Depth 6 | Set-Content -Path $JsonPath -Encoding UTF8
