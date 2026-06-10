@@ -280,3 +280,15 @@ def test_task_loop_includes_tiny_autodev_sandbox_priority_v2_task():
     assert "tests_autodev_sandbox.py" in text
     assert "RequiredChangedFiles" in text
     assert "RequiredDiffContains" in text
+
+
+def test_task_loop_has_placeholder_false_positive_contract_override():
+    text = _runner_text()
+    assert "Placeholder/speculative rejection override" in text
+    assert "$canOverridePlaceholderFalsePositive" in text
+    assert "$missingRequiredFiles.Count -eq 0" in text
+    assert "$missingDiffMarkers.Count -eq 0" in text
+    assert "$sourceChanges.Count -gt 0" in text
+    assert "$testChanges.Count -gt 0" in text
+    assert "validation-gate-after-placeholder-override" in text
+    assert "Placeholder/speculative rejection override validation gates passed." in text

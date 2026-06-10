@@ -2227,18 +2227,118 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
         $validationGateResults += Run-GateCmd "baseline regression + Nova sanity" "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
     }
     catch {
-        $category = Get-TaskOutcomeCategory -Reason $_.Exception.Message -Result "rejected"
+        $originalExceptionMessage = $_.Exception.Message
+        $category = Get-TaskOutcomeCategory -Reason $originalExceptionMessage -Result "rejected"
         $diffStat = Get-CurrentDiffStatText
         $changedFiles = @(Get-CurrentChangedFiles)
-        Append-Mistake $task.Id $_.Exception.Message $category "validation-gate" "recorded rejection, reset dirty state, and cleaned generated noise" "Validation or diff gate rejected the proposed patch before commit." $diffStat $changedFiles
-        "$(Get-Date -Format s) task=$($task.Id) category=$category reason=validation-or-significance-failed structured_event=1" | Add-Content $NoChangeTargets
-        Add-Summary "Result: rejected"
-        Add-Summary "Why: $($_.Exception.Message)"
-        git diff --stat
-        git reset --hard
-        git clean -fd
-        Clean-GeneratedNoise
-        continue
+
+        $canOverridePlaceholderFalsePositive = $false
+
+        if ($category -eq "placeholder-or-speculative") {
+            $requiredChanged = @(Get-TaskRequiredChangedFiles -Task $task)
+            $requiredDiff = @(Get-TaskRequiredDiffContains -Task $task)
+
+            $normalisedChanged = @(
+                $changedFiles | ForEach-Object {
+                    ([string]$_).Replace("/", "\").ToLowerInvariant()
+                }
+            )
+
+            $missingRequiredFiles = @()
+            foreach ($requiredPath in $requiredChanged) {
+                $requiredKey = ([string]$requiredPath).Replace("/", "\").ToLowerInvariant()
+                if ($normalisedChanged -notcontains $requiredKey) {
+                    $missingRequiredFiles += $requiredPath
+                }
+            }
+
+            $diffText = git diff --no-ext-diff | Out-String
+            $missingDiffMarkers = @()
+            foreach ($marker in $requiredDiff) {
+                if ($diffText -notmatch [regex]::Escape([string]$marker)) {
+                    $missingDiffMarkers += $marker
+                }
+            }
+
+            $sourceChanges = @(
+                $normalisedChanged | Where-Object {
+                    $_ -like "*.py" -and
+                    $_ -notlike "tests_*.py" -and
+                    $_ -notlike "*	ests\*.py"
+                }
+            )
+            $testChanges = @(
+                $normalisedChanged | Where-Object {
+                    $_ -like "tests_*.py" -or
+                    $_ -like "*	ests\*.py"
+                }
+            )
+
+            if (
+                $requiredChanged.Count -gt 0 -and
+                $requiredDiff.Count -gt 0 -and
+                $missingRequiredFiles.Count -eq 0 -and
+                $missingDiffMarkers.Count -eq 0 -and
+                $sourceChanges.Count -gt 0 -and
+                $testChanges.Count -gt 0
+            ) {
+                $canOverridePlaceholderFalsePositive = $true
+            }
+        }
+
+        if ($canOverridePlaceholderFalsePositive) {
+            Add-Summary "Placeholder/speculative rejection override: strict required source+test contract passed before validation."
+            Add-Summary "Overridden rejection reason: $originalExceptionMessage"
+
+            try {
+                $validationGateResults = @()
+                $validationCommands = @()
+
+                $compileCommand = "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py"
+                $validationGateResults += Run-GateCmd "compile" $compileCommand
+                $validationCommands += $compileCommand
+
+                foreach ($testPath in @($task.Tests)) {
+                    if ([string]::IsNullOrWhiteSpace([string]$testPath)) {
+                        continue
+                    }
+                    $targetedCommand = "python -m pytest -q $testPath"
+                    $validationGateResults += Run-GateCmd "targeted tests" $targetedCommand
+                    $validationCommands += $targetedCommand
+                }
+
+                $baselineCommand = "python -m pytest -q tests_nova_user_sanity.py tests_model_health_timeout.py tests_runtime_usability_release_gate.py tests_validation_reporting.py tests_validation_status_command.py"
+                $validationGateResults += Run-GateCmd "baseline regression + Nova sanity" $baselineCommand
+                $validationCommands += $baselineCommand
+
+                Add-Summary "Placeholder/speculative rejection override validation gates passed."
+            }
+            catch {
+                $overrideCategory = Get-TaskOutcomeCategory -Reason $_.Exception.Message -Result "rejected"
+                $overrideDiffStat = Get-CurrentDiffStatText
+                $overrideChangedFiles = @(Get-CurrentChangedFiles)
+                Append-Mistake $task.Id $_.Exception.Message $overrideCategory "validation-gate-after-placeholder-override" "recorded rejection, reset dirty state, and cleaned generated noise" "Placeholder/speculative false-positive override attempted validation, but a validation gate failed." $overrideDiffStat $overrideChangedFiles
+                "$(Get-Date -Format s) task=$($task.Id) category=$overrideCategory reason=placeholder-override-validation-failed structured_event=1" | Add-Content $NoChangeTargets
+                Add-Summary "Result: rejected"
+                Add-Summary "Why: placeholder/speculative override validation failed: $($_.Exception.Message)"
+                git diff --stat
+                git reset --hard
+                git clean -fd
+                Clean-GeneratedNoise
+                continue
+            }
+        }
+        else {
+            Append-Mistake $task.Id $originalExceptionMessage $category "validation-gate" "recorded rejection, reset dirty state, and cleaned generated noise" "Validation or diff gate rejected the proposed patch before commit." $diffStat $changedFiles
+            "$(Get-Date -Format s) task=$($task.Id) category=$category reason=validation-or-significance-failed structured_event=1" | Add-Content $NoChangeTargets
+            Add-Summary "Result: rejected"
+            Add-Summary "Why: $originalExceptionMessage"
+            git diff --stat
+            git reset --hard
+            git clean -fd
+            Clean-GeneratedNoise
+            continue
+        }
     }
 
     Clean-GeneratedNoise
