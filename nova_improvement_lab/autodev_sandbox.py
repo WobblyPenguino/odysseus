@@ -72,3 +72,16 @@ def sort_work_items_by_priority(items: Iterable[WorkItem]) -> list[WorkItem]:
     equal priority retain their original relative order.
     """
     return sorted(items, key=lambda item: priority_score(item), reverse=True)
+
+
+def select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None:
+    """
+    Return the highest‑priority actionable work item from *items*.
+
+    Actionable items are those whose status is not normalised to "done".
+    The returned item respects stable ordering among items of equal priority.
+    If no actionable items remain, return ``None``.
+    """
+    actionable = [i for i in items if normalise_status(i.status) != "done"]
+    sorted_items = sort_work_items_by_priority(actionable)
+    return sorted_items[0] if sorted_items else None
