@@ -531,3 +531,10 @@ def test_task_loop_picker_explicitly_merges_runtime_promoted_tasks():
     assert "$script:RuntimeApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($task)" in text
     assert "Runtime promoted task candidates visible to picker" in text
     assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_picker_merges_runtime_promoted_tasks_into_active_tasks():
+    text = _runner_text()
+    assert "$Tasks = @($script:RuntimeApprovedRecoveryTasks) + @($Tasks)" in text
+    assert "Runtime promoted task candidates merged into active task list" in text
+    assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text

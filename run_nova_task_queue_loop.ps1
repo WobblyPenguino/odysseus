@@ -917,7 +917,9 @@ function Pick-Task {
     if (@($script:RuntimeApprovedRecoveryTasks).Count -gt 0) {
         $runtimeIds = @($script:RuntimeApprovedRecoveryTasks | ForEach-Object { $_.Id }) -join ", "
         Add-Summary "Runtime promoted task candidates visible to picker: $runtimeIds"
+        $Tasks = @($script:RuntimeApprovedRecoveryTasks) + @($Tasks)
         $ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)
+        Add-Summary "Runtime promoted task candidates merged into active task list: $runtimeIds"
     }
 
 
