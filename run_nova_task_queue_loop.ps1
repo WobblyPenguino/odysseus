@@ -611,6 +611,15 @@ function Get-RecentTaskFailureCount {
 # They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
+        Id = "real-model-context-prompt-file-path-safety-v1"
+        Goal = "Improve Nova model context safety with one small source+test behaviour change. Ensure prompt-named file previews only include files inside the configured workspace and reject path traversal or absolute paths outside the workspace. Add or update a helper named _resolve_prompt_named_file in winlocalassistant\model_context.py and add a regression test named test_model_context_pack_rejects_prompt_named_file_outside_workspace in tests_model_context_pack.py. You must modify BOTH files. Do not edit broad Nova runtime files."
+        Editable = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredChangedFiles = @("winlocalassistant\model_context.py", "tests_model_context_pack.py")
+        RequiredDiffContains = @("_resolve_prompt_named_file", "test_model_context_pack_rejects_prompt_named_file_outside_workspace")
+        Tests = @("tests_model_context_pack.py")
+    },
+
+    @{
         Id = "research-only-agent-repo-inspiration-v1"
         Goal = "Research-only planning task. Do not edit Nova runtime source. Create or update docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md with repo/article-inspired ideas for safer Nova autonomous development. The report must include: source names, licence/risk notes, no-copy warning, ranked ideas, suggested RequiredChangedFiles/RequiredDiffContains for the top idea, and validation commands. Do not clone repos or copy external code."
         Editable = @("docs\research\NOVA_AGENT_REPO_INSPIRATION_LATEST.md")

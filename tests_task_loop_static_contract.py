@@ -202,3 +202,14 @@ def test_task_loop_defines_localization_helper_before_preflight():
     assert helper_pos != -1
     assert preflight_pos != -1
     assert helper_pos < preflight_pos
+
+
+def test_task_loop_includes_model_context_prompt_file_path_safety_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "real-model-context-prompt-file-path-safety-v1" in text
+    assert "_resolve_prompt_named_file" in text
+    assert "test_model_context_pack_rejects_prompt_named_file_outside_workspace" in text
+    assert "winlocalassistant\\model_context.py" in normalised
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
