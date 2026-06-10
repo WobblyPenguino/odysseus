@@ -492,6 +492,7 @@ function Invoke-TaskRecoveryCheck {
     if (!$Row.Quarantined) { return $false }
     if ($Row.QuarantineReason -notmatch "effective recent failure") { return $false }
     if ($Row.Reasons -notmatch "category=(test-failed|validation-failed|legacy-failure)") { return $false }
+    if ($Row.Reasons -match "low-value|no-change|reverted-success") { return $false }
 
     $task = $Row.Task
     if (!$task.Tests -or @($task.Tests).Count -eq 0) { return $false }
@@ -537,7 +538,8 @@ function Pick-Task {
         $hasSource = @($task.Editable | Where-Object { $_ -notmatch "(^|\\|/)tests_.*\.py$" }).Count -gt 0
         $hasTests = @($task.Tests | Where-Object { Test-Path $_ }).Count -gt 0
         $usedThisRun = $RunTaskCooldown.Contains([string]$task.Id)
-        $successOffsets = [Math]::Min($signals.Failures, ($signals.RecentSuccess + $signals.Recoveries))
+        $usableRecoveries = if (($signals.LowValue -eq 0) -and ($signals.RevertedSuccess -eq 0)) { $signals.Recoveries } else { 0 }
+        $successOffsets = [Math]::Min($signals.Failures, ($signals.RecentSuccess + $usableRecoveries))
         $effectiveFailures = [Math]::Max(0, $signals.Failures - $successOffsets)
         $score = 50
         $reasons = @()
@@ -571,7 +573,11 @@ function Pick-Task {
             $reasons += "$($signals.RecentSuccess) recent success cooldown(s)"
         }
         if ($signals.Recoveries -gt 0) {
-            $reasons += "$($signals.Recoveries) stale failure recovery event(s)"
+            if ($usableRecoveries -gt 0) {
+                $reasons += "$($signals.Recoveries) stale failure recovery event(s)"
+            } else {
+                $reasons += "$($signals.Recoveries) recovery event(s) ignored because low-value or reverted outcomes remain"
+            }
         }
         if ($usedThisRun) {
             $score -= 100
