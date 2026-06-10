@@ -613,7 +613,7 @@ $ApprovedRecoveryTasks = @(
     @{
         Id = "lab-small-source-test-improvement"
         Goal = "Improve only the isolated Nova improvement lab with one small source+test behaviour improvement. Do not edit broad Nova runtime files. Add or improve a test in tests_improvement_lab_contract.py and keep the change reversible."
-        Editable = @("nova_improvement_lab\\text_tools.py", "tests_improvement_lab_contract.py")
+        Editable = @("nova_improvement_lab\text_tools.py", "tests_improvement_lab_contract.py")
         Tests = @("tests_improvement_lab_contract.py")
     },
 

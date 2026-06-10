@@ -53,3 +53,12 @@ def test_task_loop_includes_improvement_lab_task():
     assert "lab-small-source-test-improvement" in text
     assert "nova_improvement_lab\\text_tools.py" in text
     assert "tests_improvement_lab_contract.py" in text
+
+
+def test_validation_helper_checks_external_command_exit_codes():
+    helper = Path(__file__).resolve().parent / "tools" / "validate_task_loop_patch.ps1"
+    text = helper.read_text(encoding="utf-8")
+    assert "$LASTEXITCODE" in text
+    assert "throw" in text
+    assert "tests_improvement_lab_contract.py" in text
+    assert "Validation passed." in text
