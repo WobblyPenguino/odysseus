@@ -44,9 +44,10 @@ $SummaryLatest = Join-Path $MemoryDir "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
 $NoChangeTargets = Join-Path $MemoryDir "NO_CHANGE_TARGETS.md"
 $MistakeMemory = Join-Path $MemoryDir "MISTAKE_MEMORY.md"
 $TaskEventMemory = Join-Path $MemoryDir "TASK_LOOP_EVENTS.jsonl"
+$MistakesJsonl = Join-Path $MemoryDir "MISTAKES.jsonl"
 $ManualReviewLatest = Join-Path $MemoryDir "NOVA_TASK_LOOP_MANUAL_REVIEW_LATEST.md"
 
-foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory, $TaskEventMemory, $ManualReviewLatest)) {
+foreach ($f in @($TaskMemory, $SummaryLatest, $NoChangeTargets, $MistakeMemory, $TaskEventMemory, $MistakesJsonl, $ManualReviewLatest)) {
     if (!(Test-Path $f)) {
         New-Item -ItemType File -Force $f | Out-Null
     }
@@ -257,12 +258,44 @@ function Get-TaskOutcomeCategory {
     return "unknown-failure"
 }
 
+function Get-CurrentDiffStatText {
+    param([string]$Before = "", [string]$After = "")
+
+    try {
+        if ($Before -and $After) {
+            return ((git diff --stat "$Before..$After" 2>$null) -join "`n")
+        }
+        return ((git diff --stat 2>$null) -join "`n")
+    }
+    catch {
+        return ""
+    }
+}
+
+function Get-CurrentChangedFiles {
+    param([string]$Before = "", [string]$After = "")
+
+    try {
+        if ($Before -and $After) {
+            return @(git diff --name-only "$Before..$After" 2>$null | Where-Object { $_ })
+        }
+        return @(git diff --name-only 2>$null | Where-Object { $_ })
+    }
+    catch {
+        return @()
+    }
+}
+
 function Record-TaskOutcome {
     param(
         [string]$TaskId,
         [string]$Result,
         [string]$Reason,
         [string]$Category = "",
+        [string]$Stage = "unspecified",
+        [string]$Message = "",
+        [string]$DiffStat = "",
+        [string]$ActionTaken = "recorded outcome",
         [string[]]$Tests = @(),
         [string]$Before = "",
         [string]$After = "",
@@ -275,15 +308,27 @@ function Record-TaskOutcome {
     if (!$Category) {
         $Category = Get-TaskOutcomeCategory -Reason $Reason -Result $Result
     }
+    if (!$Message) {
+        $Message = $Reason
+    }
+    if (!$DiffStat) {
+        $DiffStat = Get-CurrentDiffStatText -Before $Before -After $After
+    }
+    if (!$ChangedFiles -or @($ChangedFiles).Count -eq 0) {
+        $ChangedFiles = @(Get-CurrentChangedFiles -Before $Before -After $After)
+    }
 
     $head = ""
     try { $head = (git rev-parse --short HEAD) } catch {}
     $event = [ordered]@{
+        schema_version = 2
         created_at = Get-Date -Format s
         task = $TaskId
         result = $Result
         category = $Category
+        stage = $Stage
         reason = $Reason
+        message = $Message
         model = $Model
         mode = $Mode
         head = $head
@@ -291,11 +336,16 @@ function Record-TaskOutcome {
         after = $After
         lines_changed = $LinesChanged
         changed_files = @($ChangedFiles)
+        diff_stat = $DiffStat
         validation_commands = @($ValidationCommands)
+        action_taken = $ActionTaken
         audit_note = $AuditNote
         tests = @($Tests)
     }
     ($event | ConvertTo-Json -Compress -Depth 4) | Add-Content $TaskEventMemory
+    if ($Result -in @("rejected", "blocked", "no-change")) {
+        ($event | ConvertTo-Json -Compress -Depth 4) | Add-Content $MistakesJsonl
+    }
     Add-Summary "Outcome category: $Category"
 }
 
@@ -382,6 +432,9 @@ function Ensure-RevertedSuccessEvents {
             -Result "rejected" `
             -Reason "success commit was later reverted: $($event.after)" `
             -Category "reverted-success" `
+            -Stage "post-commit-audit" `
+            -Message "Accepted task-loop commit was later reverted and should inform future quarantine/scoring." `
+            -ActionTaken "synthesized reverted-success event from git revert history" `
             -Tests @($event.tests) `
             -Before ([string]$event.before) `
             -After ([string]$event.after) `
@@ -518,6 +571,9 @@ function Invoke-TaskRecoveryCheck {
         -Result "recovered" `
         -Reason $note `
         -Category "recovered-stale-failure" `
+        -Stage "recovery-check" `
+        -Message "Targeted tests passed on current HEAD, so a stale failure quarantine can be cleared." `
+        -ActionTaken "reopened task after targeted recovery tests passed" `
         -Tests $task.Tests `
         -Before $head `
         -After $head `
@@ -599,7 +655,7 @@ function Write-NoHealthyTaskReviewNote {
     $lines | Set-Content $ManualReviewLatest
     Add-Summary "Manual review note written: $ManualReviewLatest"
     Write-Host "Manual review note written: $ManualReviewLatest"
-    Record-TaskOutcome -TaskId "__task_queue__" -Result "blocked" -Reason $reason -Category "manual-review-needed" -AuditNote $ManualReviewLatest
+    Record-TaskOutcome -TaskId "__task_queue__" -Result "blocked" -Reason $reason -Category "manual-review-needed" -Stage "task-selection" -Message $reason -ActionTaken "wrote manual review note and stopped before Aider" -AuditNote $ManualReviewLatest
 }
 
 function Pick-Task {
@@ -948,6 +1004,9 @@ function Write-TaskContext {
     "## Structured task outcome events" | Add-Content $Path
     Get-Content $TaskEventMemory -Tail 60 -ErrorAction SilentlyContinue | Add-Content $Path
     "" | Add-Content $Path
+    "## Structured task mistake events" | Add-Content $Path
+    Get-Content $MistakesJsonl -Tail 60 -ErrorAction SilentlyContinue | Add-Content $Path
+    "" | Add-Content $Path
     "## Recent mistakes" | Add-Content $Path
     Get-Content $MistakeMemory -Tail 80 -ErrorAction SilentlyContinue | Add-Content $Path
     "" | Add-Content $Path
@@ -1008,18 +1067,29 @@ function Get-TaskSanityCommands {
 }
 
 function Append-Mistake {
-    param([string]$TaskId, [string]$Reason, [string]$Category = "")
+    param(
+        [string]$TaskId,
+        [string]$Reason,
+        [string]$Category = "",
+        [string]$Stage = "unspecified",
+        [string]$ActionTaken = "recorded failure for future task selection",
+        [string]$Message = "",
+        [string]$DiffStat = "",
+        [string[]]$ChangedFiles = @()
+    )
 
     if (!$Category) {
         $Category = Get-TaskOutcomeCategory -Reason $Reason -Result "rejected"
     }
-    Record-TaskOutcome -TaskId $TaskId -Result "rejected" -Reason $Reason -Category $Category
+    Record-TaskOutcome -TaskId $TaskId -Result "rejected" -Reason $Reason -Category $Category -Stage $Stage -Message $Message -DiffStat $DiffStat -ActionTaken $ActionTaken -ChangedFiles $ChangedFiles
 
     "" | Add-Content $MistakeMemory
     "## $(Get-Date -Format s)" | Add-Content $MistakeMemory
     "Task: $TaskId structured_event=1" | Add-Content $MistakeMemory
     "Category: $Category" | Add-Content $MistakeMemory
+    "Stage: $Stage" | Add-Content $MistakeMemory
     "Reason: $Reason" | Add-Content $MistakeMemory
+    "Action taken: $ActionTaken" | Add-Content $MistakeMemory
     "HEAD: $(git rev-parse --short HEAD)" | Add-Content $MistakeMemory
 }
 
@@ -1123,7 +1193,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
     if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
-        Append-Mistake $task.Id "Aider context/token/protected-file failure" "context-protected-file"
+        Append-Mistake $task.Id "Aider context/token/protected-file failure" "context-protected-file" "aider-output-scan" "reset dirty state, cleaned generated noise, and skipped task" "Aider output indicated a context/token/protected-file failure before validation could continue."
         "$(Get-Date -Format s) task=$($task.Id) category=context-protected-file reason=context-token-or-protected-file-failure structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider reported token-limit/context/protected-file output."
@@ -1134,7 +1204,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     }
 
     if ($LASTEXITCODE -ne 0) {
-        Append-Mistake $task.Id "Aider failed" "aider-failed"
+        Append-Mistake $task.Id "Aider failed" "aider-failed" "aider-run" "reset dirty state, cleaned generated noise, and skipped task" "Aider exited non-zero before a safe diff could be validated."
         "$(Get-Date -Format s) task=$($task.Id) category=aider-failed reason=aider-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider exited with a non-zero status."
@@ -1147,7 +1217,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Clean-GeneratedNoise
 
     if (!(git status --porcelain)) {
-        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "model found no source-backed improvement or produced identical output" -Category "no-change" -Tests $task.Tests -Before $before
+        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "model found no source-backed improvement or produced identical output" -Category "no-change" -Stage "aider-run" -Message "Aider completed without a source diff after generated-noise cleanup." -ActionTaken "recorded no-change and cooled task down for this run" -Tests $task.Tests -Before $before
         Add-Summary "Result: no change"
         Add-Summary "Why: model found no source-backed improvement or produced identical output."
         Add-Summary "Cooldown note: this task will be skipped for the rest of this run."
@@ -1161,7 +1231,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     try {
         $diffResult = Validate-Diff -Task $task -AiderOutputPath $out
         if ($diffResult -eq "no-change") {
-            Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no change after diff validation" -Category "no-change" -Tests $task.Tests -Before $before
+            Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no change after diff validation" -Category "no-change" -Stage "diff-validation" -Message "Diff validation found no meaningful source change." -ActionTaken "recorded no-change and skipped commit" -Tests $task.Tests -Before $before
             Add-Summary "Result: no change after diff validation"
             "$(Get-Date -Format s) task=$($task.Id) category=no-change reason=no-change-after-diff structured_event=1" | Add-Content $NoChangeTargets
             continue
@@ -1177,7 +1247,9 @@ for ($i = 1; $i -le $Cycles; $i++) {
     }
     catch {
         $category = Get-TaskOutcomeCategory -Reason $_.Exception.Message -Result "rejected"
-        Append-Mistake $task.Id $_.Exception.Message $category
+        $diffStat = Get-CurrentDiffStatText
+        $changedFiles = @(Get-CurrentChangedFiles)
+        Append-Mistake $task.Id $_.Exception.Message $category "validation-gate" "recorded rejection, reset dirty state, and cleaned generated noise" "Validation or diff gate rejected the proposed patch before commit." $diffStat $changedFiles
         "$(Get-Date -Format s) task=$($task.Id) category=$category reason=validation-or-significance-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: $($_.Exception.Message)"
@@ -1191,7 +1263,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Clean-GeneratedNoise
 
     if (!(git status --porcelain)) {
-        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no source diff after generated-noise cleanup" -Category "generated-noise-dirty-state" -Tests $task.Tests -Before $before
+        Record-TaskOutcome -TaskId $task.Id -Result "no-change" -Reason "no source diff after generated-noise cleanup" -Category "generated-noise-dirty-state" -Stage "generated-noise-cleanup" -Message "Generated-noise cleanup removed all diffs, leaving no source change to commit." -ActionTaken "recorded generated-noise no-change and skipped commit" -Tests $task.Tests -Before $before
         Add-Summary "Result: no source diff after cleanup"
         "$(Get-Date -Format s) task=$($task.Id) category=generated-noise-dirty-state reason=no-source-diff-after-cleanup structured_event=1" | Add-Content $NoChangeTargets
         continue
@@ -1223,7 +1295,7 @@ for ($i = 1; $i -le $Cycles; $i++) {
     Add-Summary "Post-commit audit marker: $auditNote"
     Add-Summary "Why beneficial: source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification."
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
-    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -AuditNote $auditNote
+    Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Stage "commit" -Message "All validation gates passed and the task-loop committed the accepted patch." -ActionTaken "committed validated task patch" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -AuditNote $auditNote
     "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
 }
 
