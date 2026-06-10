@@ -127,7 +127,7 @@ function Run-Cmd {
     $out | Add-Content $SummaryLatest
     $out | Add-Content $TaskMemory
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($aiderExitCode -ne 0) {
         throw "Command failed: $Command"
     }
 }
@@ -602,50 +602,29 @@ function Get-RecentTaskFailureCount {
 
 # Approved recovery tasks are injected here because NOVA_AGENT_TASK_QUEUE.md is currently
 # documentation/backlog only; the live loop selects from the in-script $Tasks list.
+
+# Approved fresh Nova source-backed tasks. These are used when the old task queue is exhausted.
+# They avoid editing this large loop script through Aider, because that caused context/token failures.
 $ApprovedRecoveryTasks = @(
     @{
-        Id = "loop-generated-task-proposals"
-        Editable = @("run_nova_task_queue_loop.ps1")
-        Tests = @(
-            "tests_nova_user_sanity.py",
-            "tests_model_health_timeout.py",
-            "tests_runtime_usability_release_gate.py",
-            "tests_validation_reporting.py",
-            "tests_validation_status_command.py"
-        )
-        Prompt = @"
-Improve the task loop's exhausted-queue behavior. When all current tasks are quarantined, write a manual-review note proposing 3 new source-backed tasks instead of repeatedly recovering stale no-change tasks. Keep the patch small. Do not loosen safety globally. The summary must clearly say task queue exhausted and list proposed task id, editable files, tests, risk, and reason.
-"@
-    }
+        Id = "fresh-model-timeout-fallback"
+        Goal = "Improve Nova model/Ollama timeout fallback reliability with a small source-backed source+test patch."
+        Editable = @("winlocalassistant\model_health.py", "winlocalassistant\ollama.py", "tests_model_health_timeout.py")
+        Tests = @("tests_model_health_timeout.py")
+    },
 
     @{
-        Id = "loop-reset-stale-success-cooldown"
-        Editable = @("run_nova_task_queue_loop.ps1")
-        Tests = @(
-            "tests_nova_user_sanity.py",
-            "tests_model_health_timeout.py",
-            "tests_runtime_usability_release_gate.py",
-            "tests_validation_reporting.py",
-            "tests_validation_status_command.py"
-        )
-        Prompt = @"
-Improve stale quarantine handling. Success-cooldown and reverted-success quarantine should expire after a bounded number of newer successful loop commits, instead of permanently blocking useful areas. Keep strong failure categories blocking unsafe tasks. Do not remove failure memory. Keep the patch small and reversible.
-"@
-    }
+        Id = "fresh-validation-status-diagnostics"
+        Goal = "Improve Nova validation status diagnostics only if a real source-backed reporting gap exists."
+        Editable = @("winlocalassistant\validate.py", "nova\validate.py", "tests_validation_status_command.py", "tests_validation_reporting.py")
+        Tests = @("tests_validation_status_command.py", "tests_validation_reporting.py")
+    },
 
     @{
-        Id = "loop-task-queue-health-command"
-        Editable = @("run_nova_task_queue_loop.ps1", "run_nova_task_queue_loop_with_monitor.ps1")
-        Tests = @(
-            "tests_nova_user_sanity.py",
-            "tests_model_health_timeout.py",
-            "tests_runtime_usability_release_gate.py",
-            "tests_validation_reporting.py",
-            "tests_validation_status_command.py"
-        )
-        Prompt = @"
-Add or improve a report-only/preflight mode that prints task scores, quarantine reasons, and recovery eligibility without invoking Aider. It must help explain why the loop would stop early. It must not edit source files during preflight/report-only mode. Keep normal terminal output working.
-"@
+        Id = "fresh-command-suggestion-safety"
+        Goal = "Improve Nova command suggestion safety or usefulness only with a real source-backed behaviour gap."
+        Editable = @("winlocalassistant\command_suggestions.py", "tests_command_suggestions.py")
+        Tests = @("tests_command_suggestions.py")
     }
 )
 
@@ -1362,7 +1341,12 @@ for ($i = 1; $i -le $Cycles; $i++) {
     }
 
     $denyInput = ((1..200 | ForEach-Object { "skip" }) -join "`n") + "`n"
-    $denyInput | & $Aider @aiderArgs 2>&1 | Tee-Object -FilePath $out
+    Add-Summary "Aider output log: $out"
+Write-Host "Aider output is being saved to: $out"
+$denyInput | & $Aider @aiderArgs *> $out
+$aiderExitCode = $LASTEXITCODE
+Write-Host "Aider output tail:"
+Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
     if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
