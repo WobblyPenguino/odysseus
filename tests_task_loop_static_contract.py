@@ -746,3 +746,14 @@ def test_task_loop_clears_stale_review_artifacts_before_live_run():
     assert "NOVA_SUBAGENT_REVIEW_LATEST.md" in text
     assert "Clean-GeneratedNoise\nAssert-CleanGit\nClear-LatestReviewArtifacts\nWrite-StaticToolStatusReport" in text
     assert text.index("Clear-LatestReviewArtifacts\nWrite-StaticToolStatusReport") < text.index("$denyInput | & $Aider")
+
+
+def test_task_loop_writes_failure_review_before_resetting_failed_live_changes():
+    text = _runner_text()
+    assert "function Write-TaskFailureReviewReport" in text
+    assert "NOVA_TASK_FAILURE_REVIEW_LATEST.md" in text
+    assert "Task failure review report:" in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-output-scan"' in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-run"' in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "validation-gate"' in text
+    assert 'Remove-Item -Path ".\\local_ai_cycles\\memory\\NOVA_TASK_FAILURE_REVIEW_LATEST.md"' in text

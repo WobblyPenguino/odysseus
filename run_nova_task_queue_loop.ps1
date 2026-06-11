@@ -1448,6 +1448,76 @@ function Add-AiderAddFilePromptSummary {
 
 
 
+
+function Write-TaskFailureReviewReport {
+    param(
+        [hashtable]$Task,
+        [string]$Before,
+        [string]$Stage,
+        [string]$Reason,
+        [string]$AiderOutputPath = "",
+        [string]$Path = ".\local_ai_cycles\memory\NOVA_TASK_FAILURE_REVIEW_LATEST.md"
+    )
+
+    $changedStatus = ""
+    $diffStat = ""
+
+    try {
+        $changedStatus = git status --short | Out-String
+    } catch {
+        $changedStatus = "unable to read git status: $($_.Exception.Message)"
+    }
+
+    try {
+        $diffStat = git diff --stat | Out-String
+    } catch {
+        $diffStat = "unable to read diff stat: $($_.Exception.Message)"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($changedStatus)) {
+        $changedStatus = "none"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($diffStat)) {
+        $diffStat = "none"
+    }
+
+    $lines = @(
+        "# Nova Task Failure Review Latest",
+        "",
+        "Task ID: $($Task.Id)",
+        "Before: $Before",
+        "Stage: $Stage",
+        "Reason: $Reason",
+        "Aider output log: $AiderOutputPath",
+        "",
+        "Editable files:",
+        $($Task.Editable | ForEach-Object { "- $_" }),
+        "",
+        "Targeted tests:",
+        $($Task.Tests | ForEach-Object { "- $_" }),
+        "",
+        "Changed files before reset:",
+        '```text',
+        $changedStatus.TrimEnd(),
+        '```',
+        "",
+        "Diff stat before reset:",
+        '```text',
+        $diffStat.TrimEnd(),
+        '```',
+        "",
+        "Action:",
+        "- This report records failed-task evidence before the runner resets unsafe or failing changes.",
+        "- It must not be treated as an accepted patch review."
+    )
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
+    Add-Summary "Task failure review report: $Path"
+    return $Path
+}
+
+
 function Clear-LatestReviewArtifacts {
     $paths = @(
         ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md",
@@ -2953,6 +3023,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
         "$(Get-Date -Format s) task=$($task.Id) category=context-protected-file reason=context-token-or-protected-file-failure structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider reported token-limit/context/protected-file output."
+        Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-output-scan" -Reason "Aider reported token-limit/context/protected-file output." -AiderOutputPath $out | Out-Null
         git reset --hard
         git clean -fd
         Clean-GeneratedNoise
@@ -2964,6 +3035,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
         "$(Get-Date -Format s) task=$($task.Id) category=aider-failed reason=aider-failed structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
         Add-Summary "Why: Aider exited with a non-zero status."
+        Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-run" -Reason "Aider exited with a non-zero status." -AiderOutputPath $out | Out-Null
         git reset --hard
         git clean -fd
         Clean-GeneratedNoise
@@ -3007,6 +3079,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
         $category = Get-TaskOutcomeCategory -Reason $originalExceptionMessage -Result "rejected"
         $diffStat = Get-CurrentDiffStatText
         $changedFiles = @(Get-CurrentChangedFiles)
+        Write-TaskFailureReviewReport -Task $task -Before $before -Stage "validation-gate" -Reason $originalExceptionMessage -AiderOutputPath $out | Out-Null
 
         $canOverridePlaceholderFalsePositive = $false
 
@@ -3155,6 +3228,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     Add-Summary "After: $after"
     Add-Summary "Lines changed: $linesChanged"
     Add-Summary "Changed files: $($changedFiles -join ', ')"
+    Remove-Item -Path ".\local_ai_cycles\memory\NOVA_TASK_FAILURE_REVIEW_LATEST.md" -Force -ErrorAction SilentlyContinue
     Write-PatchReviewReport -Task $task -ChangedFiles $changedFiles -Before $before -After $after -Path ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md" | Out-Null
     Write-SubagentReviewReport -Task $task -ChangedFiles $changedFiles -Before $before -After $after -ValidationGates $validationGateResults -ValidationCommands $validationCommands -Path ".\local_ai_cycles\memory\NOVA_SUBAGENT_REVIEW_LATEST.md" | Out-Null
     Add-Summary "Validation gates passed: $($validationGateResults -join ' | ')"
