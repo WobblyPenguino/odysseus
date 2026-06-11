@@ -93,5 +93,24 @@
     "Tests": [
       "tests_autodev_sandbox.py"
     ]
+  },
+  {
+    "Id": "real-model-context-prompt-file-signature-safe-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one narrow source+test robustness fix. Improve winlocalassistant/model_context.py so prompt-named file context cache signatures cannot crash if a named file becomes unreadable, locked, or changes between path resolution and signature generation. Add a small helper named _safe_prompt_named_file_signature_entry and use it inside _prompt_named_file_signature. The helper should return a deterministic signature fragment using the prompt file name, resolved path, stat metadata when available, and a content hash when readable, while catching read/stat exceptions safely. Add a regression test named test_model_context_prompt_named_file_signature_survives_read_error in tests_model_context_pack.py using monkeypatch to make Path.read_text raise for a prompt-named file, then verify build_model_context_pack still returns a context pack containing CONTEXT_HEADER. You must modify BOTH files. Do not edit GUI, task loop, unrelated runtime files, or broad project files.",
+    "Editable": [
+      "winlocalassistant\\model_context.py",
+      "tests_model_context_pack.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\model_context.py",
+      "tests_model_context_pack.py"
+    ],
+    "RequiredDiffContains": [
+      "_safe_prompt_named_file_signature_entry",
+      "test_model_context_prompt_named_file_signature_survives_read_error"
+    ],
+    "Tests": [
+      "tests_model_context_pack.py"
+    ]
   }
 ]

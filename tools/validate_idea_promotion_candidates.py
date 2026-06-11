@@ -48,7 +48,13 @@ def is_safe_candidate_path(path: str, *, test_only: bool = False) -> bool:
     if test_only:
         return normal.startswith("tests\\") or (normal.startswith("tests_") and normal.endswith(".py"))
 
+    allowed_runtime_files = {
+        "winlocalassistant\\model_context.py",
+    }
+
     return (
+        normal in allowed_runtime_files
+    ) or (
         normal.startswith("nova_improvement_lab\\") and normal.endswith(".py")
     ) or normal.startswith("tests\\") or (
         normal.startswith("tests_") and normal.endswith(".py")

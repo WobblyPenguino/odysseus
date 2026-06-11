@@ -45,3 +45,15 @@ def test_candidate_validator_rejects_required_file_not_editable():
     accepted, rejected = validate_candidates([candidate])
     assert accepted == []
     assert any("required changed file not listed as editable" in e for e in rejected[0].errors)
+
+
+def test_candidate_validator_accepts_narrow_model_context_runtime_file():
+    candidate = _valid_candidate("model-context-runtime-v1")
+    candidate["Editable"] = ["winlocalassistant\\model_context.py", "tests_model_context_pack.py"]
+    candidate["RequiredChangedFiles"] = ["winlocalassistant\\model_context.py", "tests_model_context_pack.py"]
+    candidate["Tests"] = ["tests_model_context_pack.py"]
+
+    accepted, rejected = validate_candidates([candidate])
+
+    assert [r.candidate_id for r in accepted] == ["model-context-runtime-v1"]
+    assert rejected == []
