@@ -7,10 +7,15 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
+# Allow direct execution via:
+#   python tools/run_supervised_autonomy_batch.py --help
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from winlocalassistant.autonomy_readiness import build_autonomy_readiness
 
 # --- Configuration ---
-REPO_ROOT = Path(__file__).resolve().parents[1]
 TASK_LOOP_SCRIPT = REPO_ROOT / "run_nova_task_queue_loop.ps1"
 BATCH_SUMMARY_MD = REPO_ROOT / "local_ai_cycles" / "memory" / "NOVA_SUPERVISED_AUTONOMY_BATCH_LATEST.md"
 BATCH_SUMMARY_JSON = REPO_ROOT / "local_ai_cycles" / "memory" / "NOVA_SUPERVISED_AUTONOMY_BATCH_LATEST.json"
