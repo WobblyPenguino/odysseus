@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T21:12:41
+Last updated: 2026-06-11T21:23:20
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `e800161`
+- HEAD: `46051e4`
 - Candidate doctor accepted: `11`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `1`
@@ -14,6 +14,10 @@ Last updated: 2026-06-11T21:12:41
 
 ## Latest commits
 
+- `46051e4 Detect task pool exhaustion from loop summary`
+- `d763c1d Block autonomy readiness on exhausted task pool`
+- `ec2318f Update roadmap after autonomy readiness command`
+- `1a6d4ba Add autonomy readiness command`
 - `e800161 Rank task loop failures by severity`
 - `db30d09 Add autonomy full codebase audit`
 - `35bd114 Update roadmap after screen analysis prompt command`
@@ -22,10 +26,6 @@ Last updated: 2026-06-11T21:12:41
 - `8e27feb Route screen image needs through command suggestions`
 - `45e121d Update roadmap after screen image routing helpers`
 - `372c497 Add screen image analysis routing helpers`
-- `287360b Audit screen image analysis integration options`
-- `cf78803 Update roadmap after task loop outcome`
-- `838c502 Task queue improvement: tiny-autodev-sandbox-action-plan-titles-v1`
-- `cca2e8f Auto-commit roadmap-only task loop updates`
 
 ## What we have achieved
 
