@@ -341,3 +341,10 @@ def render_action_plan_debug_markdown(items: Iterable[WorkItem]) -> str:
         f"- Status line: {debug['status_line']}",
     ]
     return "\n".join(lines)
+
+def render_action_plan_debug_json(items: Iterable[WorkItem]) -> str:
+    """Return stable machine-readable JSON for action-plan debug data."""
+    import json
+
+    return json.dumps(build_action_plan_debug_dict(items), sort_keys=True)
+

@@ -312,3 +312,34 @@ def test_autodev_sandbox_renders_action_plan_debug_markdown():
         f"- Status line: {build_action_plan_debug_dict(idle_items)['status_line']}",
     ]
     assert idle_markdown.splitlines() == idle_expected
+
+def test_autodev_sandbox_renders_action_plan_debug_json():
+    import json
+
+    from nova_improvement_lab.autodev_sandbox import render_action_plan_debug_json
+
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    payload = render_action_plan_debug_json(items)
+    parsed = json.loads(payload)
+    expected = build_action_plan_debug_dict(items)
+
+    assert parsed == expected
+    key_order = json.loads(payload, object_pairs_hook=lambda pairs: [key for key, _value in pairs])
+    assert key_order == sorted(expected)
+
+    idle_items = [WorkItem("done_item", status="done")]
+    idle_payload = render_action_plan_debug_json(idle_items)
+    idle_parsed = json.loads(idle_payload)
+    idle_expected = build_action_plan_debug_dict(idle_items)
+
+    assert idle_parsed == idle_expected
+    assert idle_parsed["next_title"] is None
+    assert idle_parsed["has_next"] is False
+    assert "idle" in idle_parsed["status_line"]
+
