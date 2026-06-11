@@ -2585,6 +2585,65 @@ function Test-IdeaPromotionTaskCandidate {
     }
 }
 
+
+function Read-IdeaPromotionRecentOutcomeText {
+    $outcomeFiles = @(
+        ".\local_ai_cycles\memory\NOVA_TASK_LOOP_SUMMARY_LATEST.md",
+        ".\local_ai_cycles\memory\NOVA_TASK_POOL_EXHAUSTED_LATEST.md",
+        ".\local_ai_cycles\memory\NOVA_TASK_FAILURE_REVIEW_LATEST.md"
+    )
+
+    $chunks = @()
+    foreach ($outcomeFile in $outcomeFiles) {
+        if (Test-Path $outcomeFile) {
+            try {
+                $chunks += Get-Content -Path $outcomeFile -Raw
+            } catch {
+                # Outcome memory is advisory only; never fail task drafting because a report cannot be read.
+            }
+        }
+    }
+
+    return ($chunks -join "`n")
+}
+
+
+function Test-IdeaPromotionCandidateRecentBadOutcome {
+    param(
+        [string]$CandidateId,
+        [string]$OutcomeText
+    )
+
+    if ([string]::IsNullOrWhiteSpace($CandidateId) -or [string]::IsNullOrWhiteSpace($OutcomeText)) {
+        return $false
+    }
+
+    $badOutcomeMarkers = @(
+        "validation-failed",
+        "required-diff",
+        "required-file",
+        "test-failed",
+        "no-change",
+        "low-significance",
+        "documentation/comment-only",
+        "placeholder-or-speculative"
+    )
+
+    $candidatePattern = [regex]::Escape($CandidateId)
+    foreach ($line in @($OutcomeText -split "\r?\n")) {
+        if ($line -match $candidatePattern) {
+            foreach ($marker in $badOutcomeMarkers) {
+                if ($line -match [regex]::Escape($marker)) {
+                    return $true
+                }
+            }
+        }
+    }
+
+    return $false
+}
+
+
 function Write-IdeaPromotionTaskDraft {
     param(
         [string]$CandidatePath = ".\local_ai_cycles\memory\NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md",
@@ -2604,6 +2663,8 @@ function Write-IdeaPromotionTaskDraft {
     } catch {
         $recentLog = ""
     }
+
+    $recentOutcomeText = Read-IdeaPromotionRecentOutcomeText
 
     $draftCandidates = @(
         [ordered]@{
@@ -2676,12 +2737,19 @@ function Write-IdeaPromotionTaskDraft {
     }
 
     $skippedDraftIds = @()
+    $skippedOutcomeDraftIds = @()
     $taskDraft = $null
     foreach ($candidate in $draftCandidates) {
         if ($recentLog -match [regex]::Escape($candidate.Id)) {
             $skippedDraftIds += $candidate.Id
             continue
         }
+
+        if (Test-IdeaPromotionCandidateRecentBadOutcome -CandidateId $candidate.Id -OutcomeText $recentOutcomeText) {
+            $skippedOutcomeDraftIds += $candidate.Id
+            continue
+        }
+
         $taskDraft = $candidate
         break
     }
@@ -2727,6 +2795,10 @@ function Write-IdeaPromotionTaskDraft {
 
     if (@($skippedDraftIds).Count -gt 0) {
         Add-Summary "Idea promotion task draft skipped recent completed candidate(s): $($skippedDraftIds -join ', ')"
+    }
+
+    if (@($skippedOutcomeDraftIds).Count -gt 0) {
+        Add-Summary "Idea promotion task draft skipped recent failed/outcome candidate(s): $($skippedOutcomeDraftIds -join ', ')"
     }
 
     $taskDraft | ConvertTo-Json -Depth 6 | Set-Content -Path $JsonPath -Encoding UTF8

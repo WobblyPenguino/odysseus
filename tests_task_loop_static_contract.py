@@ -835,3 +835,14 @@ def test_task_loop_internal_candidate_validator_allows_agent_browser_safety_file
     assert "$normal -eq 'winlocalassistant\\agent_browser_safety.py'" in text
     assert "unsafe Editable path" in text
     assert "unsafe RequiredChangedFiles path" in text
+
+
+def test_task_loop_idea_promotion_skips_recent_bad_outcome_candidates():
+    text = _runner_text()
+    assert "Read-IdeaPromotionRecentOutcomeText" in text
+    assert "Test-IdeaPromotionCandidateRecentBadOutcome" in text
+    assert "NOVA_TASK_LOOP_SUMMARY_LATEST.md" in text
+    assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in text
+    assert "validation-failed" in text
+    assert "required-diff" in text
+    assert "skipped recent failed/outcome candidate" in text
