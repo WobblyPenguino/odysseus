@@ -310,3 +310,34 @@ def render_action_plan_debug_lines(items: Iterable[WorkItem]) -> list[str]:
         f"Next score: {debug['next_score']}",
         f"Status line: {debug['status_line']}",
     ]
+
+
+# New function to render debug markdown
+def render_action_plan_debug_markdown(items: Iterable[WorkItem]) -> str:
+    """
+    Render a stable Markdown representation of the action plan debug information.
+
+    The output starts with the heading ``## Action Plan Debug`` followed by
+    bullet lines for each field returned by :func:`build_action_plan_debug_dict`:
+      - total
+      - actionable
+      - has_next
+      - next_title
+      - next_status
+      - next_score
+      - status_line
+
+    The function uses the debug dictionary to guarantee deterministic ordering.
+    """
+    debug = build_action_plan_debug_dict(items)
+    lines = [
+        "## Action Plan Debug",
+        f"- Total: {debug['total']}",
+        f"- Actionable: {debug['actionable']}",
+        f"- Has next: {debug['has_next']}",
+        f"- Next title: {debug['next_title']}",
+        f"- Next status: {debug['next_status']}",
+        f"- Next score: {debug['next_score']}",
+        f"- Status line: {debug['status_line']}",
+    ]
+    return "\n".join(lines)

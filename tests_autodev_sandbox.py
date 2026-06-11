@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines, render_action_plan_debug_markdown
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -271,3 +271,44 @@ def test_autodev_sandbox_renders_action_plan_debug_lines():
     assert f"Next score: {summary['next_score']}" in debug_lines[5]
     # Status line should match the rendered single‑line status
     assert debug_lines[6] == f"Status line: {render_action_plan_status_line(items)}"
+
+
+def test_autodev_sandbox_renders_action_plan_debug_markdown():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="done"),
+    ]
+
+    markdown = render_action_plan_debug_markdown(items)
+    # The Markdown should start with the heading
+    assert markdown.startswith("## Action Plan Debug")
+    # It should contain bullet lines for total, actionable, has_next, next_title,
+    # next_status, next_score and status_line in that order.
+    expected_lines = [
+        "## Action Plan Debug",
+        f"- Total: {build_action_plan_debug_dict(items)['total']}",
+        f"- Actionable: {build_action_plan_debug_dict(items)['actionable']}",
+        f"- Has next: {build_action_plan_debug_dict(items)['has_next']}",
+        f"- Next title: {build_action_plan_debug_dict(items)['next_title']}",
+        f"- Next status: {build_action_plan_debug_dict(items)['next_status']}",
+        f"- Next score: {build_action_plan_debug_dict(items)['next_score']}",
+        f"- Status line: {build_action_plan_debug_dict(items)['status_line']}",
+    ]
+    assert markdown.splitlines() == expected_lines
+
+    # When there are no actionable items, the debug markdown should still be deterministic
+    idle_items = [WorkItem("done_item", status="done")]
+    idle_markdown = render_action_plan_debug_markdown(idle_items)
+    idle_expected = [
+        "## Action Plan Debug",
+        f"- Total: {build_action_plan_debug_dict(idle_items)['total']}",
+        f"- Actionable: {build_action_plan_debug_dict(idle_items)['actionable']}",
+        f"- Has next: {build_action_plan_debug_dict(idle_items)['has_next']}",
+        f"- Next title: {build_action_plan_debug_dict(idle_items)['next_title']}",
+        f"- Next status: {build_action_plan_debug_dict(idle_items)['next_status']}",
+        f"- Next score: {build_action_plan_debug_dict(idle_items)['next_score']}",
+        f"- Status line: {build_action_plan_debug_dict(idle_items)['status_line']}",
+    ]
+    assert idle_markdown.splitlines() == idle_expected
