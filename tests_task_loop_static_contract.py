@@ -879,3 +879,10 @@ def test_task_loop_autonomous_fallback_defers_exhaustion_report_until_after_retr
     fallback_idx = text.index("$fallbackUsed = Invoke-AutonomousCandidateFallback")
     report_idx = text.index('Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore', fallback_idx)
     assert fallback_idx < report_idx
+
+
+def test_task_loop_autonomous_fallback_clears_stale_pool_exhaustion_report():
+    text = _runner_text()
+    assert "Autonomous candidate fallback cleared stale task-pool exhaustion report" in text
+    assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in text
+    assert "Remove-Item -Path" in text

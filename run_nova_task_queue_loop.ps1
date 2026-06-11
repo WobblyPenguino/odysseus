@@ -3038,6 +3038,8 @@ if ($externalCandidatePoolFresh) {
                 if ($null -ne $fallbackScore -and $fallbackScore -ge $MinProductiveTaskScore) {
                     $task = $fallbackTask
                     $preflightTaskScore = $fallbackScore
+                    Remove-Item -Path ".\local_ai_cycles\memory\NOVA_TASK_POOL_EXHAUSTED_LATEST.md" -Force -ErrorAction SilentlyContinue
+                    Add-Summary "Autonomous candidate fallback cleared stale task-pool exhaustion report"
                     Add-Summary "Autonomous candidate fallback selected productive task: $($task.Id)"
                     Add-Summary "Autonomous candidate fallback score: $preflightTaskScore"
                 }
