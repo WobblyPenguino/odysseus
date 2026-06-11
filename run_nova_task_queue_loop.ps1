@@ -1451,6 +1451,10 @@ function Add-AiderAddFilePromptSummary {
 
 
 function Update-TaskLoopRoadmap {
+    param(
+        [switch]$AutoCommit
+    )
+
     $scriptPath = ".\tools\update_task_loop_roadmap.py"
 
     if (-not (Test-Path $scriptPath)) {
@@ -1461,6 +1465,21 @@ function Update-TaskLoopRoadmap {
     & python $scriptPath | Out-Host
     if ($LASTEXITCODE -eq 0) {
         Add-Summary "Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md"
+
+        if ($AutoCommit) {
+            $roadmapDirty = git status --short -- docs/NOVA_TASK_LOOP_ROADMAP.md docs/NOVA_TASK_LOOP_ROADMAP.json
+            $otherDirty = git status --short -- . ":(exclude)docs/NOVA_TASK_LOOP_ROADMAP.md" ":(exclude)docs/NOVA_TASK_LOOP_ROADMAP.json"
+
+            if ($roadmapDirty -and -not $otherDirty) {
+                git add docs/NOVA_TASK_LOOP_ROADMAP.md docs/NOVA_TASK_LOOP_ROADMAP.json
+                git commit -m "Update roadmap after task loop outcome" | Out-Host
+                Add-Summary "Roadmap auto-commit: committed roadmap-only update"
+            } elseif ($roadmapDirty) {
+                Add-Summary "Roadmap auto-commit skipped: non-roadmap dirty files are present"
+            } else {
+                Add-Summary "Roadmap auto-commit skipped: no roadmap diff"
+            }
+        }
     } else {
         Add-Summary "Roadmap update failed: $scriptPath"
     }
@@ -3257,7 +3276,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
     Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Stage "commit" -Message "All validation gates passed and the task-loop committed the accepted patch." -ActionTaken "committed validated task patch" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -ValidationGates $validationGateResults -AuditNote $auditNote
     "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
-    Update-TaskLoopRoadmap
+    Update-TaskLoopRoadmap -AutoCommit
 }
 
 Clean-GeneratedNoise

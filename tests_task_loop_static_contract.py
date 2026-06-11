@@ -796,3 +796,12 @@ def test_task_loop_updates_roadmap_after_success_and_exhaustion():
     assert r"Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md" in text
     assert "Update-TaskLoopRoadmap\n        exit 0" in text
     assert 'category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets\n    Update-TaskLoopRoadmap' in text
+
+
+def test_task_loop_auto_commits_roadmap_only_updates_after_success():
+    text = _runner_text()
+    assert "[switch]$AutoCommit" in text
+    assert "Roadmap auto-commit: committed roadmap-only update" in text
+    assert "Roadmap auto-commit skipped: non-roadmap dirty files are present" in text
+    assert "git commit -m \"Update roadmap after task loop outcome\"" in text
+    assert "Update-TaskLoopRoadmap -AutoCommit" in text
