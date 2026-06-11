@@ -147,3 +147,20 @@ def test_repeated_failed_task_stop(mock_git_clean, mock_autonomy_readiness_100, 
     result = batch.run_supervised_autonomy_batch(1, "test_batch")
     assert result == 1
     assert "Repeated failed task detected in live cycle." in batch.BATCH_SUMMARY_MD.read_text()
+
+def test_dry_run_stops_after_preflight(mock_lifecycle_success, mock_subprocess_run):
+    # This test verifies that with dry_run=True, we stop after preflight and never call the live cycle.
+    # mock_lifecycle_success defines a side_effect that handles both commands.
+    
+    result = batch.run_supervised_autonomy_batch(1, "test_dry_run", dry_run=True)
+    
+    assert result == 0
+    assert "Dry run complete after preflight." in batch.BATCH_SUMMARY_MD.read_text()
+    assert '"dry_run": true' in batch.BATCH_SUMMARY_JSON.read_text()
+    
+    # Check calls: we expect preflight, but NOT live cycles.
+    for call in mock_subprocess_run.call_args_list:
+        cmd_str = " ".join(call.args[0])
+        if "run_nova_task_queue_loop.ps1" in cmd_str and "-PreflightOnly" not in cmd_str:
+            if "-Cycles 1" in cmd_str:
+                pytest.fail("Live task loop call detected in dry run")

@@ -149,11 +149,12 @@ def _write_batch_summary(batch_summary: Dict[str, Any]):
     BATCH_SUMMARY_JSON.write_text(json.dumps(batch_summary, indent=2), encoding="utf-8")
 
 # --- Main Controller Logic ---
-def run_supervised_autonomy_batch(max_cycles: int, batch_id: str):
+def run_supervised_autonomy_batch(max_cycles: int, batch_id: str, dry_run: bool = False):
     batch_log: Dict[str, Any] = {
         "batch_id": batch_id,
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         "max_cycles": max_cycles,
+        "dry_run": dry_run,
         "cycles": [],
         "final_status": "running",
         "stop_reason": "N/A"
@@ -252,6 +253,15 @@ def run_supervised_autonomy_batch(max_cycles: int, batch_id: str):
         
         print(f"Preflight passed. Selected task: {preflight_summary['selected_task_id']} (Score: {preflight_summary['selected_task_score']})")
 
+        if dry_run:
+            stop_reason = "Dry run complete after preflight."
+            print(f"INFO: {stop_reason}")
+            cycle_log["status"] = "completed"
+            batch_log["final_status"] = "completed"
+            batch_log["stop_reason"] = stop_reason
+            _write_batch_summary(batch_log)
+            return 0
+
         # 6. Run exactly one existing task-loop live cycle
         print("Running one live task loop cycle...")
         live_cycle_cmd = f"{TASK_LOOP_SCRIPT} -Cycles 1 -Mode code -MaxRecoveryCandidates 3"
@@ -334,5 +344,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run a supervised autonomy batch controller.")
     parser.add_argument("--max-cycles", type=int, default=3, help="Maximum number of cycles to run.")
     parser.add_argument("--batch-id", type=str, default=f"batch_{time.strftime('%Y%m%d_%H%M%S')}", help="Unique ID for the batch run.")
+    parser.add_argument("--dry-run", "--preflight-only", action="store_true", help="Validate preflight and exit without running live tasks.")
     args = parser.parse_args()
-    sys.exit(run_supervised_autonomy_batch(args.max_cycles, args.batch_id))
+    sys.exit(run_supervised_autonomy_batch(args.max_cycles, args.batch_id, args.dry_run))
