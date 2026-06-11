@@ -757,3 +757,10 @@ def test_task_loop_writes_failure_review_before_resetting_failed_live_changes():
     assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-run"' in text
     assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "validation-gate"' in text
     assert 'Remove-Item -Path ".\\local_ai_cycles\\memory\\NOVA_TASK_FAILURE_REVIEW_LATEST.md"' in text
+
+
+def test_task_loop_validator_rejects_double_quoted_markdown_fences():
+    validator = Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "double-quoted Markdown fence strings found" in validator
+    assert "Select-String -Path .\\run_nova_task_queue_loop.ps1 -Pattern" in validator
+    assert '"```' in validator

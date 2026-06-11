@@ -42,4 +42,12 @@ if ($LASTEXITCODE -ne 0) {
     throw "Candidate validator tests failed"
 }
 
+
+$doubleQuotedMarkdownFenceLines = Select-String -Path .\run_nova_task_queue_loop.ps1 -Pattern '"```' -SimpleMatch
+if ($doubleQuotedMarkdownFenceLines) {
+    Write-Host "Task loop double-quoted Markdown fence strings found."
+    $doubleQuotedMarkdownFenceLines | Format-Table LineNumber, Line -AutoSize
+    throw "Task loop double-quoted Markdown fence strings found."
+}
+
 Write-Host "Validation passed."
