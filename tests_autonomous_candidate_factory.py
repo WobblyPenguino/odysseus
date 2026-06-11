@@ -85,3 +85,32 @@ def test_candidate_factory_filters_recent_bad_candidate_ids() -> None:
     # The candidate with the matching Id should be removed
     assert len(filtered) == 2
     assert all(c["Id"] != "candidate-factory-bad-task-id-filter-v1" for c in filtered)
+
+
+def test_candidate_factory_extracts_failure_review_task_id() -> None:
+    text = "\n".join(
+        [
+            "Task ID: candidate-factory-agent-browser-evidence-v1",
+            "Stage: validation-gate",
+            "Reason: Command failed: python -m pytest -q tests_autonomous_candidate_factory.py",
+        ]
+    )
+
+    assert extract_recent_bad_task_ids(text) == {"candidate-factory-agent-browser-evidence-v1"}
+
+
+def test_candidate_factory_filters_failed_generated_candidate_before_return() -> None:
+    bundle = EvidenceBundle(
+        research_notes="Agent Browser should stay localhost-only and read-only first.",
+        failure_review="\n".join(
+            [
+                "Task ID: candidate-factory-agent-browser-evidence-v1",
+                "Stage: validation-gate",
+                "Reason: Command failed: python -m pytest -q tests_autonomous_candidate_factory.py",
+            ]
+        ),
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
+
+    assert "candidate-factory-agent-browser-evidence-v1" not in ids

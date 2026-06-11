@@ -64,25 +64,41 @@ def evidence_mentions_task_pool_exhaustion(bundle: EvidenceBundle) -> bool:
 
 
 def extract_recent_bad_task_ids(text: str) -> set[str]:
-    """Extract task ids tied to recent bad outcomes from evidence lines."""
-    bad_ids: set[str] = set()
+    """Extract recently failed task ids from summaries, pool reports, and failure reviews."""
 
-    for line in text.splitlines():
-        lowered = line.lower()
-        if not any(marker in lowered for marker in BAD_OUTCOME_MARKERS):
-            continue
+    if isinstance(text, EvidenceBundle):
+        normalised = normalise_evidence_text(text).lower()
+    else:
+        normalised = str(text or "").lower()
+    found: set[str] = set()
 
-        quoted = re.findall(r"task '([^']+)'", line)
-        for task_id in quoted:
-            if task_id.strip():
-                bad_ids.add(task_id.strip())
+    if not normalised:
+        return found
 
-        leading = re.match(r"\s*-\s*([a-z0-9][a-z0-9_-]+):", line, flags=re.IGNORECASE)
-        if leading:
-            bad_ids.add(leading.group(1))
+    bad_context = (
+        any(marker in normalised for marker in BAD_OUTCOME_MARKERS)
+        or "command failed" in normalised
+        or "stage: validation-gate" in normalised
+        or "result: rejected" in normalised
+        or "outcome category: test-failed" in normalised
+    )
 
-    return bad_ids
+    if not bad_context:
+        return found
 
+    for task_id in re.findall(r"(?im)^\s*task id:\s*([a-z0-9][a-z0-9_-]+)\s*$", normalised):
+        found.add(task_id)
+
+    for task_id in re.findall(r"(?im)task ['\"]([a-z0-9][a-z0-9_-]+)['\"]", normalised):
+        found.add(task_id)
+
+    for task_id in re.findall(
+        r"(?im)^-\s*([a-z0-9][a-z0-9_-]+):.*(?:score=-?\d+|category=|validation-failed|test-failed)",
+        normalised,
+    ):
+        found.add(task_id)
+
+    return found
 
 def _candidate(
     *,
