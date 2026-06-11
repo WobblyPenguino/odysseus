@@ -82,18 +82,50 @@ def _prompt_named_files(prompt: str, workspace: Path) -> list[tuple[str, str]]:
     return named_files
 
 
+def _safe_prompt_named_file_signature_entry(match: str, candidate: Path) -> tuple[str, str]:
+    """
+    Return a deterministic signature fragment for a prompt‑named file.
+
+    The fragment includes the original match string, the resolved absolute path,
+    stat metadata (mtime and size) when available, and a content hash if readable.
+    All operations are wrapped in try/except blocks to avoid raising exceptions
+    during cache key calculation.
+    """
+    # Resolve path string safely
+    try:
+        resolved = str(candidate.resolve())
+    except Exception:
+        resolved = ""
+    # Stat metadata
+    stat_info = ""
+    try:
+        st = candidate.stat()
+        stat_info = f"{st.st_mtime}:{st.st_size}"
+    except Exception:
+        pass
+    # Content hash
+    content_hash = ""
+    try:
+        text = candidate.read_text(encoding="utf-8", errors="replace")
+        content_hash = sha256(text.encode("utf-8")).hexdigest()
+    except Exception:
+        pass
+    fragment = f"{match}:{resolved}:{stat_info}:{content_hash}"
+    return (match, fragment)
+
+
 def _prompt_named_file_signature(prompt: str, workspace: Path) -> str:
     """Return a hash that changes when any prompt‑named file content changes."""
     named = []
     for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
         candidate = _resolve_prompt_named_file(match, workspace)
         if candidate is not None:
-            # Use full content for signature to detect any change
-            text = candidate.read_text(encoding="utf-8", errors="replace")
-            named.append((match, text))
+            # Use safe helper to build a deterministic fragment
+            _, fragment = _safe_prompt_named_file_signature_entry(match, candidate)
+            named.append(fragment)
     # Sort to ensure deterministic order
-    named.sort(key=lambda x: x[0])
-    sig_str = "".join(f"{name}:{content}" for name, content in named)
+    named.sort()
+    sig_str = "".join(named)
     return sha256(sig_str.encode("utf-8")).hexdigest()
 
 

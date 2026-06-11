@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+import pytest
 from winlocalassistant.config import AssistantConfig
 from winlocalassistant.core import AssistantCore
 from winlocalassistant.model_context import CONTEXT_HEADER, build_model_context_pack, enrich_messages_with_context
@@ -146,6 +147,27 @@ def test_model_context_pack_rejects_prompt_named_file_outside_workspace() -> Non
         # Prompt referencing the inside file should include its preview
         pack_inside = build_model_context_pack(cfg, [{"role": "user", "content": "review inside.txt"}], desc="quality review")
         assert "inside.txt" in pack_inside.text
+
+
+def test_model_context_prompt_named_file_signature_survives_read_error(monkeypatch) -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_sig_err_") as tmp:
+        root = Path(tmp)
+        file_path = root / "error.txt"
+        file_path.write_text("content", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+
+        # Monkeypatch Path.read_text to raise an exception for the specific file
+        original_read_text = Path.read_text
+
+        def fake_read_text(self, *args, **kwargs):
+            if self.resolve() == file_path.resolve():
+                raise IOError("simulated read error")
+            return original_read_text(self, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", fake_read_text)
+
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": f"review {file_path.name}"}], desc="quality review")
+        assert CONTEXT_HEADER in pack.text
 
 
 def run_all(verbose: bool = False) -> None:
