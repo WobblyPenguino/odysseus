@@ -78,47 +78,55 @@ def _check_tokens(
 
 
 def _check_task_pool_health(root: Path) -> ReadinessCheck:
-    """Treat the latest task-pool exhaustion report as a blocking readiness issue."""
+    """Treat latest task-pool exhaustion evidence as a blocking readiness issue."""
 
-    relative = "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md"
-    path = root / relative
-    text = _read_text(path)
+    pool_relative = "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md"
+    summary_relative = "local_ai_cycles/memory/NOVA_TASK_LOOP_SUMMARY_LATEST.md"
+    pool_path = root / pool_relative
+    summary_path = root / summary_relative
 
-    if not path.exists():
+    pool_text = _read_text(pool_path).lower()
+    summary_text = _read_text(summary_path).lower()
+    combined = "\n".join([pool_text, summary_text])
+
+    exhausted_markers = (
+        "no sufficiently productive task remained",
+        "task-pool-exhausted",
+        "task pool is exhausted",
+        "best candidate below productive minimum",
+        "no aider invocation, commit, or source edit was attempted because the task pool is exhausted",
+    )
+    exhausted = any(marker in combined for marker in exhausted_markers)
+
+    if exhausted:
+        evidence_source = summary_relative if "task-pool-exhausted" in summary_text else pool_relative
         return ReadinessCheck(
             area="candidate pool",
-            name=relative,
-            ok=True,
-            evidence="no latest task-pool exhaustion report found",
-            next_action="",
+            name=evidence_source,
+            ok=False,
+            evidence="latest task-loop evidence reports no sufficiently productive task remained",
+            next_action=(
+                "Add or approve fresh source-backed candidates, then run a preflight before any live autonomy cycle."
+            ),
             blocking=True,
         )
 
-    lowered = text.lower()
-    exhausted = (
-        "no sufficiently productive task remained" in lowered
-        or "task-pool-exhausted" in lowered
-        or "task pool is exhausted" in lowered
-    )
-
-    if not exhausted:
+    if pool_path.exists() or summary_path.exists():
         return ReadinessCheck(
             area="candidate pool",
-            name=relative,
+            name=f"{pool_relative}; {summary_relative}",
             ok=True,
-            evidence="latest task-pool report does not show exhaustion",
+            evidence="latest task-loop evidence does not show task-pool exhaustion",
             next_action="",
             blocking=True,
         )
 
     return ReadinessCheck(
         area="candidate pool",
-        name=relative,
-        ok=False,
-        evidence="latest preflight reports no sufficiently productive task remained",
-        next_action=(
-            "Add or approve fresh source-backed candidates, then run a preflight before any live autonomy cycle."
-        ),
+        name=f"{pool_relative}; {summary_relative}",
+        ok=True,
+        evidence="no latest task-pool exhaustion or task-loop summary report found",
+        next_action="",
         blocking=True,
     )
 

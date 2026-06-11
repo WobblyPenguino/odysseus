@@ -64,6 +64,23 @@ def test_autonomy_readiness_blocks_on_latest_task_pool_exhaustion(tmp_path: Path
     assert "Add or approve fresh source-backed candidates" in rendered
 
 
+def test_autonomy_readiness_blocks_on_summary_task_pool_exhaustion(tmp_path: Path) -> None:
+    _write_complete_tree(tmp_path)
+    _write(
+        tmp_path / "local_ai_cycles/memory/NOVA_TASK_LOOP_SUMMARY_LATEST.md",
+        "Outcome category: task-pool-exhausted\nBest candidate below productive minimum.",
+    )
+
+    report = build_autonomy_readiness(tmp_path)
+    rendered = render_autonomy_readiness_markdown(report)
+
+    assert report["status"] == "not-ready"
+    assert report["blocking_failures"]
+    assert "Blocking issues" in rendered
+    assert "NOVA_TASK_LOOP_SUMMARY_LATEST.md" in rendered
+    assert "Add or approve fresh source-backed candidates" in rendered
+
+
 def test_autonomy_readiness_command_is_registered_static() -> None:
     core = Path("winlocalassistant/core.py").read_text(encoding="utf-8")
     tools = Path("winlocalassistant/tools.py").read_text(encoding="utf-8")
