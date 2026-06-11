@@ -1,19 +1,21 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-12T02:07:03
+Last updated: 2026-06-12T02:18:19
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `bb4c640`
+- HEAD: `6d6515b`
 - Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
-- Fresh candidates available: `4`
-- Recently completed/skipped candidates: `12`
+- Fresh candidates available: `3`
+- Recently completed/skipped candidates: `13`
 - Next candidate: `tiny-autodev-sandbox-status-counts-line-v1`
 
 ## Latest commits
 
+- `6d6515b Task queue improvement: agent-browser-evidence-command-list-v1`
+- `82aa419 Update roadmap after task loop outcome`
 - `bb4c640 Task queue improvement: agent-browser-readonly-command-classifier-v1`
 - `3adc7b2 Update roadmap after task loop outcome`
 - `0ca1f5b Task queue improvement: agent-browser-safe-command-plan-markdown-v1`
@@ -24,8 +26,6 @@ Last updated: 2026-06-12T02:07:03
 - `fb5aadd Apply failed autonomous candidate filtering before return`
 - `f47bedd Update roadmap after failed bad-candidate filter preflight`
 - `0fd0886 Filter failed autonomous candidates from failure review`
-- `b13d5bd Update roadmap after failed generated-candidate preflight`
-- `d5ece1d Update roadmap after failed generated-candidate preflight`
 
 ## What we have achieved
 

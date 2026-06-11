@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-12T02:07:03",
-  "head": "bb4c640",
+  "last_updated": "2026-06-12T02:18:19",
+  "head": "6d6515b",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "6d6515b Task queue improvement: agent-browser-evidence-command-list-v1",
+    "82aa419 Update roadmap after task loop outcome",
     "bb4c640 Task queue improvement: agent-browser-readonly-command-classifier-v1",
     "3adc7b2 Update roadmap after task loop outcome",
     "0ca1f5b Task queue improvement: agent-browser-safe-command-plan-markdown-v1",
@@ -12,15 +14,13 @@
     "0377b8f Ignore failure logs for Agent Browser candidate generation",
     "fb5aadd Apply failed autonomous candidate filtering before return",
     "f47bedd Update roadmap after failed bad-candidate filter preflight",
-    "0fd0886 Filter failed autonomous candidates from failure review",
-    "b13d5bd Update roadmap after failed generated-candidate preflight",
-    "d5ece1d Update roadmap after failed generated-candidate preflight"
+    "0fd0886 Filter failed autonomous candidates from failure review"
   ],
   "candidate_doctor": {
     "accepted_count": 16,
     "rejected_count": 0,
-    "fresh_count": 4,
-    "skipped_recent_count": 12,
+    "fresh_count": 3,
+    "skipped_recent_count": 13,
     "next_candidate": "tiny-autodev-sandbox-status-counts-line-v1"
   },
   "next_recommended_action": "Add a fresh narrow source+test external candidate or improve task-loop workflow safety."
