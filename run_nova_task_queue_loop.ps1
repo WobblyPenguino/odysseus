@@ -2272,6 +2272,7 @@ function Test-SafeIdeaCandidatePath {
     }
 
     return (
+        $normal -eq 'winlocalassistant\model_context.py' -or
         $normal -like 'nova_improvement_lab\*.py' -or
         $normal -like 'tests_*.py' -or
         $normal -like 'tests\*.py'

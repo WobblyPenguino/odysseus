@@ -719,3 +719,11 @@ def test_task_prompt_avoids_literal_noneditable_file_names_that_trigger_aider_pr
     text = _runner_text()
     assert "Do not mention, request, or add any file outside the editable-file list." in text
     assert "Do not mention or request app.py, README.md, CHANGELOG.md, core.py, tools.py, webui.py, or startup scripts" not in text
+
+
+def test_task_loop_internal_candidate_validator_allows_model_context_file_exactly():
+    text = _runner_text()
+    assert "$normal -eq 'winlocalassistant\\model_context.py'" in text
+    assert "$normal -like 'nova_improvement_lab\\*.py'" in text
+    assert "unsafe Editable path" in text
+    assert "unsafe RequiredChangedFiles path" in text
