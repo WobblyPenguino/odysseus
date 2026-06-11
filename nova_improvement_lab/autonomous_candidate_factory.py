@@ -119,6 +119,22 @@ def extract_recent_bad_task_ids(text: str) -> set[str]:
 
     return found
 
+
+def summarise_failure_feedback(bundle: EvidenceBundle) -> str:
+    """Return a concise summary of recent rejected generated candidates.
+
+    The summary lists the IDs of tasks that were recently rejected, extracted
+    from ``bundle.failure_review``.  If no failures are detected an empty string
+    is returned.
+    """
+    bad_ids = extract_recent_bad_task_ids(bundle.failure_review)
+    if not bad_ids:
+        return ""
+    # Sort for deterministic output
+    sorted_ids = sorted(bad_ids)
+    return "Failed tasks: " + ", ".join(sorted_ids)
+
+
 def _candidate(
     *,
     candidate_id: str,

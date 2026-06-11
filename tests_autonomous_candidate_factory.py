@@ -5,6 +5,7 @@ from nova_improvement_lab.autonomous_candidate_factory import (
     evidence_mentions_task_pool_exhaustion,
     extract_recent_bad_task_ids,
     filter_recent_bad_candidate_ids,
+    summarise_failure_feedback,
 )
 
 
@@ -84,7 +85,7 @@ def test_candidate_factory_filters_recent_bad_candidate_ids() -> None:
     filtered = filter_recent_bad_candidate_ids(candidates, bad_ids)
     # The candidate with the matching Id should be removed
     assert len(filtered) == 2
-    assert all(c["Id"] != "candidate-factory-bad-task-id-filter-v1" for c in filtered)
+    assert all(c["Id"] != "candidate-factory-bad-task-id-filter_v1" for c in filtered)
 
 
 def test_candidate_factory_extracts_failure_review_task_id() -> None:
@@ -144,3 +145,19 @@ def test_candidate_factory_generates_failure_feedback_gap_candidate() -> None:
     ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
 
     assert "candidate-factory-failure-feedback-gap-v1" in ids
+
+
+def test_candidate_factory_summarises_failure_feedback() -> None:
+    bundle = EvidenceBundle(
+        failure_review="\n".join(
+            [
+                "Task ID: candidate-factory-validation-gap-v1",
+                "Stage: validation-gate",
+                "Reason: Command failed: python -m pytest -q tests_autonomous_candidate_factory.py",
+            ]
+        )
+    )
+
+    summary = summarise_failure_feedback(bundle)
+    assert "candidate-factory-validation-gap-v1" in summary
+    assert summary.startswith("Failed tasks:")
