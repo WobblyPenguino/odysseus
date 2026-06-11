@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-11T20:45:18",
-  "head": "372c497",
+  "last_updated": "2026-06-11T20:58:57",
+  "head": "8e27feb",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "8e27feb Route screen image needs through command suggestions",
+    "45e121d Update roadmap after screen image routing helpers",
     "372c497 Add screen image analysis routing helpers",
     "287360b Audit screen image analysis integration options",
     "cf78803 Update roadmap after task loop outcome",
@@ -12,9 +14,7 @@
     "a3e1486 Task queue improvement: tiny-autodev-sandbox-next-item-line-v1",
     "7728c56 Add fresh autodev sandbox task candidates",
     "a40cfef Update roadmap after task loop auto-update wiring",
-    "48b23b5 Update roadmap from task loop outcomes",
-    "22a4a92 Avoid timestamp-only roadmap update churn",
-    "aaaee59 Preserve manual roadmap section during updates"
+    "48b23b5 Update roadmap from task loop outcomes"
   ],
   "candidate_doctor": {
     "accepted_count": 11,
