@@ -827,3 +827,11 @@ def test_task_loop_severity_penalty_applies_before_used_this_run_penalty():
     severity_idx = text.index("$severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons")
     used_this_run_idx = text.index("if ($usedThisRun)", severity_idx)
     assert severity_idx < used_this_run_idx
+
+
+def test_task_loop_internal_candidate_validator_allows_agent_browser_safety_file_exactly():
+    text = _runner_text()
+    assert "$normal -eq 'winlocalassistant\\model_context.py'" in text
+    assert "$normal -eq 'winlocalassistant\\agent_browser_safety.py'" in text
+    assert "unsafe Editable path" in text
+    assert "unsafe RequiredChangedFiles path" in text
