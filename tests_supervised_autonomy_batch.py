@@ -164,3 +164,21 @@ def test_dry_run_stops_after_preflight(mock_lifecycle_success, mock_subprocess_r
         if "run_nova_task_queue_loop.ps1" in cmd_str and "-PreflightOnly" not in cmd_str:
             if "-Cycles 1" in cmd_str:
                 pytest.fail("Live task loop call detected in dry run")
+
+
+def test_parser_prefers_final_fallback_selected_task(mock_repo_root):
+    summary_path = mock_repo_root / "local_ai_cycles" / "memory" / "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
+    summary_path.write_text(
+        "\n".join([
+            "Best task candidate tiny-autodev-sandbox-sort-priority-v1: score=25; reasons=source+test candidate",
+            "Autonomous candidate fallback selected productive task: candidate-factory-failure-feedback-gap-v1",
+            "Autonomous candidate fallback score: 70",
+            "Best task candidate candidate-factory-failure-feedback-gap-v1: score=70; reasons=source+test candidate",
+            "Selected task: candidate-factory-failure-feedback-gap-v1",
+        ])
+    )
+
+    parsed = batch._parse_task_loop_summary(summary_path)
+
+    assert parsed["selected_task_id"] == "candidate-factory-failure-feedback-gap-v1"
+    assert parsed["selected_task_score"] == 70

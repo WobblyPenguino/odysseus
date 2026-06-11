@@ -83,11 +83,21 @@ def _parse_task_loop_summary(summary_path: Path) -> Dict[str, Any]:
         "raw_summary": summary_content
     }
 
-    # Parse selected task and score
-    score_match = re.search(r"Best task candidate (.+?): score=(-?\d+)", summary_content)
-    if score_match:
-        parsed["selected_task_id"] = score_match.group(1).strip()
-        parsed["selected_task_score"] = int(score_match.group(2))
+    # Parse selected task and score. Preflight summaries can include an initial
+    # low-score candidate before autonomous fallback, followed by the real final
+    # selected task. Prefer the final candidate/selected-task evidence.
+    score_matches = re.findall(r"Best task candidate (.+?): score=(-?\d+)", summary_content)
+    if score_matches:
+        selected_task_id, selected_task_score = score_matches[-1]
+        parsed["selected_task_id"] = selected_task_id.strip()
+        parsed["selected_task_score"] = int(selected_task_score)
+
+    selected_task_match = re.search(r"^Selected task:\s*(\S+)\s*$", summary_content, re.MULTILINE)
+    fallback_score_match = re.search(r"^Autonomous candidate fallback score:\s*(-?\d+)\s*$", summary_content, re.MULTILINE)
+    if selected_task_match:
+        parsed["selected_task_id"] = selected_task_match.group(1).strip()
+        if fallback_score_match:
+            parsed["selected_task_score"] = int(fallback_score_match.group(1))
 
     # Check for task pool exhaustion
     if "task-pool-exhausted" in summary_content or "No healthy or recoverable task available" in summary_content:
