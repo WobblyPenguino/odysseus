@@ -127,6 +127,23 @@ def unsafe_agent_browser_action_commands() -> tuple[str, ...]:
     )
 
 
+def classify_agent_browser_command(command: str) -> str:
+    """
+    Classify an Agent Browser command string.
+
+    Returns:
+        - 'readonly' for known evidence commands,
+        - 'requires-approval' for known action/interaction commands,
+        - 'unknown' for any other command.
+    """
+    cmd = command.strip().lower()
+    if cmd in safe_agent_browser_readonly_commands():
+        return "readonly"
+    if cmd in unsafe_agent_browser_action_commands():
+        return "requires-approval"
+    return "unknown"
+
+
 def build_agent_browser_localhost_plan(url: str) -> dict[str, object]:
     """Build a safe, read‑only first validation plan for a localhost URL."""
 

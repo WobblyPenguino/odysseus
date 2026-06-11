@@ -7,6 +7,7 @@ from winlocalassistant.agent_browser_safety import (
     unsafe_agent_browser_action_commands,
     summarise_agent_browser_policy,
     render_agent_browser_plan_markdown,
+    classify_agent_browser_command,
 )
 
 
@@ -90,3 +91,12 @@ def test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans() -> None
     # Commands appear only for allowed plan
     assert "- `agent-browser open http://localhost:8000`" in allowed_md
     assert "- `agent-browser open https://example.com`" not in blocked_md
+
+
+def test_agent_browser_command_classifier_separates_readonly_action_and_unknown() -> None:
+    # Known readonly command
+    assert classify_agent_browser_command("snapshot") == "readonly"
+    # Known action command
+    assert classify_agent_browser_command("click") == "requires-approval"
+    # Unknown command
+    assert classify_agent_browser_command("foo-bar") == "unknown"
