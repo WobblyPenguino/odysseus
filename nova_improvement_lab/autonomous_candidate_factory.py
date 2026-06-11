@@ -221,6 +221,9 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
             )
         )
 
+    if bad_ids:
+        candidates = filter_recent_bad_candidate_ids(candidates, bad_ids)
+
     return candidates[: max(1, limit)]
 
 
