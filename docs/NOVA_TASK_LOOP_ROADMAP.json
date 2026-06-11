@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-12T01:30:49",
-  "head": "d5ece1d",
+  "last_updated": "2026-06-12T01:34:37",
+  "head": "0fd0886",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "0fd0886 Filter failed autonomous candidates from failure review",
+    "b13d5bd Update roadmap after failed generated-candidate preflight",
     "d5ece1d Update roadmap after failed generated-candidate preflight",
     "04fe0c2 Update roadmap after rejected generated candidate",
     "6346871 Update roadmap after task loop outcome",
@@ -12,9 +14,7 @@
     "02772b0 Clear stale exhaustion report after autonomous fallback",
     "351f5dd Use generated candidate score after autonomous fallback",
     "1c54749 Update roadmap after autonomous fallback preflight",
-    "a042f4d Use autonomous candidate fallback on task pool exhaustion",
-    "6cd51fa Add autonomous candidate generator tool",
-    "ad48e07 Add evidence-backed autonomous candidate factory"
+    "a042f4d Use autonomous candidate fallback on task pool exhaustion"
   ],
   "candidate_doctor": {
     "accepted_count": 16,
