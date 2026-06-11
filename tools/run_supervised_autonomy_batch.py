@@ -115,11 +115,9 @@ def _parse_task_loop_summary(summary_path: Path) -> Dict[str, Any]:
     # repeated/recent-failed outcome language.
     lower_summary = summary_content.lower()
     if (
-        "repeated-failure" in lower_summary
+        "outcome category: repeated-failure" in lower_summary
         or "reason=repeated-failure" in lower_summary
-        or "repeated failed task" in lower_summary
-        or "recent failed/outcome candidate" in lower_summary
-        or "skipped recent failed/outcome" in lower_summary
+        or "repeated failed task detected" in lower_summary
     ):
         parsed["repeated_failed_task"] = True
 

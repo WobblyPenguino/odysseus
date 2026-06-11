@@ -182,3 +182,24 @@ def test_parser_prefers_final_fallback_selected_task(mock_repo_root):
 
     assert parsed["selected_task_id"] == "candidate-factory-failure-feedback-gap-v1"
     assert parsed["selected_task_score"] == 70
+
+
+def test_parser_does_not_treat_skipped_unrelated_failed_candidate_as_repeated_failure(mock_repo_root):
+    summary_path = mock_repo_root / "local_ai_cycles" / "memory" / "NOVA_TASK_LOOP_SUMMARY_LATEST.md"
+    summary_path.write_text(
+        "\n".join([
+            "Idea promotion task draft skipped recent failed/outcome candidate(s): candidate-factory-agent-browser-evidence-v1",
+            "Best task candidate candidate-factory-failure-feedback-gap-v1: score=70; reasons=source+test candidate",
+            "Selected task: candidate-factory-failure-feedback-gap-v1",
+            "Result: committed",
+            "Validation gates passed",
+        ])
+    )
+
+    parsed = batch._parse_task_loop_summary(summary_path)
+
+    assert parsed["selected_task_id"] == "candidate-factory-failure-feedback-gap-v1"
+    assert parsed["selected_task_score"] == 70
+    assert parsed["validation_passed"] is True
+    assert parsed["commit_happened"] is True
+    assert parsed["repeated_failed_task"] is False
