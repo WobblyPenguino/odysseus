@@ -870,3 +870,12 @@ def test_task_loop_uses_autonomous_candidate_fallback_on_pool_exhaustion():
     assert "NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
     assert "preflight best candidate below productive minimum" in text
     assert "Autonomous candidate fallback selected productive task" in text
+
+
+def test_task_loop_autonomous_fallback_defers_exhaustion_report_until_after_retry():
+    text = _runner_text()
+    assert "Resolve-TaskScoreFromSummaryById" in text
+    assert "Preflight best candidate below productive minimum before autonomous fallback" in text
+    fallback_idx = text.index("$fallbackUsed = Invoke-AutonomousCandidateFallback")
+    report_idx = text.index('Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore', fallback_idx)
+    assert fallback_idx < report_idx

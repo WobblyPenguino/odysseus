@@ -2898,6 +2898,31 @@ function Register-IdeaPromotionTaskDraft {
 }
 
 
+
+function Resolve-TaskScoreFromSummaryById {
+    param(
+        [string]$TaskId
+    )
+
+    if ([string]::IsNullOrWhiteSpace($TaskId) -or !(Test-Path $SummaryLatest)) {
+        return $null
+    }
+
+    $escapedTaskId = [regex]::Escape($TaskId)
+    $score = $null
+
+    foreach ($line in @(Get-Content -Path $SummaryLatest)) {
+        if ($line -match "Best task candidate\s+${escapedTaskId}:\s+score=(-?\d+)") {
+            $score = [int]$Matches[1]
+        } elseif ($line -match "^- ${escapedTaskId}:\s+score=(-?\d+)") {
+            $score = [int]$Matches[1]
+        }
+    }
+
+    return $score
+}
+
+
 function Invoke-AutonomousCandidateFallback {
     param(
         [string]$Reason = "task-pool-exhausted"
@@ -2995,14 +3020,18 @@ if ($externalCandidatePoolFresh) {
         $preflightTaskScore = Resolve-SelectedTaskScoreFromSummary
     }
     if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
-        Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
+        Add-Summary "Preflight best candidate below productive minimum before autonomous fallback: $($task.Id): score=$preflightTaskScore; minimum=$MinProductiveTaskScore"
 
         $fallbackUsed = Invoke-AutonomousCandidateFallback -Reason "preflight best candidate below productive minimum"
         if ($fallbackUsed) {
             $fallbackTask = Pick-Task
             if ($fallbackTask) {
                 $fallbackScore = Resolve-TaskScore -Task $fallbackTask
-                if ($null -eq $fallbackScore) {
+                $summaryFallbackScore = Resolve-TaskScoreFromSummaryById -TaskId ([string]$fallbackTask.Id)
+
+                if ($null -ne $summaryFallbackScore) {
+                    $fallbackScore = $summaryFallbackScore
+                } elseif ($null -eq $fallbackScore) {
                     $fallbackScore = Resolve-SelectedTaskScoreFromSummary
                 }
 
@@ -3016,6 +3045,7 @@ if ($externalCandidatePoolFresh) {
         }
 
         if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
+            Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
             Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
             Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
             Update-TaskLoopRoadmap
