@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines, render_action_plan_debug_markdown, render_action_plan_debug_json, render_next_work_item_line
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines, render_action_plan_debug_markdown, render_action_plan_debug_json, render_next_work_item_line, render_action_plan_titles
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -313,6 +313,7 @@ def test_autodev_sandbox_renders_action_plan_debug_markdown():
     ]
     assert idle_markdown.splitlines() == idle_expected
 
+
 def test_autodev_sandbox_renders_action_plan_debug_json():
     import json
 
@@ -342,6 +343,25 @@ def test_autodev_sandbox_renders_action_plan_debug_json():
     assert idle_parsed["next_title"] is None
     assert idle_parsed["has_next"] is False
     assert "idle" in idle_parsed["status_line"]
+
+# New regression test for the added function
+def test_autodev_sandbox_renders_action_plan_titles():
+    items = [
+        WorkItem("a", status="todo"),
+        WorkItem("b", status="blocked"),
+        WorkItem("c", status="review"),
+        WorkItem("d", status="todo"),
+        WorkItem("e", status="blocked"),
+    ]
+
+    titles = render_action_plan_titles(items)
+    # Expected order: blocked items first in original order (b, e), then review (c),
+    # then todo items in original order (a, d)
+    expected_titles = ["b", "e", "c", "a", "d"]
+    assert titles == expected_titles
+
+    # Empty list should return an empty list
+    assert render_action_plan_titles([]) == []
 
 # New regression test for the added function
 def test_autodev_sandbox_renders_next_work_item_line():

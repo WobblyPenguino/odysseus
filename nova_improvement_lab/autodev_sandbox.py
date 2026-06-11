@@ -365,3 +365,15 @@ def render_next_work_item_line(items: Iterable[WorkItem]) -> str:
     status = normalise_status(next_item.status)
     score = priority_score(next_item)
     return f"Next: {title} (status={status}, score={score})"
+
+
+# NEW FUNCTION: render_action_plan_titles
+def render_action_plan_titles(items: Iterable[WorkItem]) -> list[str]:
+    """
+    Return the titles of work items sorted by priority.
+
+    The function uses :func:`sort_work_items_by_priority` to obtain a stable
+    ordering and then extracts the ``title`` attribute from each item.
+    If *items* is empty, an empty list is returned.
+    """
+    return [i.title for i in sort_work_items_by_priority(items)]
