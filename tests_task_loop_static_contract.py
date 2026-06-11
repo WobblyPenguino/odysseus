@@ -770,3 +770,12 @@ def test_task_loop_validator_checks_roadmap_updater():
     validator = Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
     assert "python -m py_compile tools/update_task_loop_roadmap.py" in validator
     assert "Roadmap updater compile failed" in validator
+
+
+def test_roadmap_updater_preserves_manual_section_markers():
+    updater = Path("tools/update_task_loop_roadmap.py").read_text(encoding="utf-8")
+    assert "NOVA_ROADMAP_MANUAL_START" in updater
+    assert "NOVA_ROADMAP_MANUAL_END" in updater
+    assert "def extract_manual_section" in updater
+    assert "manual_section = extract_manual_section(existing)" in updater
+    assert "render_markdown(state, manual_section)" in updater

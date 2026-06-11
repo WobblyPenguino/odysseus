@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-11T20:05:22",
-  "head": "b8bcfc6",
+  "last_updated": "2026-06-11T20:08:34",
+  "head": "189f3ef",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "189f3ef Validate task loop roadmap updater",
+    "0e92720 Add task loop roadmap updater",
     "b8bcfc6 Add living task loop roadmap",
     "44cf409 Reject double-quoted markdown fences in task loop validation",
     "5ec7e79 Write failure review report for failed live tasks",
@@ -12,9 +14,7 @@
     "c6b4eeb Task queue improvement: tiny-autodev-sandbox-action-plan-debug-markdown-v1",
     "7f78c2b Add fresh action plan debug markdown candidate",
     "fb1f6ca Record denied Aider add-file prompts",
-    "ab079b8 Task queue improvement: real-model-context-prompt-file-signature-safe-v1",
-    "aad55be Allow model context file in task loop candidate validation",
-    "fdb50c5 Avoid literal off-scope filenames in Aider task prompts"
+    "ab079b8 Task queue improvement: real-model-context-prompt-file-signature-safe-v1"
   ],
   "candidate_doctor": {
     "accepted_count": 8,

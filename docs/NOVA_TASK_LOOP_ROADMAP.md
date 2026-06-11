@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T20:05:22
+Last updated: 2026-06-11T20:08:34
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `b8bcfc6`
+- HEAD: `189f3ef`
 - Candidate doctor accepted: `8`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `0`
@@ -14,6 +14,8 @@ Last updated: 2026-06-11T20:05:22
 
 ## Latest commits
 
+- `189f3ef Validate task loop roadmap updater`
+- `0e92720 Add task loop roadmap updater`
 - `b8bcfc6 Add living task loop roadmap`
 - `44cf409 Reject double-quoted markdown fences in task loop validation`
 - `5ec7e79 Write failure review report for failed live tasks`
@@ -24,8 +26,6 @@ Last updated: 2026-06-11T20:05:22
 - `7f78c2b Add fresh action plan debug markdown candidate`
 - `fb1f6ca Record denied Aider add-file prompts`
 - `ab079b8 Task queue improvement: real-model-context-prompt-file-signature-safe-v1`
-- `aad55be Allow model context file in task loop candidate validation`
-- `fdb50c5 Avoid literal off-scope filenames in Aider task prompts`
 
 ## What we have achieved
 
@@ -66,3 +66,30 @@ Before committing or running the next live task:
 10. Commit.
 11. Preflight proof.
 12. Update this roadmap.
+
+<!-- NOVA_ROADMAP_MANUAL_START -->
+## Long-term roadmap
+
+### Phase 1 — Make the loop easier to operate
+
+- Add a command that runs the standing audit rule.
+- Add a compact latest-state report.
+- Link this roadmap from task-loop summaries.
+
+### Phase 2 — Improve candidate generation quality
+
+- Generate fresh candidates that are narrow, deterministic, source+test, and low-risk.
+- Reject vague or broad candidates earlier.
+- Prefer small existing modules over runtime/GUI changes.
+
+### Phase 3 — Improve failure learning
+
+- Add failed command, exit code, and Aider output tail to failure review reports.
+- Categorise failures more precisely.
+- Suggest the next safe recovery action after each failed task.
+
+### Phase 4 — Release-readiness
+
+- Keep roadmap and JSON state updated after every pass.
+- Add a release-readiness note when the loop reaches a stable milestone.
+<!-- NOVA_ROADMAP_MANUAL_END -->
