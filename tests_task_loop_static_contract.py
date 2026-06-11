@@ -918,3 +918,16 @@ def test_task_loop_recent_bad_outcome_filter_uses_candidate_context_window() -> 
     assert "stage: validation-gate" in body
     assert "command failed:" in body
     assert "[regex]::Escape($CandidateId)" in body
+
+
+def test_task_loop_recent_outcome_reader_includes_durable_memory() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Read-IdeaPromotionRecentOutcomeText")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "MISTAKE_MEMORY.md" in body
+    assert "NO_CHANGE_TARGETS.md" in body
+    assert "NOVA_TASK_FAILURE_REVIEW_LATEST.md" in body

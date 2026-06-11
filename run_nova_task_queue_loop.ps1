@@ -2590,7 +2590,9 @@ function Read-IdeaPromotionRecentOutcomeText {
     $outcomeFiles = @(
         ".\local_ai_cycles\memory\NOVA_TASK_LOOP_SUMMARY_LATEST.md",
         ".\local_ai_cycles\memory\NOVA_TASK_POOL_EXHAUSTED_LATEST.md",
-        ".\local_ai_cycles\memory\NOVA_TASK_FAILURE_REVIEW_LATEST.md"
+        ".\local_ai_cycles\memory\NOVA_TASK_FAILURE_REVIEW_LATEST.md",
+        ".\local_ai_cycles\memory\MISTAKE_MEMORY.md",
+        ".\local_ai_cycles\memory\NO_CHANGE_TARGETS.md"
     )
 
     $chunks = @()
