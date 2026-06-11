@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-12T01:34:37
+Last updated: 2026-06-12T02:03:13
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `0fd0886`
+- HEAD: `0ca1f5b`
 - Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `5`
@@ -14,18 +14,18 @@ Last updated: 2026-06-12T01:34:37
 
 ## Latest commits
 
+- `0ca1f5b Task queue improvement: agent-browser-safe-command-plan-markdown-v1`
+- `5271f04 Use durable outcome memory for autonomous draft filtering`
+- `f3a4d33 Skip recent bad autonomous draft candidates by outcome context`
+- `ce75b22 Add failure feedback gap autonomous candidate`
+- `0377b8f Ignore failure logs for Agent Browser candidate generation`
+- `fb5aadd Apply failed autonomous candidate filtering before return`
+- `f47bedd Update roadmap after failed bad-candidate filter preflight`
 - `0fd0886 Filter failed autonomous candidates from failure review`
 - `b13d5bd Update roadmap after failed generated-candidate preflight`
 - `d5ece1d Update roadmap after failed generated-candidate preflight`
 - `04fe0c2 Update roadmap after rejected generated candidate`
 - `6346871 Update roadmap after task loop outcome`
-- `f274451 Task queue improvement: candidate-factory-bad-task-id-filter-v1`
-- `6e38149 Use autonomous fallback before live task execution`
-- `4a1eac3 Treat recovered autonomous fallback as task-pool ready`
-- `02772b0 Clear stale exhaustion report after autonomous fallback`
-- `351f5dd Use generated candidate score after autonomous fallback`
-- `1c54749 Update roadmap after autonomous fallback preflight`
-- `a042f4d Use autonomous candidate fallback on task pool exhaustion`
 
 ## What we have achieved
 
