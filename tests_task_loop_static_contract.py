@@ -787,3 +787,12 @@ def test_roadmap_updater_avoids_timestamp_only_churn():
     assert 'comparable.pop("last_updated", None)' in updater
     assert "previous_state = load_json(ROADMAP_JSON)" in updater
     assert 'state["last_updated"] = previous_state.get("last_updated", state["last_updated"])' in updater
+
+
+def test_task_loop_updates_roadmap_after_success_and_exhaustion():
+    text = _runner_text()
+    assert "function Update-TaskLoopRoadmap" in text
+    assert r".\tools\update_task_loop_roadmap.py" in text
+    assert r"Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md" in text
+    assert "Update-TaskLoopRoadmap\n        exit 0" in text
+    assert 'category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets\n    Update-TaskLoopRoadmap' in text

@@ -1449,6 +1449,24 @@ function Add-AiderAddFilePromptSummary {
 
 
 
+
+function Update-TaskLoopRoadmap {
+    $scriptPath = ".\tools\update_task_loop_roadmap.py"
+
+    if (-not (Test-Path $scriptPath)) {
+        Add-Summary "Roadmap update skipped: missing $scriptPath"
+        return
+    }
+
+    & python $scriptPath | Out-Host
+    if ($LASTEXITCODE -eq 0) {
+        Add-Summary "Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md"
+    } else {
+        Add-Summary "Roadmap update failed: $scriptPath"
+    }
+}
+
+
 function Write-TaskFailureReviewReport {
     param(
         [hashtable]$Task,
@@ -2788,6 +2806,7 @@ if ($externalCandidatePoolFresh) {
         Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
         Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
         Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+        Update-TaskLoopRoadmap
         exit 0
     }
 
@@ -3238,6 +3257,7 @@ Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
     git diff --stat "$before..$after" | Add-Content $SummaryLatest
     Record-TaskOutcome -TaskId $task.Id -Result "committed" -Reason "source/test task passed targeted tests, baseline tests, Nova user sanity tests, generated-noise cleanup, and clean-git verification" -Category "success-cooldown" -Stage "commit" -Message "All validation gates passed and the task-loop committed the accepted patch." -ActionTaken "committed validated task patch" -Tests $task.Tests -Before $before -After $after -LinesChanged $linesChanged -ChangedFiles $changedFiles -ValidationCommands $validationCommands -ValidationGates $validationGateResults -AuditNote $auditNote
     "$(Get-Date -Format s) task=$($task.Id) category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets
+    Update-TaskLoopRoadmap
 }
 
 Clean-GeneratedNoise
