@@ -50,6 +50,7 @@ def is_safe_candidate_path(path: str, *, test_only: bool = False) -> bool:
 
     allowed_runtime_files = {
         "winlocalassistant\\model_context.py",
+        "winlocalassistant\\agent_browser_safety.py",
     }
 
     return (

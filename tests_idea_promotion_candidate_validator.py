@@ -57,3 +57,16 @@ def test_candidate_validator_accepts_narrow_model_context_runtime_file():
 
     assert [r.candidate_id for r in accepted] == ["model-context-runtime-v1"]
     assert rejected == []
+
+
+def test_candidate_validator_accepts_narrow_agent_browser_safety_runtime_file():
+    candidate = _valid_candidate("agent-browser-safety-runtime-v1")
+    candidate["Editable"] = ["winlocalassistant\\agent_browser_safety.py", "tests_agent_browser_safety.py"]
+    candidate["RequiredChangedFiles"] = ["winlocalassistant\\agent_browser_safety.py", "tests_agent_browser_safety.py"]
+    candidate["RequiredDiffContains"] = ["summarise_agent_browser_policy", "test_agent_browser_policy_summary_mentions_safety_defaults"]
+    candidate["Tests"] = ["tests_agent_browser_safety.py"]
+
+    accepted, rejected = validate_candidates([candidate])
+
+    assert [r.candidate_id for r in accepted] == ["agent-browser-safety-runtime-v1"]
+    assert rejected == []

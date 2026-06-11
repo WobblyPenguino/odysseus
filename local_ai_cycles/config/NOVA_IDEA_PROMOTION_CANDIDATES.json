@@ -207,5 +207,100 @@
     "Tests": [
       "tests_autodev_sandbox.py"
     ]
+  },
+  {
+    "Id": "agent-browser-safety-policy-approval-summary-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add summarise_agent_browser_policy(policy: AgentBrowserSafetyPolicy | None = None) -> str to winlocalassistant\\agent_browser_safety.py. It must produce a stable human-readable summary mentioning localhost-only defaults, read-only-first behaviour, manual install requirement, and manual approval for action commands. Add a regression test named test_agent_browser_policy_summary_mentions_safety_defaults in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "summarise_agent_browser_policy",
+      "test_agent_browser_policy_summary_mentions_safety_defaults"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-safe-command-plan-markdown-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add render_agent_browser_plan_markdown(plan: Mapping[str, object]) -> str to winlocalassistant\\agent_browser_safety.py. It must render allowed/blocked status, URL, blocked reason when present, and planned commands without executing them. Add a regression test named test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "render_agent_browser_plan_markdown",
+      "test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-readonly-command-classifier-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add classify_agent_browser_command(command: str) -> str to winlocalassistant\\agent_browser_safety.py. It must classify known read-only evidence commands as 'readonly', known interaction/action commands as 'requires-approval', and unknown commands as 'unknown'. Add a regression test named test_agent_browser_command_classifier_separates_readonly_action_and_unknown in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "classify_agent_browser_command",
+      "test_agent_browser_command_classifier_separates_readonly_action_and_unknown"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-localhost-port-helper-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add is_probably_local_dev_url(url: str) -> bool to winlocalassistant\\agent_browser_safety.py. It must return true for localhost/127.0.0.1/::1 URLs with or without ports and false for external hosts. Add a regression test named test_agent_browser_detects_probably_local_dev_urls in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "is_probably_local_dev_url",
+      "test_agent_browser_detects_probably_local_dev_urls"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-evidence-command-list-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add build_agent_browser_evidence_command_list(url: str) -> list[str] to winlocalassistant\\agent_browser_safety.py. It must return stable display strings for the safe localhost read-only evidence commands and return an empty list for blocked external URLs. Add a regression test named test_agent_browser_evidence_command_list_is_stable_and_localhost_only in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "build_agent_browser_evidence_command_list",
+      "test_agent_browser_evidence_command_list_is_stable_and_localhost_only"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
   }
 ]
