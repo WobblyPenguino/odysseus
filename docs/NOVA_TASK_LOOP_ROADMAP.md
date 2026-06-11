@@ -1,19 +1,22 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T20:20:31
+Last updated: 2026-06-11T20:30:05
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `48b23b5`
-- Candidate doctor accepted: `8`
+- HEAD: `a3e1486`
+- Candidate doctor accepted: `11`
 - Candidate doctor rejected: `0`
-- Fresh candidates available: `0`
+- Fresh candidates available: `3`
 - Recently completed/skipped candidates: `8`
-- Next candidate: `none`
+- Next candidate: `tiny-autodev-sandbox-next-item-line-v1`
 
 ## Latest commits
 
+- `a3e1486 Task queue improvement: tiny-autodev-sandbox-next-item-line-v1`
+- `7728c56 Add fresh autodev sandbox task candidates`
+- `a40cfef Update roadmap after task loop auto-update wiring`
 - `48b23b5 Update roadmap from task loop outcomes`
 - `22a4a92 Avoid timestamp-only roadmap update churn`
 - `aaaee59 Preserve manual roadmap section during updates`
@@ -23,9 +26,6 @@ Last updated: 2026-06-11T20:20:31
 - `44cf409 Reject double-quoted markdown fences in task loop validation`
 - `5ec7e79 Write failure review report for failed live tasks`
 - `fa5ddf6 Clear stale review artifacts before live task runs`
-- `cb33785 Task queue improvement: tiny-autodev-sandbox-action-plan-debug-json-v1`
-- `f04ee6a Add fresh action plan debug JSON candidate`
-- `c6b4eeb Task queue improvement: tiny-autodev-sandbox-action-plan-debug-markdown-v1`
 
 ## What we have achieved
 
