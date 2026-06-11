@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T22:10:40
+Last updated: 2026-06-11T22:14:12
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `780a12c`
+- HEAD: `c24b62f`
 - Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `6`
@@ -14,6 +14,7 @@ Last updated: 2026-06-11T22:10:40
 
 ## Latest commits
 
+- `c24b62f Update roadmap after Agent Browser candidate preflight`
 - `780a12c Allow Agent Browser safety task candidates`
 - `c1c3968 Add Agent Browser safety research`
 - `474afe6 Update roadmap after readiness summary blocking`
@@ -25,7 +26,6 @@ Last updated: 2026-06-11T22:10:40
 - `db30d09 Add autonomy full codebase audit`
 - `35bd114 Update roadmap after screen analysis prompt command`
 - `0202bfa Add manual screen analysis prompt command`
-- `deadf3d Update roadmap after screen command routing`
 
 ## What we have achieved
 
