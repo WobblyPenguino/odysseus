@@ -155,3 +155,67 @@ def build_screen_analysis_prompt(kind: ScreenContextKind, user_text: str | None)
         "- Mention uncertainty when text is too small, cropped, or unreadable.\n"
         "- Do not enable continuous screen watching; use explicit user-provided or manually captured images only.\n"
     )
+
+
+def parse_screen_analysis_request(user_text: str | None) -> tuple[ScreenContextKind, str]:
+    """Parse an explicit screen-analysis command request.
+
+    Examples:
+    - "terminal PowerShell traceback screenshot"
+    - "gui overlapping drawer screenshot"
+    - "browser broken Chromium viewport"
+    - "what is visible in this image"
+    """
+
+    raw = str(user_text or "").strip()
+    if not raw:
+        return "image", ""
+
+    first, sep, rest = raw.partition(" ")
+    aliases: dict[str, ScreenContextKind] = {
+        "term": "terminal",
+        "terminal": "terminal",
+        "console": "terminal",
+        "shell": "terminal",
+        "powershell": "terminal",
+        "gui": "gui",
+        "ui": "gui",
+        "layout": "gui",
+        "browser": "browser",
+        "web": "browser",
+        "chromium": "browser",
+        "image": "image",
+        "screenshot": "image",
+        "photo": "image",
+        "picture": "image",
+    }
+
+    lowered = first.lower().strip()
+    if lowered in aliases:
+        return aliases[lowered], rest.strip()
+
+    inferred = classify_screen_context_need(raw)
+    if inferred == "none":
+        inferred = "image"
+    return inferred, raw
+
+
+def render_screen_analysis_prompt_help(kind: ScreenContextKind, user_text: str | None = "") -> str:
+    """Render a user-facing manual prompt for screenshot/image analysis."""
+
+    prompt = build_screen_analysis_prompt(kind, user_text)
+    return (
+        "# Nova Screen Analysis Prompt\n\n"
+        f"Kind: `{kind}`\n\n"
+        "Use this when the user has explicitly provided a screenshot/image or wants to provide one. "
+        "This helper does not capture the screen and does not enable background watching.\n\n"
+        "## Prompt to use with a screenshot/image\n\n"
+        "```text\n"
+        f"{prompt}"
+        "```\n\n"
+        "## Next safe step\n\n"
+        "- Ask the user to upload or attach the screenshot/image if it is not already available.\n"
+        "- For an uploaded/latest image, use `/image-analyze latest => <prompt>` with the prompt above.\n"
+        "- For a file path, use `/image-analyze PATH => <prompt>`.\n"
+        "- Do not run shell commands or edit GUI code until visual evidence and normal validation agree.\n"
+    )

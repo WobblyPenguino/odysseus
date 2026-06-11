@@ -42,6 +42,7 @@ from .watchdog import heartbeat as watchdog_heartbeat, start_watchdog, stop_watc
 from .eventlog import ACTIVITY_PATH, MODEL_IO_PATH, log_activity, log_model_io, tail_jsonl
 from .tool_guides import get_local_model_tool_use_summary
 from .file_context import IMAGE_EXTS, resolve_image_context
+from .screen_analysis import parse_screen_analysis_request, render_screen_analysis_prompt_help
 from .image_generation import build_image_prompt_plan, render_image_prompt_plan_markdown, image_generation_status
 from .project_brief import infer_project_build_brief, render_project_build_brief_markdown, write_project_build_brief
 from .code_repair_audit import write_code_repair_audit_report, render_code_repair_audit_markdown
@@ -446,6 +447,8 @@ class ToolRegistry:
             "video_user_tests": self.video_user_tests_tool,
             "media_status": self.media_status_tool,
             "image_plan": self.image_plan_tool,
+            "screen_analysis_prompt": self.screen_analysis_prompt_tool,
+            "screen_context_help": self.screen_analysis_prompt_tool,
             "image_prompt_plan": self.image_plan_tool,
             "video_storyboard": self.video_storyboard_tool,
             "video_package": self.video_package_tool,
@@ -2088,6 +2091,22 @@ class ToolRegistry:
         lines += ["", "## Recommended flow"]
         lines.extend(f"- {x}" for x in payload.get('recommended_flow', []))
         return ToolResult(True, "Nova media status", {"message": "\n".join(lines), **payload})
+
+    def screen_analysis_prompt_tool(self, request: str = "") -> ToolResult:
+        """Build a safe prompt for manual screenshot/image analysis."""
+
+        kind, user_text = parse_screen_analysis_request(request)
+        message = render_screen_analysis_prompt_help(kind, user_text)
+        return ToolResult(
+            True,
+            "Nova screen analysis prompt",
+            {
+                "message": message,
+                "kind": kind,
+                "request": user_text,
+                "usage": "/screen-analysis-prompt terminal|gui|browser|image DESCRIPTION",
+            },
+        )
 
     def image_plan_tool(self, prompt: str = "", style: str = "cinematic", variations: int | str = 4) -> ToolResult:
         """Plan image prompt variants/seeds without invoking a heavy generation backend."""
