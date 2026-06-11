@@ -737,3 +737,12 @@ def test_task_loop_records_denied_aider_add_file_prompts():
     assert "Add-AiderAddFilePromptSummary -OutputText $text -Task $task" in text
     assert "Added pyproject\\.toml" in text
     assert "Added pytest\\.ini" in text
+
+
+def test_task_loop_clears_stale_review_artifacts_before_live_run():
+    text = _runner_text()
+    assert "function Clear-LatestReviewArtifacts" in text
+    assert "NOVA_PATCH_REVIEW_LATEST.md" in text
+    assert "NOVA_SUBAGENT_REVIEW_LATEST.md" in text
+    assert "Clean-GeneratedNoise\nAssert-CleanGit\nClear-LatestReviewArtifacts\nWrite-StaticToolStatusReport" in text
+    assert text.index("Clear-LatestReviewArtifacts\nWrite-StaticToolStatusReport") < text.index("$denyInput | & $Aider")

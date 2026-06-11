@@ -1447,6 +1447,18 @@ function Add-AiderAddFilePromptSummary {
 }
 
 
+
+function Clear-LatestReviewArtifacts {
+    $paths = @(
+        ".\local_ai_cycles\memory\NOVA_PATCH_REVIEW_LATEST.md",
+        ".\local_ai_cycles\memory\NOVA_SUBAGENT_REVIEW_LATEST.md"
+    )
+
+    foreach ($path in $paths) {
+        Remove-Item -Path $path -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Validate-Diff {
     param([hashtable]$Task, [string]$AiderOutputPath = "")
 
@@ -2725,6 +2737,7 @@ if ($externalCandidatePoolFresh) {
 
 Clean-GeneratedNoise
 Assert-CleanGit
+Clear-LatestReviewArtifacts
 Write-StaticToolStatusReport -Path ".\local_ai_cycles\memory\NOVA_STATIC_TOOL_STATUS_LATEST.md" | Out-Null
 Write-TaskIdeaPoolReport -Path ".\local_ai_cycles\memory\NOVA_TASK_IDEA_POOL_LATEST.md" | Out-Null
 
