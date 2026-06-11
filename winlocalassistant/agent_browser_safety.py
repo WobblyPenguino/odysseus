@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from urllib.parse import urlparse
+from typing import Mapping
 
 
 LOCALHOST_HOSTS = {"localhost", "127.0.0.1", "::1"}
@@ -149,3 +150,35 @@ def build_agent_browser_localhost_plan(url: str) -> dict[str, object]:
         "commands": commands,
         "blocked_reason": "" if allowed else "URL is outside Nova's default localhost-only Agent Browser policy.",
     }
+
+
+def render_agent_browser_plan_markdown(plan: Mapping[str, object]) -> str:
+    """
+    Render a markdown representation of an agent‑browser plan.
+
+    The output includes the URL, whether it is allowed or blocked,
+    any blocked reason, and a list of planned commands (without executing them).
+    """
+    lines = []
+    lines.append("## Agent Browser Plan")
+    lines.append("")
+    url = plan.get("url", "")
+    lines.append(f"- **URL**: `{url}`")
+
+    status = "Allowed" if plan.get("allowed") else "Blocked"
+    lines.append(f"- **Status**: {status}")
+
+    if not plan.get("allowed"):
+        blocked_reason = plan.get("blocked_reason", "")
+        if blocked_reason:
+            lines.append(f"- **Reason**: {blocked_reason}")
+
+    commands = plan.get("commands", [])
+    if commands:
+        lines.append("")
+        lines.append("- Commands:")
+        for cmd in commands:
+            # Each command is a list of strings
+            lines.append(f"  - `{ ' '.join(cmd) }`")
+
+    return "\n".join(lines)

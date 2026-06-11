@@ -6,6 +6,7 @@ from winlocalassistant.agent_browser_safety import (
     safe_agent_browser_readonly_commands,
     unsafe_agent_browser_action_commands,
     summarise_agent_browser_policy,
+    render_agent_browser_plan_markdown,
 )
 
 
@@ -66,3 +67,26 @@ def test_agent_browser_policy_summary_mentions_safety_defaults() -> None:
     assert "Read-only commands run first." in summary
     assert "Manual installation of Agent Browser is required." in summary
     assert "Action commands require manual approval." in summary
+
+
+def test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans() -> None:
+    blocked_plan = build_agent_browser_localhost_plan("https://example.com")
+    allowed_plan = build_agent_browser_localhost_plan("http://localhost:8000")
+
+    blocked_md = render_agent_browser_plan_markdown(blocked_plan)
+    allowed_md = render_agent_browser_plan_markdown(allowed_plan)
+
+    # Status rendering
+    assert "Blocked" in blocked_md
+    assert "Allowed" in allowed_md
+
+    # URL rendering
+    assert "https://example.com" in blocked_md
+    assert "http://localhost:8000" in allowed_md
+
+    # Blocked reason appears for blocked plan
+    assert "URL is outside Nova's default localhost-only Agent Browser policy." in blocked_md
+
+    # Commands appear only for allowed plan
+    assert "- `agent-browser open http://localhost:8000`" in allowed_md
+    assert "- `agent-browser open https://example.com`" not in blocked_md
