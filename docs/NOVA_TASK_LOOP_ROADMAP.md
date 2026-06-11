@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-12T01:25:38
+Last updated: 2026-06-12T01:28:16
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `6346871`
+- HEAD: `04fe0c2`
 - Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `5`
@@ -14,6 +14,7 @@ Last updated: 2026-06-12T01:25:38
 
 ## Latest commits
 
+- `04fe0c2 Update roadmap after rejected generated candidate`
 - `6346871 Update roadmap after task loop outcome`
 - `f274451 Task queue improvement: candidate-factory-bad-task-id-filter-v1`
 - `6e38149 Use autonomous fallback before live task execution`
@@ -25,7 +26,6 @@ Last updated: 2026-06-12T01:25:38
 - `6cd51fa Add autonomous candidate generator tool`
 - `ad48e07 Add evidence-backed autonomous candidate factory`
 - `bf87017 Update roadmap after post-live-cycle preflight`
-- `dc133e7 Update roadmap after task loop outcome`
 
 ## What we have achieved
 
