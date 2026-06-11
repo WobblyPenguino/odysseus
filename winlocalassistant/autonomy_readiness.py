@@ -19,6 +19,7 @@ class ReadinessCheck:
     ok: bool
     evidence: str
     next_action: str = ""
+    blocking: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -40,7 +41,7 @@ def _file_contains(root: Path, relative: str, tokens: Iterable[str]) -> bool:
     return all(token in text for token in tokens)
 
 
-def _check_file(root: Path, area: str, relative: str, purpose: str) -> ReadinessCheck:
+def _check_file(root: Path, area: str, relative: str, purpose: str, *, blocking: bool = False) -> ReadinessCheck:
     ok = _has_file(root, relative)
     return ReadinessCheck(
         area=area,
@@ -48,10 +49,19 @@ def _check_file(root: Path, area: str, relative: str, purpose: str) -> Readiness
         ok=ok,
         evidence="present" if ok else "missing",
         next_action="" if ok else f"Restore or add {relative} for {purpose}.",
+        blocking=blocking,
     )
 
 
-def _check_tokens(root: Path, area: str, relative: str, tokens: list[str], purpose: str) -> ReadinessCheck:
+def _check_tokens(
+    root: Path,
+    area: str,
+    relative: str,
+    tokens: list[str],
+    purpose: str,
+    *,
+    blocking: bool = False,
+) -> ReadinessCheck:
     path = root / relative
     text = _read_text(path)
     missing = [token for token in tokens if token not in text]
@@ -63,6 +73,53 @@ def _check_tokens(root: Path, area: str, relative: str, tokens: list[str], purpo
         ok=ok,
         evidence=evidence,
         next_action="" if ok else f"Update {relative} so Nova can support {purpose}.",
+        blocking=blocking,
+    )
+
+
+def _check_task_pool_health(root: Path) -> ReadinessCheck:
+    """Treat the latest task-pool exhaustion report as a blocking readiness issue."""
+
+    relative = "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md"
+    path = root / relative
+    text = _read_text(path)
+
+    if not path.exists():
+        return ReadinessCheck(
+            area="candidate pool",
+            name=relative,
+            ok=True,
+            evidence="no latest task-pool exhaustion report found",
+            next_action="",
+            blocking=True,
+        )
+
+    lowered = text.lower()
+    exhausted = (
+        "no sufficiently productive task remained" in lowered
+        or "task-pool-exhausted" in lowered
+        or "task pool is exhausted" in lowered
+    )
+
+    if not exhausted:
+        return ReadinessCheck(
+            area="candidate pool",
+            name=relative,
+            ok=True,
+            evidence="latest task-pool report does not show exhaustion",
+            next_action="",
+            blocking=True,
+        )
+
+    return ReadinessCheck(
+        area="candidate pool",
+        name=relative,
+        ok=False,
+        evidence="latest preflight reports no sufficiently productive task remained",
+        next_action=(
+            "Add or approve fresh source-backed candidates, then run a preflight before any live autonomy cycle."
+        ),
+        blocking=True,
     )
 
 
@@ -78,6 +135,7 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
             "run_nova_task_queue_loop.ps1",
             ["function Pick-Task", "Resolve-TaskScore", "Get-TaskSignalSeverityPenalty"],
             "scored task selection with failure-severity ranking",
+            blocking=True,
         ),
         _check_tokens(
             root_path,
@@ -85,6 +143,7 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
             "run_nova_task_queue_loop.ps1",
             ["Write-TaskFailureReviewReport", "NOVA_TASK_FAILURE_REVIEW_LATEST.md", "Record-TaskOutcome"],
             "failure review and structured outcome memory",
+            blocking=True,
         ),
         _check_tokens(
             root_path,
@@ -92,12 +151,14 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
             "tools/validate_task_loop_patch.ps1",
             ["tests_task_loop_static_contract.py", "validate_idea_promotion_candidates.py", "Validation passed"],
             "repeatable task-loop validation",
+            blocking=True,
         ),
         _check_file(
             root_path,
             "validation",
             "tests_task_loop_static_contract.py",
             "static task-loop contracts",
+            blocking=True,
         ),
         _check_tokens(
             root_path,
@@ -125,6 +186,7 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
             "winlocalassistant/tools.py",
             ["screen_analysis_prompt", "image_analyze", "ToolRegistry"],
             "tool registry access to vision and screen-analysis helpers",
+            blocking=True,
         ),
         _check_tokens(
             root_path,
@@ -132,13 +194,16 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
             "winlocalassistant/core.py",
             ["/screen-analysis-prompt", "/image-analyze", "handle_command"],
             "user-facing command access",
+            blocking=True,
         ),
         _check_file(
             root_path,
             "candidate pool",
             "local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json",
             "fresh task candidates",
+            blocking=True,
         ),
+        _check_task_pool_health(root_path),
         _check_file(
             root_path,
             "audit evidence",
@@ -150,8 +215,11 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
     ok_count = sum(1 for check in checks if check.ok)
     total = len(checks)
     score = round((ok_count / total) * 100) if total else 0
+    blocking_failures = [check for check in checks if check.blocking and not check.ok]
 
-    if score >= 90:
+    if blocking_failures:
+        status = "not-ready"
+    elif score >= 90:
         status = "ready-for-supervised-longer-runs"
     elif score >= 70:
         status = "ready-for-short-supervised-runs"
@@ -172,6 +240,7 @@ def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
         "passed": ok_count,
         "total": total,
         "checks": [check.to_dict() for check in checks],
+        "blocking_failures": [check.to_dict() for check in blocking_failures],
         "next_actions": next_actions,
     }
 
@@ -180,6 +249,7 @@ def render_autonomy_readiness_markdown(report: dict[str, object]) -> str:
     """Render an autonomy readiness report as Markdown."""
 
     checks = list(report.get("checks", []))
+    blocking_failures = list(report.get("blocking_failures", []))
     next_actions = list(report.get("next_actions", []))
 
     lines = [
@@ -190,13 +260,22 @@ def render_autonomy_readiness_markdown(report: dict[str, object]) -> str:
         f"Checks: `{report.get('passed', 0)}` / `{report.get('total', 0)}` passing",
         f"Root: `{report.get('root', '')}`",
         "",
-        "## Checks",
     ]
 
+    if blocking_failures:
+        lines += ["## Blocking issues"]
+        for issue in blocking_failures:
+            lines.append(
+                f"- `{issue.get('area')}` / `{issue.get('name')}` — {issue.get('evidence')}"
+            )
+        lines.append("")
+
+    lines.append("## Checks")
     for check in checks:
         mark = "PASS" if check.get("ok") else "FAIL"
+        blocking = " blocking" if check.get("blocking") else ""
         lines.append(
-            f"- **{mark}** `{check.get('area')}` / `{check.get('name')}` — {check.get('evidence')}"
+            f"- **{mark}**{blocking} `{check.get('area')}` / `{check.get('name')}` — {check.get('evidence')}"
         )
 
     lines += ["", "## Next actions"]

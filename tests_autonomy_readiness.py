@@ -11,23 +11,28 @@ def _write(path: Path, text: str = "") -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def _write_complete_tree(root: Path) -> None:
+    _write(root / "run_nova_task_queue_loop.ps1", "function Pick-Task Resolve-TaskScore Get-TaskSignalSeverityPenalty Write-TaskFailureReviewReport NOVA_TASK_FAILURE_REVIEW_LATEST.md Record-TaskOutcome")
+    _write(root / "tools/validate_task_loop_patch.ps1", "tests_task_loop_static_contract.py validate_idea_promotion_candidates.py Validation passed")
+    _write(root / "tests_task_loop_static_contract.py", "contracts")
+    _write(root / "tools/update_task_loop_roadmap.py", "NOVA_TASK_LOOP_ROADMAP last_updated latest_commits")
+    _write(root / "docs/NOVA_TASK_LOOP_ROADMAP.md", "roadmap")
+    _write(root / "winlocalassistant/screen_analysis.py", "classify_screen_context_need build_screen_analysis_prompt render_screen_analysis_prompt_help")
+    _write(root / "winlocalassistant/tools.py", "screen_analysis_prompt image_analyze ToolRegistry")
+    _write(root / "winlocalassistant/core.py", "/screen-analysis-prompt /image-analyze handle_command")
+    _write(root / "local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json", "[]")
+    _write(root / "docs/NOVA_AUTONOMY_FULL_CODEBASE_AUDIT.md", "audit")
+
+
 def test_autonomy_readiness_scores_minimal_complete_tree(tmp_path: Path) -> None:
-    _write(tmp_path / "run_nova_task_queue_loop.ps1", "function Pick-Task Resolve-TaskScore Get-TaskSignalSeverityPenalty Write-TaskFailureReviewReport NOVA_TASK_FAILURE_REVIEW_LATEST.md Record-TaskOutcome")
-    _write(tmp_path / "tools/validate_task_loop_patch.ps1", "tests_task_loop_static_contract.py validate_idea_promotion_candidates.py Validation passed")
-    _write(tmp_path / "tests_task_loop_static_contract.py", "contracts")
-    _write(tmp_path / "tools/update_task_loop_roadmap.py", "NOVA_TASK_LOOP_ROADMAP last_updated latest_commits")
-    _write(tmp_path / "docs/NOVA_TASK_LOOP_ROADMAP.md", "roadmap")
-    _write(tmp_path / "winlocalassistant/screen_analysis.py", "classify_screen_context_need build_screen_analysis_prompt render_screen_analysis_prompt_help")
-    _write(tmp_path / "winlocalassistant/tools.py", "screen_analysis_prompt image_analyze ToolRegistry")
-    _write(tmp_path / "winlocalassistant/core.py", "/screen-analysis-prompt /image-analyze handle_command")
-    _write(tmp_path / "local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json", "[]")
-    _write(tmp_path / "docs/NOVA_AUTONOMY_FULL_CODEBASE_AUDIT.md", "audit")
+    _write_complete_tree(tmp_path)
 
     report = build_autonomy_readiness(tmp_path)
 
     assert report["score"] >= 90
     assert report["status"] == "ready-for-supervised-longer-runs"
     assert report["passed"] == report["total"]
+    assert report["blocking_failures"] == []
 
 
 def test_autonomy_readiness_reports_missing_items(tmp_path: Path) -> None:
@@ -36,9 +41,27 @@ def test_autonomy_readiness_reports_missing_items(tmp_path: Path) -> None:
 
     assert report["score"] < 70
     assert report["status"] == "not-ready"
+    assert report["blocking_failures"]
     assert "Nova Autonomy Readiness" in rendered
     assert "Safety note" in rendered
     assert "does not run Aider" in rendered
+
+
+def test_autonomy_readiness_blocks_on_latest_task_pool_exhaustion(tmp_path: Path) -> None:
+    _write_complete_tree(tmp_path)
+    _write(
+        tmp_path / "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md",
+        "No sufficiently productive task remained.",
+    )
+
+    report = build_autonomy_readiness(tmp_path)
+    rendered = render_autonomy_readiness_markdown(report)
+
+    assert report["status"] == "not-ready"
+    assert report["blocking_failures"]
+    assert "Blocking issues" in rendered
+    assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in rendered
+    assert "Add or approve fresh source-backed candidates" in rendered
 
 
 def test_autonomy_readiness_command_is_registered_static() -> None:
