@@ -75,6 +75,7 @@ from .command_verifier import render_command_verification_markdown
 from .repo_upgrade_assurance import build_repo_upgrade_assurance, render_repo_upgrade_assurance
 from .codebase_sanity_audit import build_codebase_sanity_audit, render_codebase_sanity_audit
 from .maintenance_validation import build_maintenance_validation, render_maintenance_validation
+from .autonomy_readiness import build_autonomy_readiness, render_autonomy_readiness_markdown
 
 from .prompt_test_compiler import build_prompt_contract, validate_contract, render_prompt_contract, render_contract_validation
 from .candidate_tournament import build_candidate_tournament, render_tournament, render_candidate_failure_report, candidate_diff
@@ -464,6 +465,8 @@ class ToolRegistry:
             "mission_contract": self.mission_contract_tool,
             "autonomous_mission_contract": self.mission_contract_tool,
             "mission_progress_score": self.mission_progress_score_tool,
+            "autonomy_readiness": self.autonomy_readiness_tool,
+            "autonomy_capability_audit": self.autonomy_readiness_tool,
             "surgical_recipe": self.surgical_recipe_tool,
             "project_type_registry": self.project_type_registry_tool,
             "self_test_from_bug": self.self_test_from_bug_tool,
@@ -1206,6 +1209,20 @@ class ToolRegistry:
     def idle_progress_score_tool(self) -> ToolResult:
         payload = {"progress_score": _score_from_events(_events(160), "idle")}
         return ToolResult(True, "Idle progress score generated", {"message": render_payload(payload, "Idle Progress Score"), **payload})
+
+    def autonomy_readiness_tool(self, path: str = ".") -> ToolResult:
+        """Report whether Nova is ready for supervised autonomous improvement runs."""
+
+        try:
+            target = resolve_inside_workspace(self.workspace, path or ".")
+        except Exception:
+            target = self.workspace
+        report = build_autonomy_readiness(target)
+        return ToolResult(
+            True,
+            "Nova autonomy readiness",
+            {"message": render_autonomy_readiness_markdown(report), **report},
+        )
 
     def tool_choice_trace_tool(self, goal: str = "") -> ToolResult:
         payload = build_tool_choice_trace(goal)

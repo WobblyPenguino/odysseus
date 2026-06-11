@@ -1,0 +1,51 @@
+from pathlib import Path
+
+from winlocalassistant.autonomy_readiness import (
+    build_autonomy_readiness,
+    render_autonomy_readiness_markdown,
+)
+
+
+def _write(path: Path, text: str = "") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def test_autonomy_readiness_scores_minimal_complete_tree(tmp_path: Path) -> None:
+    _write(tmp_path / "run_nova_task_queue_loop.ps1", "function Pick-Task Resolve-TaskScore Get-TaskSignalSeverityPenalty Write-TaskFailureReviewReport NOVA_TASK_FAILURE_REVIEW_LATEST.md Record-TaskOutcome")
+    _write(tmp_path / "tools/validate_task_loop_patch.ps1", "tests_task_loop_static_contract.py validate_idea_promotion_candidates.py Validation passed")
+    _write(tmp_path / "tests_task_loop_static_contract.py", "contracts")
+    _write(tmp_path / "tools/update_task_loop_roadmap.py", "NOVA_TASK_LOOP_ROADMAP last_updated latest_commits")
+    _write(tmp_path / "docs/NOVA_TASK_LOOP_ROADMAP.md", "roadmap")
+    _write(tmp_path / "winlocalassistant/screen_analysis.py", "classify_screen_context_need build_screen_analysis_prompt render_screen_analysis_prompt_help")
+    _write(tmp_path / "winlocalassistant/tools.py", "screen_analysis_prompt image_analyze ToolRegistry")
+    _write(tmp_path / "winlocalassistant/core.py", "/screen-analysis-prompt /image-analyze handle_command")
+    _write(tmp_path / "local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json", "[]")
+    _write(tmp_path / "docs/NOVA_AUTONOMY_FULL_CODEBASE_AUDIT.md", "audit")
+
+    report = build_autonomy_readiness(tmp_path)
+
+    assert report["score"] >= 90
+    assert report["status"] == "ready-for-supervised-longer-runs"
+    assert report["passed"] == report["total"]
+
+
+def test_autonomy_readiness_reports_missing_items(tmp_path: Path) -> None:
+    report = build_autonomy_readiness(tmp_path)
+    rendered = render_autonomy_readiness_markdown(report)
+
+    assert report["score"] < 70
+    assert report["status"] == "not-ready"
+    assert "Nova Autonomy Readiness" in rendered
+    assert "Safety note" in rendered
+    assert "does not run Aider" in rendered
+
+
+def test_autonomy_readiness_command_is_registered_static() -> None:
+    core = Path("winlocalassistant/core.py").read_text(encoding="utf-8")
+    tools = Path("winlocalassistant/tools.py").read_text(encoding="utf-8")
+
+    assert '"/autonomy-readiness"' in core
+    assert 'self.tools.call("autonomy_readiness", path=rest or ".")' in core
+    assert '"autonomy_readiness": self.autonomy_readiness_tool' in tools
+    assert "def autonomy_readiness_tool" in tools
