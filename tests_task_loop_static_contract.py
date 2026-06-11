@@ -727,3 +727,13 @@ def test_task_loop_internal_candidate_validator_allows_model_context_file_exactl
     assert "$normal -like 'nova_improvement_lab\\*.py'" in text
     assert "unsafe Editable path" in text
     assert "unsafe RequiredChangedFiles path" in text
+
+
+def test_task_loop_records_denied_aider_add_file_prompts():
+    text = _runner_text()
+    assert "function Add-AiderAddFilePromptSummary" in text
+    assert "Add file to the chat\\?" in text
+    assert "Aider add-file prompts denied for non-editable file(s):" in text
+    assert "Add-AiderAddFilePromptSummary -OutputText $text -Task $task" in text
+    assert "Added pyproject\\.toml" in text
+    assert "Added pytest\\.ini" in text

@@ -1402,6 +1402,51 @@ function Validate-AiderClaimsAgainstDiff {
     }
 }
 
+
+function Add-AiderAddFilePromptSummary {
+    param(
+        [string]$OutputText,
+        [hashtable]$Task
+    )
+
+    if ([string]::IsNullOrWhiteSpace($OutputText)) { return }
+
+    $plain = Remove-AnsiText $OutputText
+    if ($plain -notmatch "Add file to the chat\?") { return }
+
+    $allowed = @($Task.Editable | ForEach-Object {
+        ([string]$_).Replace("/", "\").ToLowerInvariant()
+    })
+
+    $prompted = New-Object 'System.Collections.Generic.List[string]'
+    $lines = @($plain -split "`r?`n")
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -notmatch "Add file to the chat\?") { continue }
+
+        for ($j = $i - 1; $j -ge 0; $j--) {
+            $candidate = ([string]$lines[$j]).Trim()
+            if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+            if ($candidate -match "Please answer with one of") { continue }
+
+            if ($candidate -match "^(?:[A-Za-z0-9_.-]+|[A-Za-z0-9_.-]+(?:[\\/][A-Za-z0-9_.-]+)+)$") {
+                $normal = $candidate.Replace("/", "\").ToLowerInvariant()
+                if ($allowed -notcontains $normal -and !$prompted.Contains($candidate)) {
+                    [void]$prompted.Add($candidate)
+                }
+            }
+            break
+        }
+    }
+
+    if ($prompted.Count -gt 0) {
+        Add-Summary "Aider add-file prompts denied for non-editable file(s): $($prompted -join ', ')"
+    } else {
+        Add-Summary "Aider add-file prompts detected and denied."
+    }
+}
+
+
 function Validate-Diff {
     param([hashtable]$Task, [string]$AiderOutputPath = "")
 
@@ -2889,7 +2934,8 @@ Write-Host "Aider output tail:"
 Get-Content $out -Tail 80 -ErrorAction SilentlyContinue | Write-Host
 
     $text = Get-Content $out -Raw -ErrorAction SilentlyContinue
-    if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
+    Add-AiderAddFilePromptSummary -OutputText $text -Task $task
+    if ($text -match "exceeds the .* token limit|has hit a token limit|Token counts below are approximate|Open URL for more info|Added app\.py|Added README\.md|Added CHANGELOG\.md|Added pyproject\.toml|Added pytest\.ini|Added winlocalassistant\\core\.py|Added winlocalassistant\\tools\.py|Added winlocalassistant\\webui\.py") {
         Append-Mistake $task.Id "Aider context/token/protected-file failure" "context-protected-file" "aider-output-scan" "reset dirty state, cleaned generated noise, and skipped task" "Aider output indicated a context/token/protected-file failure before validation could continue."
         "$(Get-Date -Format s) task=$($task.Id) category=context-protected-file reason=context-token-or-protected-file-failure structured_event=1" | Add-Content $NoChangeTargets
         Add-Summary "Result: rejected"
