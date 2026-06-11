@@ -348,3 +348,20 @@ def render_action_plan_debug_json(items: Iterable[WorkItem]) -> str:
 
     return json.dumps(build_action_plan_debug_dict(items), sort_keys=True)
 
+
+# New function required by the task
+def render_next_work_item_line(items: Iterable[WorkItem]) -> str:
+    """
+    Render a single stable line summarising the next work item.
+
+    The output contains the title, normalised status and priority score of
+    the highest‑priority actionable work item.  If no actionable items are
+    available, the function returns ``'Next: none'``.
+    """
+    next_item = select_next_work_item(items)
+    if not next_item:
+        return "Next: none"
+    title = next_item.title
+    status = normalise_status(next_item.status)
+    score = priority_score(next_item)
+    return f"Next: {title} (status={status}, score={score})"
