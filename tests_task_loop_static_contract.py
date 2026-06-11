@@ -902,3 +902,19 @@ def test_task_loop_uses_autonomous_candidate_fallback_before_live_prompt_generat
     assert fallback_idx < context_idx
     assert fallback_idx < prompt_idx
     assert fallback_idx < aider_idx
+
+
+def test_task_loop_recent_bad_outcome_filter_uses_candidate_context_window() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Test-IdeaPromotionCandidateRecentBadOutcome")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "$lines = $OutcomeText -split" in body
+    assert "$window" in body
+    assert "score=0" in body
+    assert "stage: validation-gate" in body
+    assert "command failed:" in body
+    assert "[regex]::Escape($CandidateId)" in body

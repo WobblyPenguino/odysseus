@@ -2619,30 +2619,43 @@ function Test-IdeaPromotionCandidateRecentBadOutcome {
     }
 
     $badOutcomeMarkers = @(
+        "score=0",
+        "score=-",
+        "test-failed",
         "validation-failed",
         "required-diff",
         "required-file",
-        "test-failed",
-        "no-change",
-        "low-significance",
+        "stage: validation-gate",
+        "result: rejected",
+        "command failed:",
+        "outcome category: test-failed",
         "documentation/comment-only",
-        "placeholder-or-speculative"
+        "placeholder-or-speculative",
+        "reverted-success"
     )
 
     $candidatePattern = [regex]::Escape($CandidateId)
-    foreach ($line in @($OutcomeText -split "\r?\n")) {
-        if ($line -match $candidatePattern) {
-            foreach ($marker in $badOutcomeMarkers) {
-                if ($line -match [regex]::Escape($marker)) {
-                    return $true
-                }
+    $lines = $OutcomeText -split "`r?`n"
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $line = [string]$lines[$i]
+        if ($line -notmatch $candidatePattern) {
+            continue
+        }
+
+        $start = [Math]::Max(0, $i - 2)
+        $end = [Math]::Min($lines.Count - 1, $i + 8)
+        $window = (($lines[$start..$end]) -join "`n").ToLowerInvariant()
+
+        foreach ($marker in $badOutcomeMarkers) {
+            if ($window.Contains($marker)) {
+                return $true
             }
         }
     }
 
     return $false
 }
-
 
 function Write-IdeaPromotionTaskDraft {
     param(
