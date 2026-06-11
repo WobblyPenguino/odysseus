@@ -1,19 +1,22 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T20:36:06
+Last updated: 2026-06-11T20:45:18
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `838c502`
+- HEAD: `372c497`
 - Candidate doctor accepted: `11`
 - Candidate doctor rejected: `0`
-- Fresh candidates available: `2`
-- Recently completed/skipped candidates: `9`
-- Next candidate: `tiny-autodev-sandbox-action-plan-titles-v1`
+- Fresh candidates available: `1`
+- Recently completed/skipped candidates: `10`
+- Next candidate: `tiny-autodev-sandbox-status-counts-line-v1`
 
 ## Latest commits
 
+- `372c497 Add screen image analysis routing helpers`
+- `287360b Audit screen image analysis integration options`
+- `cf78803 Update roadmap after task loop outcome`
 - `838c502 Task queue improvement: tiny-autodev-sandbox-action-plan-titles-v1`
 - `cca2e8f Auto-commit roadmap-only task loop updates`
 - `935d65c Update roadmap after next item line task`
@@ -23,9 +26,6 @@ Last updated: 2026-06-11T20:36:06
 - `48b23b5 Update roadmap from task loop outcomes`
 - `22a4a92 Avoid timestamp-only roadmap update churn`
 - `aaaee59 Preserve manual roadmap section during updates`
-- `189f3ef Validate task loop roadmap updater`
-- `0e92720 Add task loop roadmap updater`
-- `b8bcfc6 Add living task loop roadmap`
 
 ## What we have achieved
 
