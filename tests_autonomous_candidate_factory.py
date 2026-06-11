@@ -134,3 +134,13 @@ def test_candidate_factory_still_uses_research_notes_for_agent_browser_generatio
     ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
 
     assert "candidate-factory-agent-browser-evidence-v1" in ids
+
+
+def test_candidate_factory_generates_failure_feedback_gap_candidate() -> None:
+    bundle = EvidenceBundle(
+        failure_review="Task ID: candidate-factory-validation-gap-v1\nStage: validation-gate\nReason: Command failed: python -m pytest -q tests_autonomous_candidate_factory.py"
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
+
+    assert "candidate-factory-failure-feedback-gap-v1" in ids

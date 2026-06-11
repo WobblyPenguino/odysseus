@@ -63,6 +63,25 @@ def evidence_mentions_task_pool_exhaustion(bundle: EvidenceBundle) -> bool:
     return "task-pool-exhausted" in text or "no sufficiently productive task" in text
 
 
+def detect_failure_feedback_gap(bundle: EvidenceBundle) -> bool:
+    """Return true when recent evidence shows failed generated tasks need clearer feedback."""
+    text = "\n".join(
+        part
+        for part in (
+            bundle.latest_summary,
+            bundle.failure_review,
+            bundle.task_pool_exhausted,
+        )
+        if part
+    ).lower()
+    return (
+        "result: rejected" in text
+        or "stage: validation-gate" in text
+        or "command failed:" in text
+        or "outcome category: test-failed" in text
+    )
+
+
 def extract_recent_bad_task_ids(text: str) -> set[str]:
     """Extract recently failed task ids from summaries, pool reports, and failure reviews."""
 
@@ -203,6 +222,23 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
                 diff_markers=[
                     "detect_agent_browser_opportunity",
                     "test_candidate_factory_detects_agent_browser_opportunity",
+                ],
+            )
+        )
+
+    if detect_failure_feedback_gap(bundle):
+        candidates.append(
+            _candidate(
+                candidate_id="candidate-factory-failure-feedback-gap-v1",
+                goal=(
+                    "Improve Nova's autonomous candidate factory with one small source+test change. "
+                    "Add summarise_failure_feedback(bundle: EvidenceBundle) -> str so Nova can summarise recent "
+                    "rejected generated candidates without treating failure logs as proposal evidence. Add a regression "
+                    "test named test_candidate_factory_summarises_failure_feedback."
+                ),
+                diff_markers=[
+                    "summarise_failure_feedback",
+                    "test_candidate_factory_summarises_failure_feedback",
                 ],
             )
         )
