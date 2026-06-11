@@ -1,19 +1,20 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T22:23:40
+Last updated: 2026-06-11T22:25:20
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `da6df56`
+- HEAD: `dc133e7`
 - Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
-- Fresh candidates available: `6`
-- Recently completed/skipped candidates: `10`
+- Fresh candidates available: `5`
+- Recently completed/skipped candidates: `11`
 - Next candidate: `tiny-autodev-sandbox-status-counts-line-v1`
 
 ## Latest commits
 
+- `dc133e7 Update roadmap after task loop outcome`
 - `da6df56 Task queue improvement: agent-browser-safety-policy-approval-summary-v1`
 - `d7f4fe6 Skip recent failed idea promotion candidates`
 - `d889487 Update roadmap after Agent Browser runner validation`
@@ -25,7 +26,6 @@ Last updated: 2026-06-11T22:23:40
 - `474afe6 Update roadmap after readiness summary blocking`
 - `46051e4 Detect task pool exhaustion from loop summary`
 - `d763c1d Block autonomy readiness on exhausted task pool`
-- `ec2318f Update roadmap after autonomy readiness command`
 
 ## What we have achieved
 
