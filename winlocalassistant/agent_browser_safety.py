@@ -199,3 +199,19 @@ def render_agent_browser_plan_markdown(plan: Mapping[str, object]) -> str:
             lines.append(f"  - `{ ' '.join(cmd) }`")
 
     return "\n".join(lines)
+
+
+def build_agent_browser_evidence_command_list(url: str) -> list[str]:
+    """
+    Return a stable list of evidence command display strings for a given URL.
+
+    If the URL is allowed by the default localhost‑only policy, the function
+    returns the read‑only evidence commands as simple strings.  For any
+    blocked or external URL it returns an empty list.
+    """
+    policy = default_agent_browser_safety_policy()
+    if not is_agent_browser_url_allowed(url, policy):
+        return []
+
+    # Return the command names in a stable order (tuple order)
+    return list(safe_agent_browser_readonly_commands())

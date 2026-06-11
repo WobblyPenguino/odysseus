@@ -8,6 +8,7 @@ from winlocalassistant.agent_browser_safety import (
     summarise_agent_browser_policy,
     render_agent_browser_plan_markdown,
     classify_agent_browser_command,
+    build_agent_browser_evidence_command_list,
 )
 
 
@@ -100,3 +101,13 @@ def test_agent_browser_command_classifier_separates_readonly_action_and_unknown(
     assert classify_agent_browser_command("click") == "requires-approval"
     # Unknown command
     assert classify_agent_browser_command("foo-bar") == "unknown"
+
+
+def test_agent_browser_evidence_command_list_is_stable_and_localhost_only() -> None:
+    """Regression test for evidence command list stability and localhost‑only behaviour."""
+    # Localhost URL should return the read‑only commands in a stable order
+    expected = list(safe_agent_browser_readonly_commands())
+    assert build_agent_browser_evidence_command_list("http://localhost:8000") == expected
+
+    # External URL should yield an empty list
+    assert build_agent_browser_evidence_command_list("https://example.com") == []
