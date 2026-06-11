@@ -131,6 +131,26 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
     """
     text = normalise_evidence_text(bundle)
     lowered = text.lower()
+    proposal_text = "\n".join(
+        part
+        for part in (
+            bundle.roadmap,
+            bundle.audit,
+            bundle.research_notes,
+        )
+        if part
+    ).lower()
+    validation_text = "\n".join(
+        part
+        for part in (
+            bundle.roadmap,
+            bundle.latest_summary,
+            bundle.task_pool_exhausted,
+            bundle.audit,
+            bundle.research_notes,
+        )
+        if part
+    ).lower()
     bad_ids = extract_recent_bad_task_ids(text)
 
     candidates: list[dict[str, object]] = []
@@ -170,7 +190,7 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
             )
         )
 
-    if "agent browser" in lowered or "browser" in lowered:
+    if "agent browser" in proposal_text or "browser" in proposal_text:
         candidates.append(
             _candidate(
                 candidate_id="candidate-factory-agent-browser-evidence-v1",
@@ -187,7 +207,7 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
             )
         )
 
-    if "regression" in lowered or "validation" in lowered or "tests" in lowered:
+    if "regression" in validation_text or "validation" in validation_text or "tests" in validation_text:
         candidates.append(
             _candidate(
                 candidate_id="candidate-factory-validation-gap-v1",

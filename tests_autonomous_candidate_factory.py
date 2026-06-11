@@ -114,3 +114,23 @@ def test_candidate_factory_filters_failed_generated_candidate_before_return() ->
     ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
 
     assert "candidate-factory-agent-browser-evidence-v1" not in ids
+
+
+def test_candidate_factory_ignores_failure_review_for_agent_browser_generation() -> None:
+    bundle = EvidenceBundle(
+        failure_review="Task ID: candidate-factory-agent-browser-evidence-v1\nStage: validation-gate"
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
+
+    assert "candidate-factory-agent-browser-evidence-v1" not in ids
+
+
+def test_candidate_factory_still_uses_research_notes_for_agent_browser_generation() -> None:
+    bundle = EvidenceBundle(
+        research_notes="Agent Browser should stay localhost-only and read-only first."
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
+
+    assert "candidate-factory-agent-browser-evidence-v1" in ids
