@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-11T22:14:12",
-  "head": "c24b62f",
+  "last_updated": "2026-06-11T22:16:11",
+  "head": "8b7819b",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "8b7819b Allow Agent Browser safety file in task loop candidate validation",
+    "2a1cecf Update roadmap after runner validator preflight",
     "c24b62f Update roadmap after Agent Browser candidate preflight",
     "780a12c Allow Agent Browser safety task candidates",
     "c1c3968 Add Agent Browser safety research",
@@ -12,9 +14,7 @@
     "ec2318f Update roadmap after autonomy readiness command",
     "1a6d4ba Add autonomy readiness command",
     "e800161 Rank task loop failures by severity",
-    "db30d09 Add autonomy full codebase audit",
-    "35bd114 Update roadmap after screen analysis prompt command",
-    "0202bfa Add manual screen analysis prompt command"
+    "db30d09 Add autonomy full codebase audit"
   ],
   "candidate_doctor": {
     "accepted_count": 16,
