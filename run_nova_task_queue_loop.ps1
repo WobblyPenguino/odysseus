@@ -1579,7 +1579,7 @@ function Write-TaskPrompt {
         "- Do not invent APIs, classes, commands, or output text.",
         "- Do not add placeholder tests, TODOs, pass-only tests, Mock, MagicMock, or assert True.",
         "- Do not ask to add files.",
-        "- Do not mention or request app.py, README.md, CHANGELOG.md, core.py, tools.py, webui.py, or startup scripts.",
+        "- Do not mention, request, or add any file outside the editable-file list.",
         "- Do not rewrite whole files.",
         "- Keep the diff small and reversible.",
         "",

@@ -713,3 +713,9 @@ def test_preflight_checks_productive_threshold_before_selected_task_summary():
 
     assert threshold < result
     assert threshold < localization
+
+
+def test_task_prompt_avoids_literal_noneditable_file_names_that_trigger_aider_prompts():
+    text = _runner_text()
+    assert "Do not mention, request, or add any file outside the editable-file list." in text
+    assert "Do not mention or request app.py, README.md, CHANGELOG.md, core.py, tools.py, webui.py, or startup scripts" not in text
