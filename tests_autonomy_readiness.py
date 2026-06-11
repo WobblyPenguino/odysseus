@@ -89,3 +89,30 @@ def test_autonomy_readiness_command_is_registered_static() -> None:
     assert 'self.tools.call("autonomy_readiness", path=rest or ".")' in core
     assert '"autonomy_readiness": self.autonomy_readiness_tool' in tools
     assert "def autonomy_readiness_tool" in tools
+
+
+def test_autonomy_readiness_allows_recovered_autonomous_candidate_fallback(tmp_path: Path) -> None:
+    _write_complete_tree(tmp_path)
+    _write(
+        tmp_path / "local_ai_cycles/memory/NOVA_TASK_LOOP_SUMMARY_LATEST.md",
+        "\n".join(
+            [
+                "Best candidate below productive minimum: tiny-old-task: score=25; minimum=35",
+                "Autonomous candidate fallback selected productive task: candidate-factory-bad-task-id-filter-v1",
+                "Autonomous candidate fallback score: 70",
+                "Result: preflight-only",
+                "Selected task: candidate-factory-bad-task-id-filter-v1",
+            ]
+        ),
+    )
+    _write(
+        tmp_path / "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md",
+        "No sufficiently productive task remained.",
+    )
+
+    report = build_autonomy_readiness(tmp_path)
+    rendered = render_autonomy_readiness_markdown(report)
+
+    assert report["status"] == "ready-for-supervised-longer-runs"
+    assert report["blocking_failures"] == []
+    assert "autonomous fallback selected a productive candidate" in rendered

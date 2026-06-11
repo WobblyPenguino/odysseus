@@ -98,7 +98,15 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
     )
     exhausted = any(marker in combined for marker in exhausted_markers)
 
-    if exhausted:
+    recovered_markers = (
+        "autonomous candidate fallback selected productive task",
+        "autonomous candidate fallback score:",
+        "result: preflight-only",
+        "selected task: candidate-factory-",
+    )
+    recovered_by_autonomous_fallback = all(marker in summary_text for marker in recovered_markers)
+
+    if exhausted and not recovered_by_autonomous_fallback:
         evidence_source = summary_relative if "task-pool-exhausted" in summary_text else pool_relative
         return ReadinessCheck(
             area="candidate pool",
@@ -108,6 +116,16 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
             next_action=(
                 "Add or approve fresh source-backed candidates, then run a preflight before any live autonomy cycle."
             ),
+            blocking=True,
+        )
+
+    if recovered_by_autonomous_fallback:
+        return ReadinessCheck(
+            area="candidate pool",
+            name=summary_relative,
+            ok=True,
+            evidence="latest task-loop evidence shows autonomous fallback selected a productive candidate",
+            next_action="",
             blocking=True,
         )
 
