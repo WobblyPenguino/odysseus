@@ -886,3 +886,19 @@ def test_task_loop_autonomous_fallback_clears_stale_pool_exhaustion_report():
     assert "Autonomous candidate fallback cleared stale task-pool exhaustion report" in text
     assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in text
     assert "Remove-Item -Path" in text
+
+
+def test_task_loop_uses_autonomous_candidate_fallback_before_live_prompt_generation():
+    text = _runner_text()
+    assert "Live best candidate below productive minimum before autonomous fallback" in text
+    assert 'Invoke-AutonomousCandidateFallback -Reason "live best candidate below productive minimum"' in text
+    assert "Live autonomous candidate fallback selected productive task" in text
+
+    fallback_idx = text.index("Live best candidate below productive minimum before autonomous fallback")
+    context_idx = text.index("Write-TaskContext -Path $context -Task $task")
+    prompt_idx = text.index("Write-TaskPrompt -Path $prompt -Task $task")
+    aider_idx = text.index("$aiderArgs = @(", prompt_idx)
+
+    assert fallback_idx < context_idx
+    assert fallback_idx < prompt_idx
+    assert fallback_idx < aider_idx

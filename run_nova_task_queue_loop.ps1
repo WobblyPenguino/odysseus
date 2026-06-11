@@ -3210,6 +3210,47 @@ for ($i = 1; $i -le $Cycles; $i++) {
         Write-Host "No healthy task available. Manual review note: $ManualReviewLatest"
         break
     }
+
+    $liveTaskScoreForProductivity = Resolve-TaskScore -Task $task
+    if ($null -eq $liveTaskScoreForProductivity) {
+        $liveTaskScoreForProductivity = Resolve-SelectedTaskScoreFromSummary
+    }
+
+    if ($null -ne $liveTaskScoreForProductivity -and $liveTaskScoreForProductivity -lt $MinProductiveTaskScore) {
+        Add-Summary "Live best candidate below productive minimum before autonomous fallback: $($task.Id): score=$liveTaskScoreForProductivity; minimum=$MinProductiveTaskScore"
+
+        $fallbackUsed = Invoke-AutonomousCandidateFallback -Reason "live best candidate below productive minimum"
+        if ($fallbackUsed) {
+            $fallbackTask = Pick-Task
+            if ($fallbackTask) {
+                $fallbackScore = Resolve-TaskScore -Task $fallbackTask
+                $summaryFallbackScore = Resolve-TaskScoreFromSummaryById -TaskId ([string]$fallbackTask.Id)
+
+                if ($null -ne $summaryFallbackScore) {
+                    $fallbackScore = $summaryFallbackScore
+                } elseif ($null -eq $fallbackScore) {
+                    $fallbackScore = Resolve-SelectedTaskScoreFromSummary
+                }
+
+                if ($null -ne $fallbackScore -and $fallbackScore -ge $MinProductiveTaskScore) {
+                    $task = $fallbackTask
+                    $liveTaskScoreForProductivity = $fallbackScore
+                    Remove-Item -Path ".\local_ai_cycles\memory\NOVA_TASK_POOL_EXHAUSTED_LATEST.md" -Force -ErrorAction SilentlyContinue
+                    Add-Summary "Live autonomous candidate fallback cleared stale task-pool exhaustion report"
+                    Add-Summary "Live autonomous candidate fallback selected productive task: $($task.Id)"
+                    Add-Summary "Live autonomous candidate fallback score: $liveTaskScoreForProductivity"
+                }
+            }
+        }
+
+        if ($null -ne $liveTaskScoreForProductivity -and $liveTaskScoreForProductivity -lt $MinProductiveTaskScore) {
+            Add-Summary ""
+            Add-Summary "## Cycle $i"
+            Add-Summary "Task: $($task.Id)"
+            Write-TaskPoolExhaustedReport -Task $task -Phase "live" -Score $liveTaskScoreForProductivity | Out-Null
+            break
+        }
+    }
     [void]$RunTaskCooldown.Add([string]$task.Id)
     $before = git rev-parse --short HEAD
     $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -3239,15 +3280,6 @@ for ($i = 1; $i -le $Cycles; $i++) {
         "--subtree-only",
         "--map-tokens", "0"
     )
-
-    $taskScoreForProductivity = Resolve-TaskScore -Task $task
-    if ($null -eq $taskScoreForProductivity) {
-        $taskScoreForProductivity = Resolve-SelectedTaskScoreFromSummary
-    }
-    if ($null -ne $taskScoreForProductivity -and $taskScoreForProductivity -lt $MinProductiveTaskScore) {
-        Write-TaskPoolExhaustedReport -Task $task -Phase "live" -Score $taskScoreForProductivity | Out-Null
-        break
-    }
 
     $snippetContext = Write-TaskLargeFileSnippetContext -Task $task -Path (Join-Path "local_ai_cycles" ("task_large_file_snippets_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".md"))
     $largeEditableFiles = @()
