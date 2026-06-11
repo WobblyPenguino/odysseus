@@ -1,8 +1,11 @@
 {
-  "last_updated": "2026-06-11T21:07:12",
-  "head": "0202bfa",
+  "last_updated": "2026-06-11T21:12:41",
+  "head": "e800161",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "e800161 Rank task loop failures by severity",
+    "db30d09 Add autonomy full codebase audit",
+    "35bd114 Update roadmap after screen analysis prompt command",
     "0202bfa Add manual screen analysis prompt command",
     "deadf3d Update roadmap after screen command routing",
     "8e27feb Route screen image needs through command suggestions",
@@ -11,10 +14,7 @@
     "287360b Audit screen image analysis integration options",
     "cf78803 Update roadmap after task loop outcome",
     "838c502 Task queue improvement: tiny-autodev-sandbox-action-plan-titles-v1",
-    "cca2e8f Auto-commit roadmap-only task loop updates",
-    "935d65c Update roadmap after next item line task",
-    "a3e1486 Task queue improvement: tiny-autodev-sandbox-next-item-line-v1",
-    "7728c56 Add fresh autodev sandbox task candidates"
+    "cca2e8f Auto-commit roadmap-only task loop updates"
   ],
   "candidate_doctor": {
     "accepted_count": 11,

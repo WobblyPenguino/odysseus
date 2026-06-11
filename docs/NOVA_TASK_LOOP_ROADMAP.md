@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T21:07:12
+Last updated: 2026-06-11T21:12:41
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `0202bfa`
+- HEAD: `e800161`
 - Candidate doctor accepted: `11`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `1`
@@ -14,6 +14,9 @@ Last updated: 2026-06-11T21:07:12
 
 ## Latest commits
 
+- `e800161 Rank task loop failures by severity`
+- `db30d09 Add autonomy full codebase audit`
+- `35bd114 Update roadmap after screen analysis prompt command`
 - `0202bfa Add manual screen analysis prompt command`
 - `deadf3d Update roadmap after screen command routing`
 - `8e27feb Route screen image needs through command suggestions`
@@ -23,9 +26,6 @@ Last updated: 2026-06-11T21:07:12
 - `cf78803 Update roadmap after task loop outcome`
 - `838c502 Task queue improvement: tiny-autodev-sandbox-action-plan-titles-v1`
 - `cca2e8f Auto-commit roadmap-only task loop updates`
-- `935d65c Update roadmap after next item line task`
-- `a3e1486 Task queue improvement: tiny-autodev-sandbox-next-item-line-v1`
-- `7728c56 Add fresh autodev sandbox task candidates`
 
 ## What we have achieved
 
