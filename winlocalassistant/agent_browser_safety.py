@@ -34,6 +34,42 @@ def default_agent_browser_safety_policy() -> AgentBrowserSafetyPolicy:
     return AgentBrowserSafetyPolicy()
 
 
+def summarise_agent_browser_policy(policy: AgentBrowserSafetyPolicy | None = None) -> str:
+    """
+    Return a stable human‑readable summary of the given safety policy.
+    The summary mentions localhost‑only defaults, read‑only‑first behaviour,
+    manual install requirement, and manual approval for action commands.
+    """
+    policy = policy or default_agent_browser_safety_policy()
+    parts: list[str] = []
+
+    # localhost‑only defaults
+    if set(policy.allowed_hosts) == {"localhost", "127.0.0.1", "::1"} and not policy.allow_external_domains:
+        parts.append("Default: only localhost hosts are allowed.")
+    else:
+        parts.append(f"Allowed hosts: {', '.join(policy.allowed_hosts)}")
+
+    # read‑only‑first behaviour
+    if policy.read_only_first:
+        parts.append("Read-only commands run first.")
+    else:
+        parts.append("Action commands may run before evidence collection.")
+
+    # manual install requirement
+    if policy.require_manual_install:
+        parts.append("Manual installation of Agent Browser is required.")
+    else:
+        parts.append("Agent Browser can be installed automatically.")
+
+    # manual approval for action commands
+    if policy.require_manual_approval_for_actions:
+        parts.append("Action commands require manual approval.")
+    else:
+        parts.append("Action commands are allowed without manual approval.")
+
+    return " ".join(parts)
+
+
 def normalise_agent_browser_host(url: str) -> str:
     """Extract a lowercase host from a URL-ish string."""
 
@@ -91,7 +127,7 @@ def unsafe_agent_browser_action_commands() -> tuple[str, ...]:
 
 
 def build_agent_browser_localhost_plan(url: str) -> dict[str, object]:
-    """Build a safe, read-only first validation plan for a localhost URL."""
+    """Build a safe, read‑only first validation plan for a localhost URL."""
 
     policy = default_agent_browser_safety_policy()
     allowed = is_agent_browser_url_allowed(url, policy)

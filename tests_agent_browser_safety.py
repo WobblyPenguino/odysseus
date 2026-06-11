@@ -5,6 +5,7 @@ from winlocalassistant.agent_browser_safety import (
     normalise_agent_browser_host,
     safe_agent_browser_readonly_commands,
     unsafe_agent_browser_action_commands,
+    summarise_agent_browser_policy,
 )
 
 
@@ -57,3 +58,11 @@ def test_agent_browser_localhost_plan_builds_readonly_evidence_commands() -> Non
     assert ["agent-browser", "open", "http://localhost:8000"] in plan["commands"]
     assert ["agent-browser", "snapshot"] in plan["commands"]
     assert ["agent-browser", "screenshot", "--annotate"] in plan["commands"]
+
+
+def test_agent_browser_policy_summary_mentions_safety_defaults() -> None:
+    summary = summarise_agent_browser_policy()
+    assert "Default: only localhost hosts are allowed." in summary
+    assert "Read-only commands run first." in summary
+    assert "Manual installation of Agent Browser is required." in summary
+    assert "Action commands require manual approval." in summary
