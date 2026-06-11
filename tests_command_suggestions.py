@@ -111,3 +111,23 @@ def test_reset_project_command_is_disallowed() -> None:
     assert _is_disallowed("/reset-project")
     assert _is_disallowed("please run /reset-project before continuing")
 
+
+
+def test_terminal_screenshot_suggests_screen_context_route() -> None:
+    suggestions = suggest_next_commands("look at this terminal screenshot error output")
+    commands = [item.command for item in suggestions]
+    assert any("terminal screenshot" in cmd for cmd in commands)
+    assert all("powershell" not in cmd.lower() for cmd in commands)
+
+
+def test_generic_image_question_does_not_route_to_media_generation() -> None:
+    commands = _commands("what is visible in this image?")
+    assert any("uploaded image context" in cmd for cmd in commands)
+    assert "/media-status" not in commands
+    assert not any(cmd.startswith("/image-plan") or cmd.startswith("/video-package") for cmd in commands)
+
+
+def test_media_generation_prompt_still_routes_to_media_pipeline() -> None:
+    commands = _commands("make a video trailer and image storyboard")
+    assert "/media-status" in commands
+    assert any(cmd.startswith("/image-plan") or cmd.startswith("/video-package") for cmd in commands)

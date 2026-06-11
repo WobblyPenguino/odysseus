@@ -38,3 +38,8 @@ def test_builds_safe_screen_analysis_prompt():
     assert "PowerShell error screenshot" in prompt
     assert "Use only visible evidence" in prompt
     assert "Do not enable continuous screen watching" in prompt
+
+
+def test_ignores_media_generation_image_storyboard_requests():
+    text = "make a video trailer and image storyboard"
+    assert classify_screen_context_need(text) == "none"

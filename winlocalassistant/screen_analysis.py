@@ -63,6 +63,31 @@ _IMAGE_TERMS = (
 )
 
 
+_MEDIA_GENERATION_TERMS = (
+    "make a video",
+    "create a video",
+    "video trailer",
+    "storyboard",
+    "image storyboard",
+    "generate image",
+    "render",
+    "comfyui",
+)
+
+_VISUAL_INSPECTION_TERMS = (
+    "screenshot",
+    "screen shot",
+    "look at",
+    "visible",
+    "what is visible",
+    "what is shown",
+    "attached",
+    "see my screen",
+    "terminal output",
+    "error output",
+)
+
+
 def _normalise_text(user_text: str | None) -> str:
     return " ".join(str(user_text or "").lower().split())
 
@@ -72,6 +97,11 @@ def classify_screen_context_need(user_text: str | None) -> ScreenContextKind:
 
     text = _normalise_text(user_text)
     if not text:
+        return "none"
+
+    if any(term in text for term in _MEDIA_GENERATION_TERMS) and not any(
+        term in text for term in _VISUAL_INSPECTION_TERMS
+    ):
         return "none"
 
     has_image_signal = any(term in text for term in _IMAGE_TERMS)

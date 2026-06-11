@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from winlocalassistant.screen_analysis import classify_screen_context_need
+
 
 @dataclass
 class CommandSuggestion:
@@ -35,6 +37,23 @@ def suggest_next_commands(
             return
         suggestions.append(CommandSuggestion(label, command, reason, risk, category))
 
+    screen_kind = classify_screen_context_need(text)
+    if screen_kind == "terminal":
+        add("Inspect terminal screenshot", "/idle once inspect terminal screenshot evidence and propose safe debugging steps", "Use explicit visual terminal context without running shell commands automatically.", category="screen")
+        add("Investigate logs", "/idle once investigate logs and propose safe improvements", "Correlate visible terminal errors with recent logs before editing code.", category="diagnostics")
+        add("Test all", "/test-all", "Run existing verification after the visible terminal issue is understood.", category="verify")
+    elif screen_kind == "gui":
+        add("GUI visual test", "/gui-visual-test", "Use the existing GUI visual-regression gate for screenshot/layout issues.", category="screen")
+        add("Focus chat", "/validation-status", "Check whether the running backend is current before changing GUI code.", category="gui")
+        add("Route health", "/tool-health-map gui routes", "Check command/tool route health instead of assuming a stale GUI template is correct.", category="gui")
+    elif screen_kind == "browser":
+        add("GUI visual test", "/gui-visual-test", "Use browser/GUI visual evidence before changing layout code.", category="screen")
+        add("Route health", "/tool-health-map gui routes", "Check browser and GUI route health before editing runtime files.", category="gui")
+        add("Focus chat", "/validation-status", "Check whether the running backend is current before changing browser-facing code.", category="gui")
+    elif screen_kind == "image":
+        add("Inspect image context", "/idle once inspect uploaded image context and propose safe next steps", "Use user-provided image context without enabling continuous screen watching.", category="screen")
+        add("Tool guide", "/tool-guide", "Review available local visual/screen tools before wiring risky automation.", category="help")
+
     self_improve_mentioned = any(term in text for term in ["self-improve", "self improve", "self-improvement", "self improvement", "improve itself", "improve yourself"])
     wla_source_review = any(term in text for term in [
         "your own files", "your files", "your own code", "review your code", "wla source",
@@ -56,7 +75,7 @@ def suggest_next_commands(
         add("GUI visual test", "/gui-visual-test", "Use the existing GUI visual-regression gate before and after layout changes.", category="gui")
         add("Route health", "/tool-health-map gui routes", "Check command/tool route health instead of assuming a stale template is correct.", category="gui")
 
-    if any(term in text for term in ["video", "image", "media", "comfyui", "storyboard", "trailer", "render"]):
+    if screen_kind == "none" and any(term in text for term in ["video", "image", "media", "comfyui", "storyboard", "trailer", "render"]):
         add("Media status", "/media-status", "Check image/video backend readiness before trying expensive generation.", category="media")
         add("Image plan", "/image-plan cinematic robot dog mascot", "Create prompt variants and safety metadata before generation.", category="media")
         add("Video package", "/video-package 10 second cinematic trailer about Nova improving a project", "Create a resumable render package instead of calling missing backends blindly.", category="media")
