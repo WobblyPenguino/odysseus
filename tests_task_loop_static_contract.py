@@ -805,3 +805,25 @@ def test_task_loop_auto_commits_roadmap_only_updates_after_success():
     assert "Roadmap auto-commit skipped: non-roadmap dirty files are present" in text
     assert "git commit -m \"Update roadmap after task loop outcome\"" in text
     assert "Update-TaskLoopRoadmap -AutoCommit" in text
+
+
+def test_task_loop_scores_failure_categories_by_severity():
+    text = _runner_text()
+    assert "function Get-TaskSignalSeverityPenalty" in text
+    assert "context-protected-file|protected-file|context/token" in text
+    assert "required-file|missing required changed file|test-only patch" in text
+    assert "required-diff|missing required diff marker" in text
+    assert "syntaxerror|invalid syntax|compile|test-failed|command failed" in text
+    assert "validation-failed|documentation/comment-only|no executable code" in text
+    assert "low-significance|low-value|no-change" in text
+    assert "placeholder-or-speculative" in text
+    assert "$severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons" in text
+    assert "$score -= $severityPenalty" in text
+    assert "task outcome severity penalty=$severityPenalty" in text
+
+
+def test_task_loop_severity_penalty_applies_before_used_this_run_penalty():
+    text = _runner_text()
+    severity_idx = text.index("$severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons")
+    used_this_run_idx = text.index("if ($usedThisRun)", severity_idx)
+    assert severity_idx < used_this_run_idx

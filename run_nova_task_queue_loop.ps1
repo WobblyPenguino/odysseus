@@ -837,6 +837,47 @@ function Invoke-TaskRecoveryCheck {
     return $true
 }
 
+
+function Get-TaskSignalSeverityPenalty {
+    param([object[]]$Reasons)
+
+    $maxPenalty = 0
+    foreach ($reason in @($Reasons)) {
+        $text = ([string]$reason).ToLowerInvariant()
+
+        if ($text -match "context-protected-file|protected-file|context/token") {
+            $maxPenalty = [Math]::Max($maxPenalty, 70)
+            continue
+        }
+        if ($text -match "required-file|missing required changed file|test-only patch") {
+            $maxPenalty = [Math]::Max($maxPenalty, 55)
+            continue
+        }
+        if ($text -match "required-diff|missing required diff marker") {
+            $maxPenalty = [Math]::Max($maxPenalty, 50)
+            continue
+        }
+        if ($text -match "syntaxerror|invalid syntax|compile|test-failed|command failed") {
+            $maxPenalty = [Math]::Max($maxPenalty, 45)
+            continue
+        }
+        if ($text -match "validation-failed|documentation/comment-only|no executable code") {
+            $maxPenalty = [Math]::Max($maxPenalty, 35)
+            continue
+        }
+        if ($text -match "low-significance|low-value|no-change") {
+            $maxPenalty = [Math]::Max($maxPenalty, 25)
+            continue
+        }
+        if ($text -match "placeholder-or-speculative") {
+            $maxPenalty = [Math]::Max($maxPenalty, 20)
+            continue
+        }
+    }
+
+    return $maxPenalty
+}
+
 function Get-ManualReviewEvidenceHint {
     param($Row)
 
@@ -977,6 +1018,13 @@ function Pick-Task {
                 $reasons += "$($signals.Recoveries) recovery event(s) ignored because low-value or reverted outcomes remain"
             }
         }
+
+        $severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons
+        if ($severityPenalty -gt 0) {
+            $score -= $severityPenalty
+            $reasons += "task outcome severity penalty=$severityPenalty"
+        }
+
         if ($usedThisRun) {
             $score -= 100
             $reasons += "already tried this run"
