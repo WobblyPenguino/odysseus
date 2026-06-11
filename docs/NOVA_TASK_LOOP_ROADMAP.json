@@ -1,8 +1,10 @@
 {
-  "last_updated": "2026-06-12T02:03:13",
-  "head": "0ca1f5b",
+  "last_updated": "2026-06-12T02:07:03",
+  "head": "bb4c640",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "bb4c640 Task queue improvement: agent-browser-readonly-command-classifier-v1",
+    "3adc7b2 Update roadmap after task loop outcome",
     "0ca1f5b Task queue improvement: agent-browser-safe-command-plan-markdown-v1",
     "5271f04 Use durable outcome memory for autonomous draft filtering",
     "f3a4d33 Skip recent bad autonomous draft candidates by outcome context",
@@ -12,15 +14,13 @@
     "f47bedd Update roadmap after failed bad-candidate filter preflight",
     "0fd0886 Filter failed autonomous candidates from failure review",
     "b13d5bd Update roadmap after failed generated-candidate preflight",
-    "d5ece1d Update roadmap after failed generated-candidate preflight",
-    "04fe0c2 Update roadmap after rejected generated candidate",
-    "6346871 Update roadmap after task loop outcome"
+    "d5ece1d Update roadmap after failed generated-candidate preflight"
   ],
   "candidate_doctor": {
     "accepted_count": 16,
     "rejected_count": 0,
-    "fresh_count": 5,
-    "skipped_recent_count": 11,
+    "fresh_count": 4,
+    "skipped_recent_count": 12,
     "next_candidate": "tiny-autodev-sandbox-status-counts-line-v1"
   },
   "next_recommended_action": "Add a fresh narrow source+test external candidate or improve task-loop workflow safety."
