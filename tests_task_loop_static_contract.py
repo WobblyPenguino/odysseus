@@ -764,3 +764,9 @@ def test_task_loop_validator_rejects_double_quoted_markdown_fences():
     assert "double-quoted Markdown fence strings found" in validator
     assert "Select-String -Path .\\run_nova_task_queue_loop.ps1 -Pattern" in validator
     assert '"```' in validator
+
+
+def test_task_loop_validator_checks_roadmap_updater():
+    validator = Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "python -m py_compile tools/update_task_loop_roadmap.py" in validator
+    assert "Roadmap updater compile failed" in validator

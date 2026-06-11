@@ -50,4 +50,12 @@ if ($doubleQuotedMarkdownFenceLines) {
     throw "Task loop double-quoted Markdown fence strings found."
 }
 
+
+Write-Host ""
+Write-Host ">>> python -m py_compile tools/update_task_loop_roadmap.py"
+python -m py_compile tools/update_task_loop_roadmap.py
+if ($LASTEXITCODE -ne 0) {
+    throw "Roadmap updater compile failed"
+}
+
 Write-Host "Validation passed."
