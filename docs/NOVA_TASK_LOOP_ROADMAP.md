@@ -1,19 +1,22 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T21:23:20
+Last updated: 2026-06-11T22:10:40
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `46051e4`
-- Candidate doctor accepted: `11`
+- HEAD: `780a12c`
+- Candidate doctor accepted: `16`
 - Candidate doctor rejected: `0`
-- Fresh candidates available: `1`
+- Fresh candidates available: `6`
 - Recently completed/skipped candidates: `10`
 - Next candidate: `tiny-autodev-sandbox-status-counts-line-v1`
 
 ## Latest commits
 
+- `780a12c Allow Agent Browser safety task candidates`
+- `c1c3968 Add Agent Browser safety research`
+- `474afe6 Update roadmap after readiness summary blocking`
 - `46051e4 Detect task pool exhaustion from loop summary`
 - `d763c1d Block autonomy readiness on exhausted task pool`
 - `ec2318f Update roadmap after autonomy readiness command`
@@ -23,9 +26,6 @@ Last updated: 2026-06-11T21:23:20
 - `35bd114 Update roadmap after screen analysis prompt command`
 - `0202bfa Add manual screen analysis prompt command`
 - `deadf3d Update roadmap after screen command routing`
-- `8e27feb Route screen image needs through command suggestions`
-- `45e121d Update roadmap after screen image routing helpers`
-- `372c497 Add screen image analysis routing helpers`
 
 ## What we have achieved
 
