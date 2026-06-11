@@ -1,20 +1,20 @@
 {
-  "last_updated": "2026-06-12T01:07:18",
-  "head": "a042f4d",
+  "last_updated": "2026-06-12T01:21:03",
+  "head": "f274451",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "f274451 Task queue improvement: candidate-factory-bad-task-id-filter-v1",
+    "6e38149 Use autonomous fallback before live task execution",
+    "4a1eac3 Treat recovered autonomous fallback as task-pool ready",
+    "02772b0 Clear stale exhaustion report after autonomous fallback",
+    "351f5dd Use generated candidate score after autonomous fallback",
+    "1c54749 Update roadmap after autonomous fallback preflight",
     "a042f4d Use autonomous candidate fallback on task pool exhaustion",
     "6cd51fa Add autonomous candidate generator tool",
     "ad48e07 Add evidence-backed autonomous candidate factory",
     "bf87017 Update roadmap after post-live-cycle preflight",
     "dc133e7 Update roadmap after task loop outcome",
-    "da6df56 Task queue improvement: agent-browser-safety-policy-approval-summary-v1",
-    "d7f4fe6 Skip recent failed idea promotion candidates",
-    "d889487 Update roadmap after Agent Browser runner validation",
-    "8b7819b Allow Agent Browser safety file in task loop candidate validation",
-    "2a1cecf Update roadmap after runner validator preflight",
-    "c24b62f Update roadmap after Agent Browser candidate preflight",
-    "780a12c Allow Agent Browser safety task candidates"
+    "da6df56 Task queue improvement: agent-browser-safety-policy-approval-summary-v1"
   ],
   "candidate_doctor": {
     "accepted_count": 16,
