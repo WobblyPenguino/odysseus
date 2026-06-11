@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
-from typing import Iterable
+from typing import Iterable, List, Dict
 
 
 @dataclass(frozen=True)
@@ -211,3 +211,10 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
 def candidate_ids(candidates: Iterable[dict[str, object]]) -> list[str]:
     """Return candidate ids as strings for reporting and tests."""
     return [str(candidate.get("Id", "")).strip() for candidate in candidates if candidate.get("Id")]
+
+
+def filter_recent_bad_candidate_ids(
+    candidates: List[Dict[str, object]], bad_ids: set[str]
+) -> List[Dict[str, object]]:
+    """Return a new list of candidates excluding any whose Id is in bad_ids."""
+    return [c for c in candidates if str(c.get("Id", "")).strip() not in bad_ids]

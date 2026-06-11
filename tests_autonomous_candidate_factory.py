@@ -4,6 +4,7 @@ from nova_improvement_lab.autonomous_candidate_factory import (
     candidate_ids,
     evidence_mentions_task_pool_exhaustion,
     extract_recent_bad_task_ids,
+    filter_recent_bad_candidate_ids,
 )
 
 
@@ -70,3 +71,17 @@ def test_candidate_factory_candidates_have_validator_shape() -> None:
         assert candidate["RequiredChangedFiles"]
         assert candidate["RequiredDiffContains"]
         assert candidate["Tests"]
+
+
+def test_candidate_factory_filters_recent_bad_candidate_ids() -> None:
+    # Create a set of candidates including the bad-task-id-filter candidate
+    candidates = [
+        {"Id": "c1"},
+        {"Id": "candidate-factory-bad-task-id-filter-v1"},
+        {"Id": "c3"},
+    ]
+    bad_ids = {"candidate-factory-bad-task-id-filter-v1", "c2"}
+    filtered = filter_recent_bad_candidate_ids(candidates, bad_ids)
+    # The candidate with the matching Id should be removed
+    assert len(filtered) == 2
+    assert all(c["Id"] != "candidate-factory-bad-task-id-filter-v1" for c in filtered)
