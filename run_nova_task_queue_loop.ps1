@@ -2897,6 +2897,54 @@ function Register-IdeaPromotionTaskDraft {
     return $true
 }
 
+
+function Invoke-AutonomousCandidateFallback {
+    param(
+        [string]$Reason = "task-pool-exhausted"
+    )
+
+    if (!(Test-Path ".\tools\generate_autonomous_idea_candidates.py")) {
+        Add-Summary "Autonomous candidate fallback skipped: generator tool missing"
+        return $false
+    }
+
+    Add-Summary "Autonomous candidate fallback starting: $Reason"
+    Run-Cmd "python .\tools\generate_autonomous_idea_candidates.py --root . --limit 5"
+
+    $autonomousConfig = ".\local_ai_cycles\config\NOVA_AUTONOMOUS_IDEA_CANDIDATES.json"
+    $autonomousReport = ".\local_ai_cycles\memory\NOVA_AUTONOMOUS_IDEA_CANDIDATES_LATEST.md"
+    $autonomousDraft = ".\local_ai_cycles\memory\NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.md"
+    $autonomousDraftJson = ".\local_ai_cycles\memory\NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json"
+
+    if (!(Test-Path $autonomousConfig)) {
+        Add-Summary "Autonomous candidate fallback failed: generated config missing $autonomousConfig"
+        return $false
+    }
+
+    Run-Cmd "python .\tools\validate_idea_promotion_candidates.py --config $autonomousConfig --probe"
+
+    $draftPath = Write-IdeaPromotionTaskDraft `
+        -CandidatePath $autonomousReport `
+        -Path $autonomousDraft `
+        -JsonPath $autonomousDraftJson `
+        -CandidateConfigPath $autonomousConfig
+
+    if (!$draftPath) {
+        Add-Summary "Autonomous candidate fallback failed: no draft produced"
+        return $false
+    }
+
+    $registered = Register-IdeaPromotionTaskDraft -DraftPath $autonomousDraft -JsonPath $autonomousDraftJson
+    if (!$registered) {
+        Add-Summary "Autonomous candidate fallback failed: draft registration failed"
+        return $false
+    }
+
+    Add-Summary "Autonomous candidate fallback registered generated task draft"
+    return $true
+}
+
+
 if ($PreflightOnly) {
     Add-Summary ""
     Add-Summary "## Preflight task selection"
@@ -2948,10 +2996,31 @@ if ($externalCandidatePoolFresh) {
     }
     if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
         Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore | Out-Null
-        Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
-        Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
-        Update-TaskLoopRoadmap
-        exit 0
+
+        $fallbackUsed = Invoke-AutonomousCandidateFallback -Reason "preflight best candidate below productive minimum"
+        if ($fallbackUsed) {
+            $fallbackTask = Pick-Task
+            if ($fallbackTask) {
+                $fallbackScore = Resolve-TaskScore -Task $fallbackTask
+                if ($null -eq $fallbackScore) {
+                    $fallbackScore = Resolve-SelectedTaskScoreFromSummary
+                }
+
+                if ($null -ne $fallbackScore -and $fallbackScore -ge $MinProductiveTaskScore) {
+                    $task = $fallbackTask
+                    $preflightTaskScore = $fallbackScore
+                    Add-Summary "Autonomous candidate fallback selected productive task: $($task.Id)"
+                    Add-Summary "Autonomous candidate fallback score: $preflightTaskScore"
+                }
+            }
+        }
+
+        if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore) {
+            Write-Host "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+            Add-Summary "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted."
+            Update-TaskLoopRoadmap
+            exit 0
+        }
     }
 
     Add-Summary "Result: preflight-only"

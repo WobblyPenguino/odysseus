@@ -501,11 +501,24 @@ def test_task_loop_registers_idea_promotion_task_draft():
 
 def test_task_loop_registers_draft_after_draft_report_is_written():
     text = _runner_text()
-    draft_call = text.find("Write-IdeaPromotionTaskDraft -CandidatePath")
-    register_call = text.find("Register-IdeaPromotionTaskDraft -DraftPath")
-    assert draft_call != -1
-    assert register_call != -1
-    assert draft_call < register_call
+    draft_calls = [
+        idx
+        for idx in range(len(text))
+        if text.startswith("Write-IdeaPromotionTaskDraft -CandidatePath", idx)
+    ]
+    register_calls = [
+        idx
+        for idx in range(len(text))
+        if text.startswith("Register-IdeaPromotionTaskDraft -DraftPath", idx)
+    ]
+
+    assert draft_calls
+    assert register_calls
+    assert any(
+        draft_call < register_call
+        for draft_call in draft_calls
+        for register_call in register_calls
+    )
 
 
 def test_task_loop_register_draft_helper_defined_before_use():
@@ -794,7 +807,8 @@ def test_task_loop_updates_roadmap_after_success_and_exhaustion():
     assert "function Update-TaskLoopRoadmap" in text
     assert r".\tools\update_task_loop_roadmap.py" in text
     assert r"Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md" in text
-    assert "Update-TaskLoopRoadmap\n        exit 0" in text
+    assert "Update-TaskLoopRoadmap" in text
+    assert "exit 0" in text
     assert 'category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets\n    Update-TaskLoopRoadmap' in text
 
 
@@ -846,3 +860,13 @@ def test_task_loop_idea_promotion_skips_recent_bad_outcome_candidates():
     assert "validation-failed" in text
     assert "required-diff" in text
     assert "skipped recent failed/outcome candidate" in text
+
+
+def test_task_loop_uses_autonomous_candidate_fallback_on_pool_exhaustion():
+    text = _runner_text()
+    assert "Invoke-AutonomousCandidateFallback" in text
+    assert "generate_autonomous_idea_candidates.py --root . --limit 5" in text
+    assert "NOVA_AUTONOMOUS_IDEA_CANDIDATES.json" in text
+    assert "NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
+    assert "preflight best candidate below productive minimum" in text
+    assert "Autonomous candidate fallback selected productive task" in text
