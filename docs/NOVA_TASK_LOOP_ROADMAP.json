@@ -1,8 +1,11 @@
 {
-  "last_updated": "2026-06-11T20:30:05",
-  "head": "a3e1486",
+  "last_updated": "2026-06-11T20:36:06",
+  "head": "838c502",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "838c502 Task queue improvement: tiny-autodev-sandbox-action-plan-titles-v1",
+    "cca2e8f Auto-commit roadmap-only task loop updates",
+    "935d65c Update roadmap after next item line task",
     "a3e1486 Task queue improvement: tiny-autodev-sandbox-next-item-line-v1",
     "7728c56 Add fresh autodev sandbox task candidates",
     "a40cfef Update roadmap after task loop auto-update wiring",
@@ -11,17 +14,14 @@
     "aaaee59 Preserve manual roadmap section during updates",
     "189f3ef Validate task loop roadmap updater",
     "0e92720 Add task loop roadmap updater",
-    "b8bcfc6 Add living task loop roadmap",
-    "44cf409 Reject double-quoted markdown fences in task loop validation",
-    "5ec7e79 Write failure review report for failed live tasks",
-    "fa5ddf6 Clear stale review artifacts before live task runs"
+    "b8bcfc6 Add living task loop roadmap"
   ],
   "candidate_doctor": {
     "accepted_count": 11,
     "rejected_count": 0,
-    "fresh_count": 3,
-    "skipped_recent_count": 8,
-    "next_candidate": "tiny-autodev-sandbox-next-item-line-v1"
+    "fresh_count": 2,
+    "skipped_recent_count": 9,
+    "next_candidate": "tiny-autodev-sandbox-action-plan-titles-v1"
   },
   "next_recommended_action": "Add a fresh narrow source+test external candidate or improve task-loop workflow safety."
 }
