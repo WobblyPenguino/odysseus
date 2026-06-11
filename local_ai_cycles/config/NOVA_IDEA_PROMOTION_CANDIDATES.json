@@ -131,5 +131,24 @@
     "Tests": [
       "tests_autodev_sandbox.py"
     ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-json-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_debug_json(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use build_action_plan_debug_dict(items) and return stable machine-readable JSON with sorted keys for total, actionable, has_next, next_title, next_status, next_score, and status_line. Add a regression test named test_autodev_sandbox_renders_action_plan_debug_json in tests_autodev_sandbox.py. The test should parse the JSON and verify the expected keys and values for both actionable and idle item lists. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, broad project files, or unrelated files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_debug_json",
+      "test_autodev_sandbox_renders_action_plan_debug_json"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
   }
 ]
