@@ -1,8 +1,9 @@
 {
-  "last_updated": "2026-06-11T20:08:34",
-  "head": "189f3ef",
+  "last_updated": "2026-06-11T20:10:50",
+  "head": "aaaee59",
   "branch": "nova-task-loop-experiments",
   "latest_commits": [
+    "aaaee59 Preserve manual roadmap section during updates",
     "189f3ef Validate task loop roadmap updater",
     "0e92720 Add task loop roadmap updater",
     "b8bcfc6 Add living task loop roadmap",
@@ -13,8 +14,7 @@
     "f04ee6a Add fresh action plan debug JSON candidate",
     "c6b4eeb Task queue improvement: tiny-autodev-sandbox-action-plan-debug-markdown-v1",
     "7f78c2b Add fresh action plan debug markdown candidate",
-    "fb1f6ca Record denied Aider add-file prompts",
-    "ab079b8 Task queue improvement: real-model-context-prompt-file-signature-safe-v1"
+    "fb1f6ca Record denied Aider add-file prompts"
   ],
   "candidate_doctor": {
     "accepted_count": 8,

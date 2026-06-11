@@ -1,11 +1,11 @@
 # Nova Task Loop Roadmap
 
-Last updated: 2026-06-11T20:08:34
+Last updated: 2026-06-11T20:10:50
 
 ## Current status
 
 - Branch: `nova-task-loop-experiments`
-- HEAD: `189f3ef`
+- HEAD: `aaaee59`
 - Candidate doctor accepted: `8`
 - Candidate doctor rejected: `0`
 - Fresh candidates available: `0`
@@ -14,6 +14,7 @@ Last updated: 2026-06-11T20:08:34
 
 ## Latest commits
 
+- `aaaee59 Preserve manual roadmap section during updates`
 - `189f3ef Validate task loop roadmap updater`
 - `0e92720 Add task loop roadmap updater`
 - `b8bcfc6 Add living task loop roadmap`
@@ -25,7 +26,6 @@ Last updated: 2026-06-11T20:08:34
 - `c6b4eeb Task queue improvement: tiny-autodev-sandbox-action-plan-debug-markdown-v1`
 - `7f78c2b Add fresh action plan debug markdown candidate`
 - `fb1f6ca Record denied Aider add-file prompts`
-- `ab079b8 Task queue improvement: real-model-context-prompt-file-signature-safe-v1`
 
 ## What we have achieved
 

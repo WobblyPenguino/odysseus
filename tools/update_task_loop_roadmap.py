@@ -64,6 +64,12 @@ def extract_manual_section(existing: str) -> str:
 {MANUAL_END}"""
 
 
+def comparable_state(state: dict) -> dict:
+    comparable = dict(state or {})
+    comparable.pop("last_updated", None)
+    return comparable
+
+
 def build_state() -> dict:
     doctor = load_json(DOCTOR_JSON)
     return {
@@ -150,6 +156,10 @@ Before committing or running the next live task:
 
 def main() -> None:
     state = build_state()
+    previous_state = load_json(ROADMAP_JSON)
+    if comparable_state(previous_state) == comparable_state(state):
+        state["last_updated"] = previous_state.get("last_updated", state["last_updated"])
+
     ROADMAP_MD.parent.mkdir(parents=True, exist_ok=True)
     existing = ROADMAP_MD.read_text(encoding="utf-8") if ROADMAP_MD.exists() else ""
     manual_section = extract_manual_section(existing)

@@ -779,3 +779,11 @@ def test_roadmap_updater_preserves_manual_section_markers():
     assert "def extract_manual_section" in updater
     assert "manual_section = extract_manual_section(existing)" in updater
     assert "render_markdown(state, manual_section)" in updater
+
+
+def test_roadmap_updater_avoids_timestamp_only_churn():
+    updater = Path("tools/update_task_loop_roadmap.py").read_text(encoding="utf-8")
+    assert "def comparable_state" in updater
+    assert 'comparable.pop("last_updated", None)' in updater
+    assert "previous_state = load_json(ROADMAP_JSON)" in updater
+    assert 'state["last_updated"] = previous_state.get("last_updated", state["last_updated"])' in updater
