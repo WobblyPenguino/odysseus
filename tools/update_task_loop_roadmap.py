@@ -1,0 +1,123 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from datetime import datetime
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+ROADMAP_MD = ROOT / "docs" / "NOVA_TASK_LOOP_ROADMAP.md"
+ROADMAP_JSON = ROOT / "docs" / "NOVA_TASK_LOOP_ROADMAP.json"
+DOCTOR_JSON = ROOT / "local_ai_cycles" / "memory" / "NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json"
+
+
+def run_git(args: list[str]) -> str:
+    try:
+        return subprocess.check_output(["git", *args], cwd=ROOT, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return ""
+
+
+def load_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def build_state() -> dict:
+    doctor = load_json(DOCTOR_JSON)
+    return {
+        "last_updated": datetime.now().isoformat(timespec="seconds"),
+        "head": run_git(["rev-parse", "--short", "HEAD"]),
+        "branch": run_git(["branch", "--show-current"]),
+        "latest_commits": run_git(["--no-pager", "log", "--oneline", "-12"]).splitlines(),
+        "candidate_doctor": {
+            "accepted_count": doctor.get("accepted_count"),
+            "rejected_count": doctor.get("rejected_count"),
+            "fresh_count": doctor.get("fresh_count"),
+            "skipped_recent_count": doctor.get("skipped_recent_count"),
+            "next_candidate": doctor.get("next_candidate"),
+        },
+        "next_recommended_action": "Add a fresh narrow source+test external candidate or improve task-loop workflow safety.",
+    }
+
+
+def render_markdown(state: dict) -> str:
+    doctor = state["candidate_doctor"]
+    commits = "\n".join(f"- `{line}`" for line in state["latest_commits"])
+
+    return f"""# Nova Task Loop Roadmap
+
+Last updated: {state["last_updated"]}
+
+## Current status
+
+- Branch: `{state["branch"]}`
+- HEAD: `{state["head"]}`
+- Candidate doctor accepted: `{doctor.get("accepted_count")}`
+- Candidate doctor rejected: `{doctor.get("rejected_count")}`
+- Fresh candidates available: `{doctor.get("fresh_count")}`
+- Recently completed/skipped candidates: `{doctor.get("skipped_recent_count")}`
+- Next candidate: `{doctor.get("next_candidate") or "none"}`
+
+## Latest commits
+
+{commits}
+
+## What we have achieved
+
+- External JSON task candidates are validated before use.
+- Candidate doctor reports tell us whether there is fresh work.
+- Runtime task registration and picker merge work.
+- Preflight localization shows exact editable files and tests before Aider runs.
+- Compile, targeted test, baseline test, generated-noise cleanup, and clean-git gates protect commits.
+- Failed live tasks write failure review evidence.
+- Stale patch/subagent reviews are cleared before live runs.
+- Double-quoted Markdown code fences in PowerShell are rejected by validation.
+- A local roadmap exists and can now be updated by script.
+
+## Current blockers / weak spots
+
+- External candidate pool can become exhausted after successful runs.
+- Older built-in tasks are still low-scoring or quarantined.
+- Aider can still produce syntax mistakes, so narrow scoped tasks are safer.
+- The task loop does not yet call this updater automatically.
+
+## Next recommended action
+
+{state["next_recommended_action"]}
+
+## Standing audit rule
+
+Before committing or running the next live task:
+
+1. PowerShell parser audit.
+2. Markdown fence audit.
+3. Python compile.
+4. Pytest audit.
+5. Candidate validation.
+6. Task-loop validation.
+7. Generated-noise cleanup.
+8. `git diff --check`.
+9. Inspect diff.
+10. Commit.
+11. Preflight proof.
+12. Update this roadmap.
+"""
+
+
+def main() -> None:
+    state = build_state()
+    ROADMAP_MD.parent.mkdir(parents=True, exist_ok=True)
+    ROADMAP_MD.write_text(render_markdown(state), encoding="utf-8")
+    ROADMAP_JSON.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    print(f"Updated {ROADMAP_MD}")
+    print(f"Updated {ROADMAP_JSON}")
+
+
+if __name__ == "__main__":
+    main()
