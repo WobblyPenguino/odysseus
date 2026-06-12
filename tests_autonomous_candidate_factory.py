@@ -420,3 +420,31 @@ def test_generator_current_exhaustion_hint_surfaces_inventory_expansion(tmp_path
     assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
     assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
 
+
+def test_candidate_factory_builds_task_pool_exhaustion_summary() -> None:
+    from nova_improvement_lab.autonomous_candidate_factory import (
+        EvidenceBundle,
+        build_task_pool_exhaustion_summary,
+    )
+
+    bundle = EvidenceBundle(
+        latest_summary=(
+            "Best candidate below productive minimum before autonomous fallback. "
+            "candidate-factory-bad-task-id-filter-v1 failed previously."
+        ),
+        task_pool_exhausted=(
+            "Outcome category: task-pool-exhausted\n"
+            "No sufficiently productive task remained.\n"
+            "candidate-factory-agent-browser-evidence-v1"
+        ),
+        failure_review="Rejected task-pool candidate.",
+        roadmap="",
+        audit="real codebase source+test improvement",
+    )
+
+    summary = build_task_pool_exhaustion_summary(bundle)
+
+    assert "task-pool-exhausted=True" in summary
+    assert "recent_bad_task_ids=2" in summary
+    assert "fresh_candidate_generation_needed=True" in summary
+

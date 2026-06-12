@@ -530,3 +530,44 @@ def filter_recent_bad_candidate_ids(
 ) -> List[Dict[str, object]]:
     """Return a new list of candidates excluding any whose Id is in bad_ids."""
     return [c for c in candidates if str(c.get("Id", "")).strip() not in bad_ids]
+
+
+def build_task_pool_exhaustion_summary(bundle: EvidenceBundle) -> str:
+    """Return deterministic evidence about why autonomous task selection exhausted."""
+
+    import re
+
+    evidence = "\n".join(
+        str(getattr(bundle, name, "") or "")
+        for name in (
+            "latest_summary",
+            "task_pool_exhausted",
+            "failure_review",
+            "roadmap",
+            "audit",
+            "research_notes",
+        )
+    )
+    lower = evidence.lower()
+    bad_ids = sorted(
+        set(re.findall(r"\b[a-z][a-z0-9]+(?:-[a-z0-9]+)+-v\d+\b", evidence))
+    )
+    fresh_candidate_generation_needed = any(
+        marker in lower
+        for marker in (
+            "task-pool-exhausted",
+            "no sufficiently productive task remained",
+            "below productive minimum",
+            "external candidate pool exhausted",
+        )
+    )
+
+    return (
+        "task-pool-exhausted="
+        + str("task-pool-exhausted" in lower)
+        + "; recent_bad_task_ids="
+        + str(len(bad_ids))
+        + "; fresh_candidate_generation_needed="
+        + str(fresh_candidate_generation_needed)
+    )
+
