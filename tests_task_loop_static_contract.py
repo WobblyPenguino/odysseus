@@ -920,6 +920,19 @@ def test_task_loop_recent_bad_outcome_filter_uses_candidate_context_window() -> 
     assert "[regex]::Escape($CandidateId)" in body
 
 
+def test_task_loop_recent_bad_outcome_filter_ignores_marker_text_inside_candidate_ids() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Test-IdeaPromotionCandidateRecentBadOutcome")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "$windowForMarkers" in body
+    assert "(?:-[a-z0-9]+)+-v\\d+" in body
+    assert "$windowForMarkers.Contains($marker)" in body
+
+
 def test_task_loop_recent_outcome_reader_includes_durable_memory() -> None:
     from pathlib import Path
 

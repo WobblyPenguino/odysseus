@@ -2651,9 +2651,10 @@ function Test-IdeaPromotionCandidateRecentBadOutcome {
         $start = [Math]::Max(0, $i - 2)
         $end = [Math]::Min($lines.Count - 1, $i + 8)
         $window = (($lines[$start..$end]) -join "`n").ToLowerInvariant()
+        $windowForMarkers = [regex]::Replace($window, '\b[a-z][a-z0-9]+(?:-[a-z0-9]+)+-v\d+\b', '')
 
         foreach ($marker in $badOutcomeMarkers) {
-            if ($window.Contains($marker)) {
+            if ($windowForMarkers.Contains($marker)) {
                 return $true
             }
         }
