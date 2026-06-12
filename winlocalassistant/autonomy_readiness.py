@@ -7,6 +7,7 @@ project over repeated cycles.
 
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
@@ -99,13 +100,21 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
     pool_exhausted = any(marker in pool_text for marker in exhausted_markers)
     exhausted = summary_exhausted or pool_exhausted
 
-    recovered_markers = (
-        "autonomous candidate fallback selected productive task",
-        "autonomous candidate fallback score:",
-        "result: preflight-only",
-        "selected task: candidate-factory-",
+    fallback_score_match = re.search(r"autonomous candidate fallback score:\s*(-?\d+)", summary_text)
+    fallback_score = int(fallback_score_match.group(1)) if fallback_score_match else 0
+
+    recovered_by_autonomous_fallback = (
+        "result: preflight-only" in summary_text
+        and "autonomous candidate fallback selected productive task:" in summary_text
+        and "autonomous candidate fallback score:" in summary_text
+        and "selected task:" in summary_text
+        and (
+            "source+test candidate" in summary_text
+            or "editable files:" in summary_text
+            or "targeted tests:" in summary_text
+        )
+        and fallback_score >= 70
     )
-    recovered_by_autonomous_fallback = all(marker in summary_text for marker in recovered_markers)
 
     successful_committed_fallback = (
         "result: committed" in summary_text
