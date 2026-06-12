@@ -481,3 +481,37 @@ def test_candidate_factory_task_pool_exhaustion_diagnostics() -> None:
     assert diagnostics["candidate_id_count"] == 3
     assert "candidate-factory-agent-browser-evidence-v1" in diagnostics["candidate_ids"]
 
+
+def test_inventory_backed_generation_continues_after_exhaustion_diagnostics_completed() -> None:
+    from nova_improvement_lab.autonomous_candidate_factory import (
+        EvidenceBundle,
+        build_autonomous_candidate_drafts,
+        candidate_ids,
+    )
+
+    completed = "\n".join(
+        [
+            "Task queue improvement: tools-report-state-task-pool-diagnostics-v1",
+            "Task queue improvement: nova-lab-autodev-sandbox-task-selection-diagnostics-v1",
+            "Task queue improvement: candidate-factory-pool-exhaustion-summary-v1",
+            "Task queue improvement: candidate-factory-task-pool-exhaustion-diagnostics-v1",
+            "Task queue improvement: candidate-factory-bad-task-id-filter-v1",
+            "Task queue improvement: candidate-factory-failure-feedback-gap-v1",
+        ]
+    )
+
+    bundle = EvidenceBundle(
+        roadmap=completed,
+        latest_summary="Preflight best candidate below productive minimum before autonomous fallback",
+        task_pool_exhausted=(
+            "Outcome category: task-pool-exhausted\n"
+            "No sufficiently productive task remained.\n"
+            "external candidate pool exhausted"
+        ),
+        audit="real codebase source+test improvement",
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle, limit=8))
+
+    assert "candidate-factory-continuation-after-exhaustion-v1" in ids
+

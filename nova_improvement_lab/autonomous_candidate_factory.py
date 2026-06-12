@@ -350,6 +350,28 @@ def build_inventory_backed_candidate_drafts(bundle: EvidenceBundle) -> list[dict
                 )
             )
 
+        candidates.append(
+            _inventory_backed_candidate(
+                candidate_id="candidate-factory-continuation-after-exhaustion-v1",
+                goal=(
+                    "Improve autonomous candidate continuation after generated candidate "
+                    "pools are exhausted. Add deterministic source+test diagnostics in "
+                    "nova_improvement_lab/autonomous_candidate_factory.py and "
+                    "tests_autonomous_candidate_factory.py so Nova can explain which "
+                    "candidate ids were completed, skipped, or still eligible."
+                ),
+                editable=[
+                    "nova_improvement_lab\\autonomous_candidate_factory.py",
+                    "tests_autonomous_candidate_factory.py",
+                ],
+                required_diff_contains=[
+                    "continuation",
+                    "tests_autonomous_candidate_factory",
+                ],
+                tests=["tests_autonomous_candidate_factory.py"],
+            )
+        )
+
     return candidates[:2]
 
 def _candidate(
