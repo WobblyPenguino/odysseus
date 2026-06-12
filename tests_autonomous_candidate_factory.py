@@ -187,12 +187,19 @@ def test_local_discovery_inventory_extracts_completed_task_ids() -> None:
         [
             "- abc1234 Task queue improvement: real-model-context-prompt-file-safety-v1",
             "- tiny-autodev-sandbox-next-item-line-v1 [recently-completed]",
+            (
+                "Idea promotion task draft skipped recent completed candidate(s): "
+                "candidate-factory-task-pool-exhaustion-diagnostics-v1, "
+                "candidate-factory-bad-task-id-filter-v1"
+            ),
         ]
     )
 
     assert extract_recent_completed_task_ids(roadmap) == {
         "real-model-context-prompt-file-safety-v1",
         "tiny-autodev-sandbox-next-item-line-v1",
+        "candidate-factory-task-pool-exhaustion-diagnostics-v1",
+        "candidate-factory-bad-task-id-filter-v1",
     }
 
 
@@ -419,6 +426,49 @@ def test_generator_current_exhaustion_hint_surfaces_inventory_expansion(tmp_path
 
     assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
     assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
+
+
+def test_generator_current_exhaustion_hint_surfaces_continuation_after_skipped_factory_ids(tmp_path) -> None:
+    from tools.generate_autonomous_idea_candidates import build_evidence_bundle
+
+    memory = tmp_path / "local_ai_cycles" / "memory"
+    memory.mkdir(parents=True)
+    (tmp_path / "docs").mkdir(parents=True)
+    (memory / "NOVA_TASK_LOOP_SUMMARY_LATEST.md").write_text(
+        "\n".join(
+            [
+                "Idea promotion task draft external candidate pool exhausted; no fresh JSON draft written",
+                (
+                    "Idea promotion task draft skipped recent completed candidate(s): "
+                    "candidate-factory-task-pool-exhaustion-diagnostics-v1, "
+                    "candidate-factory-bad-task-id-filter-v1, "
+                    "candidate-factory-failure-feedback-gap-v1"
+                ),
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    bundle = build_evidence_bundle(
+        tmp_path,
+        current_exhaustion_hint="preflight best candidate below productive minimum",
+    )
+    candidates = build_autonomous_candidate_drafts(bundle, limit=12)
+    ids = candidate_ids(candidates)
+
+    assert "candidate-factory-continuation-after-exhaustion-v1" in ids
+    assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
+    for candidate in candidates:
+        assert set(candidate["Editable"]).issubset(
+            {
+                "nova_improvement_lab\\autodev_sandbox.py",
+                "nova_improvement_lab\\autonomous_candidate_factory.py",
+                "tests_autodev_sandbox.py",
+                "tests_autonomous_candidate_factory.py",
+            }
+        )
+        assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+        assert candidate["Tests"]
 
 
 def test_candidate_factory_builds_task_pool_exhaustion_summary() -> None:

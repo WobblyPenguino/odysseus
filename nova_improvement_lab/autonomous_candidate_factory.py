@@ -154,6 +154,13 @@ def extract_recent_completed_task_ids(text: str | EvidenceBundle) -> set[str]:
     for task_id in re.findall(r"(?im)^-\s*([a-z0-9][a-z0-9_-]+)\s+\[recently-completed\]", normalised):
         found.add(task_id)
 
+    for line in normalised.splitlines():
+        if "skipped recent completed candidate" not in line:
+            continue
+        tail = line.split(":", 1)[-1]
+        for task_id in re.findall(r"\b([a-z0-9][a-z0-9_-]+-v\d+)\b", tail):
+            found.add(task_id)
+
     return found
 
 
@@ -194,7 +201,7 @@ def build_local_discovery_inventory(bundle: EvidenceBundle) -> dict[str, object]
     if has_any("command", "help", "contract", "/help"):
         themes.add("command_help_contracts")
 
-    completed_ids = extract_recent_completed_task_ids(bundle.roadmap)
+    completed_ids = extract_recent_completed_task_ids(bundle)
     failed_ids = extract_recent_bad_task_ids(
         "\n".join(
             part
@@ -372,7 +379,8 @@ def build_inventory_backed_candidate_drafts(bundle: EvidenceBundle) -> list[dict
             )
         )
 
-    return candidates[:2]
+    candidate_limit = 3 if exhausted else 2
+    return candidates[:candidate_limit]
 
 def _candidate(
     *,
