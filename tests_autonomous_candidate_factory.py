@@ -161,3 +161,71 @@ def test_candidate_factory_summarises_failure_feedback() -> None:
     summary = summarise_failure_feedback(bundle)
     assert "candidate-factory-validation-gap-v1" in summary
     assert summary.startswith("Failed tasks:")
+
+
+from nova_improvement_lab.autonomous_candidate_factory import (
+    build_local_discovery_inventory,
+    extract_recent_completed_task_ids,
+)
+
+
+def test_local_discovery_inventory_detects_task_selection_scoring() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nBest candidate below productive minimum.",
+    )
+
+    inventory = build_local_discovery_inventory(bundle)
+
+    assert inventory["task_pool_exhausted"] is True
+    assert "task_selection_scoring" in inventory["problem_themes"]
+
+
+def test_local_discovery_inventory_extracts_completed_task_ids() -> None:
+    roadmap = "\n".join(
+        [
+            "- abc1234 Task queue improvement: real-model-context-prompt-file-safety-v1",
+            "- tiny-autodev-sandbox-next-item-line-v1 [recently-completed]",
+        ]
+    )
+
+    assert extract_recent_completed_task_ids(roadmap) == {
+        "real-model-context-prompt-file-safety-v1",
+        "tiny-autodev-sandbox-next-item-line-v1",
+    }
+
+
+def test_local_discovery_inventory_extracts_failed_task_ids() -> None:
+    bundle = EvidenceBundle(
+        failure_review="Task ID: candidate-factory-agent-browser-evidence-v1\nStage: validation-gate\nReason: Command failed"
+    )
+
+    inventory = build_local_discovery_inventory(bundle)
+
+    assert inventory["failed_task_ids"] == ["candidate-factory-agent-browser-evidence-v1"]
+
+
+def test_local_discovery_inventory_is_read_only_and_deterministic() -> None:
+    bundle = EvidenceBundle(
+        roadmap="Task queue improvement: completed-task-v1",
+        latest_summary="validation reporting and repeated low-value cycles",
+        task_pool_exhausted="task-pool-exhausted",
+    )
+
+    first = build_local_discovery_inventory(bundle)
+    second = build_local_discovery_inventory(bundle)
+
+    assert first == second
+    assert bundle.roadmap == "Task queue improvement: completed-task-v1"
+
+
+def test_local_discovery_inventory_does_not_generate_candidates_for_nonexistent_files_yet() -> None:
+    bundle = EvidenceBundle(
+        audit="validation reporting diagnostics for real codebase improvement"
+    )
+
+    inventory = build_local_discovery_inventory(bundle)
+
+    assert "Editable" not in inventory
+    assert "RequiredChangedFiles" not in inventory
+    assert "winlocalassistant\\validate.py" not in str(inventory)

@@ -135,6 +135,99 @@ def summarise_failure_feedback(bundle: EvidenceBundle) -> str:
     return "Failed tasks: " + ", ".join(sorted_ids)
 
 
+
+def extract_recent_completed_task_ids(text: str | EvidenceBundle) -> set[str]:
+    """Extract recently completed task ids from roadmap and candidate-doctor evidence."""
+
+    if isinstance(text, EvidenceBundle):
+        normalised = normalise_evidence_text(text).lower()
+    else:
+        normalised = str(text or "").lower()
+
+    found: set[str] = set()
+    if not normalised:
+        return found
+
+    for task_id in re.findall(r"task queue improvement:\s*([a-z0-9][a-z0-9_-]+)", normalised):
+        found.add(task_id)
+
+    for task_id in re.findall(r"(?im)^-\s*([a-z0-9][a-z0-9_-]+)\s+\[recently-completed\]", normalised):
+        found.add(task_id)
+
+    return found
+
+
+def build_local_discovery_inventory(bundle: EvidenceBundle) -> dict[str, object]:
+    """Build a read-only local discovery inventory from already-loaded evidence strings.
+
+    This does not inspect the filesystem, run commands, call models, or generate
+    executable candidates. It only classifies evidence so later candidate
+    generation can avoid invented files and repeated failed/completed work.
+    """
+
+    text = normalise_evidence_text(bundle)
+    lowered = text.lower()
+
+    themes: set[str] = set()
+
+    def has_any(*needles: str) -> bool:
+        return any(needle in lowered for needle in needles)
+
+    if has_any("stale", "cleanup", "generated-noise", "state consistency", "snapshot"):
+        themes.add("stale_state")
+
+    if has_any("validation", "reporting", "diagnostic", "compile failed", "gate:"):
+        themes.add("validation_reporting")
+
+    if (
+        evidence_mentions_task_pool_exhaustion(bundle)
+        or has_any("task selection", "score", "scoring", "productive minimum", "best candidate below productive minimum")
+    ):
+        themes.add("task_selection_scoring")
+
+    if has_any("low-value", "no-change", "repeated", "success cooldown", "reverted-success"):
+        themes.add("repeated_low_value")
+
+    if has_any("missing tests", "no tests", "coverage", "untested"):
+        themes.add("missing_tests")
+
+    if has_any("command", "help", "contract", "/help"):
+        themes.add("command_help_contracts")
+
+    completed_ids = extract_recent_completed_task_ids(bundle.roadmap)
+    failed_ids = extract_recent_bad_task_ids(
+        "\n".join(
+            part
+            for part in (
+                bundle.latest_summary,
+                bundle.task_pool_exhausted,
+                bundle.failure_review,
+            )
+            if part
+        )
+    )
+
+    non_meta_markers = (
+        "real codebase",
+        "codebase improvement",
+        "non-meta",
+        "source+test",
+        "existing module",
+        "validation reporting",
+        "task selection",
+        "command help",
+        "stale state",
+        "missing tests",
+    )
+
+    return {
+        "problem_themes": sorted(themes),
+        "completed_task_ids": sorted(completed_ids),
+        "failed_task_ids": sorted(failed_ids),
+        "task_pool_exhausted": evidence_mentions_task_pool_exhaustion(bundle),
+        "asks_for_non_meta_codebase_improvements": any(marker in lowered for marker in non_meta_markers),
+    }
+
 def _candidate(
     *,
     candidate_id: str,
