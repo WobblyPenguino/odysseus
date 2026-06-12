@@ -982,3 +982,29 @@ def test_nova_operator_has_package_mode() -> None:
     assert '"Package"' in script
     assert "Package-Checkpoint -Label $PackageLabel" in script
 
+
+def test_failure_triage_changed_files_ignore_missing_required_prefix() -> None:
+    from tools.nova_failure_triage import find_last, split_files
+
+    why = (
+        "Rejected required-file contract breach for task 'candidate-factory-pool-exhaustion-summary-v1': "
+        "missing required changed file(s): tests_autonomous_candidate_factory.py. "
+        "Changed file(s): nova_improvement_lab\\autonomous_candidate_factory.py."
+    )
+
+    missing = split_files(
+        find_last(r"missing required changed file\(s\):\s*([^\n]+?)\.\s*Changed file", why)
+    )
+    changed = split_files(
+        find_last(r"(?<!required )Changed file\(s\):\s*([^\n]+)", why)
+    )
+
+    assert missing == ["tests_autonomous_candidate_factory.py"]
+    assert changed == ["nova_improvement_lab\\autonomous_candidate_factory.py"]
+
+
+def test_nova_operator_package_refreshes_failure_triage() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert 'Run-Step "Refresh failure triage"' in script
+    assert "python .\\tools\\nova_failure_triage.py" in script
+

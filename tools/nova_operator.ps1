@@ -147,6 +147,9 @@ try {
         Clean-GeneratedNoise
         Assert-CleanGit
         Package-Checkpoint -Label $PackageLabel
+        Run-Step "Refresh failure triage" {
+            python .\tools\nova_failure_triage.py
+        }
         Show-Status
         return
     }

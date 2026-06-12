@@ -97,7 +97,7 @@ def triage() -> FailureTriage:
     missing_required_files = split_files(
         find_last(r"missing required changed file\(s\):\s*([^\n]+?)\.\s*Changed file", parse_target)
     )
-    changed_files = split_files(find_last(r"Changed file\(s\):\s*([^\n]+?)\.?$", parse_target))
+    changed_files = split_files(find_last(r"(?<!required )Changed file\(s\):\s*([^\n]+)", parse_target))
     denied_noneditable_files = split_files(
         find_last(r"Aider add-file prompts denied for non-editable file\(s\):\s*([^\n]+)", focused)
     )
