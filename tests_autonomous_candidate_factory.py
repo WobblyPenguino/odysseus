@@ -390,3 +390,31 @@ def test_generator_evidence_bundle_accepts_current_exhaustion_hint(tmp_path) -> 
     assert "preflight best candidate below productive minimum" in bundle.latest_summary.lower()
     assert "preflight best candidate below productive minimum" in bundle.task_pool_exhausted.lower()
 
+
+def test_generator_current_exhaustion_hint_surfaces_inventory_expansion(tmp_path) -> None:
+    from tools.generate_autonomous_idea_candidates import build_evidence_bundle
+
+    docs = tmp_path / "docs"
+    memory = tmp_path / "local_ai_cycles" / "memory"
+    docs.mkdir(parents=True)
+    memory.mkdir(parents=True)
+
+    (docs / "NOVA_TASK_LOOP_ROADMAP.md").write_text(
+        "\n".join(
+            [
+                "- abc1234 Task queue improvement: tools-report-state-task-pool-diagnostics-v1",
+                "- def5678 Task queue improvement: nova-lab-autodev-sandbox-task-selection-diagnostics-v1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    bundle = build_evidence_bundle(
+        tmp_path,
+        current_exhaustion_hint="preflight best candidate below productive minimum",
+    )
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle, limit=8))
+
+    assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
+    assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
+

@@ -41,8 +41,17 @@ def build_evidence_bundle(root: Path, *, current_exhaustion_hint: str = "") -> E
     task_pool_exhausted = _read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_POOL_EXHAUSTED_LATEST.md")
     if current_exhaustion_hint.strip():
         hint = current_exhaustion_hint.strip()
-        latest_summary = "\n".join(part for part in [latest_summary, hint] if part)
-        task_pool_exhausted = "\n".join(part for part in [task_pool_exhausted, hint] if part)
+        current_exhaustion_evidence = "\n".join(
+            [
+                hint,
+                "Outcome category: task-pool-exhausted",
+                "No sufficiently productive task remained.",
+                "Task selection scoring diagnostics are needed.",
+                "real codebase source+test improvement",
+            ]
+        )
+        latest_summary = "\n".join(part for part in [latest_summary, current_exhaustion_evidence] if part)
+        task_pool_exhausted = "\n".join(part for part in [task_pool_exhausted, current_exhaustion_evidence] if part)
 
     return EvidenceBundle(
         roadmap=_read(root / "docs" / "NOVA_TASK_LOOP_ROADMAP.md"),
