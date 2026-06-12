@@ -165,6 +165,7 @@ def test_candidate_factory_summarises_failure_feedback() -> None:
 
 from nova_improvement_lab.autonomous_candidate_factory import (
     build_local_discovery_inventory,
+    build_inventory_backed_candidate_drafts,
     extract_recent_completed_task_ids,
 )
 
@@ -229,3 +230,93 @@ def test_local_discovery_inventory_does_not_generate_candidates_for_nonexistent_
     assert "Editable" not in inventory
     assert "RequiredChangedFiles" not in inventory
     assert "winlocalassistant\\validate.py" not in str(inventory)
+
+
+def test_inventory_backed_generation_produces_non_meta_source_test_candidate() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nBest candidate below productive minimum.",
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_inventory_backed_candidate_drafts(bundle)
+    ids = candidate_ids(candidates)
+
+    assert "tools-report-state-task-pool-diagnostics-v1" in ids
+    candidate = next(c for c in candidates if c["Id"] == "tools-report-state-task-pool-diagnostics-v1")
+    assert candidate["Editable"] == [
+        "tools\\report_supervised_autonomy_state.py",
+        "tests_supervised_autonomy_state_report.py",
+    ]
+    assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+    assert candidate["Tests"] == ["tests_supervised_autonomy_state_report.py"]
+
+
+def test_inventory_backed_generation_avoids_completed_task_ids() -> None:
+    bundle = EvidenceBundle(
+        roadmap="Task queue improvement: tools-report-state-task-pool-diagnostics-v1",
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement",
+    )
+
+    ids = candidate_ids(build_inventory_backed_candidate_drafts(bundle))
+
+    assert "tools-report-state-task-pool-diagnostics-v1" not in ids
+
+
+def test_inventory_backed_generation_avoids_failed_task_ids() -> None:
+    bundle = EvidenceBundle(
+        failure_review="Task ID: tools-report-state-task-pool-diagnostics-v1\nStage: validation-gate",
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement",
+    )
+
+    ids = candidate_ids(build_inventory_backed_candidate_drafts(bundle))
+
+    assert "tools-report-state-task-pool-diagnostics-v1" not in ids
+
+
+def test_inventory_backed_candidates_have_validator_shape() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_inventory_backed_candidate_drafts(bundle)
+
+    assert candidates
+    for candidate in candidates:
+        assert set(["Id", "Goal", "Editable", "RequiredChangedFiles", "RequiredDiffContains", "Tests"]).issubset(candidate)
+        assert candidate["Editable"]
+        assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+        assert candidate["Tests"]
+
+
+def test_inventory_backed_generation_does_not_generate_nonexistent_file_candidate() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement in winlocalassistant validate.py project_state.py",
+    )
+
+    candidates = build_inventory_backed_candidate_drafts(bundle)
+    rendered = str(candidates)
+
+    assert "winlocalassistant\\validate.py" not in rendered
+    assert "winlocalassistant\\project_state.py" not in rendered
+
+
+def test_build_autonomous_candidate_drafts_preserves_meta_candidates_with_inventory_backed_candidates() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement",
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
+
+    assert "tools-report-state-task-pool-diagnostics-v1" in ids
+    assert "candidate-factory-pool-exhaustion-summary-v1" in ids

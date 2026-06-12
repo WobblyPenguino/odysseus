@@ -228,6 +228,101 @@ def build_local_discovery_inventory(bundle: EvidenceBundle) -> dict[str, object]
         "asks_for_non_meta_codebase_improvements": any(marker in lowered for marker in non_meta_markers),
     }
 
+
+def _inventory_backed_candidate(
+    *,
+    candidate_id: str,
+    goal: str,
+    editable: list[str],
+    required_diff_contains: list[str],
+    tests: list[str],
+) -> dict[str, object]:
+    """Build a validator-shaped non-meta candidate from an allowlisted source+test pair."""
+
+    return {
+        "Id": candidate_id,
+        "Goal": goal,
+        "Editable": editable,
+        "RequiredChangedFiles": editable,
+        "RequiredDiffContains": required_diff_contains,
+        "Tests": tests,
+    }
+
+
+def build_inventory_backed_candidate_drafts(bundle: EvidenceBundle) -> list[dict[str, object]]:
+    """Generate tiny, allowlisted non-meta candidates from local discovery inventory.
+
+    This is intentionally pure and deterministic: it does not scan the filesystem,
+    run shell commands, call models, or invent target files.
+    """
+
+    inventory = build_local_discovery_inventory(bundle)
+    themes = set(inventory.get("problem_themes", []))
+    blocked_ids = set(inventory.get("completed_task_ids", [])) | set(
+        inventory.get("failed_task_ids", [])
+    )
+    exhausted = bool(inventory.get("task_pool_exhausted", False))
+
+    candidates: list[dict[str, object]] = []
+
+    wants_scoring_or_reporting = exhausted and (
+        "task_selection_scoring" in themes
+        or "validation_reporting" in themes
+        or bool(inventory.get("asks_for_non_meta_codebase_improvements", False))
+    )
+
+    if wants_scoring_or_reporting:
+        candidate_id = "tools-report-state-task-pool-diagnostics-v1"
+        if candidate_id not in blocked_ids:
+            candidates.append(
+                _inventory_backed_candidate(
+                    candidate_id=candidate_id,
+                    goal=(
+                        "Improve Nova's supervised autonomy state report with clearer "
+                        "task-pool diagnostics. Update tools\\report_supervised_autonomy_state.py "
+                        "to surface the latest task-pool exhaustion reason and selected candidate "
+                        "score context, and verify with tests_supervised_autonomy_state_report.py."
+                    ),
+                    editable=[
+                        "tools\\report_supervised_autonomy_state.py",
+                        "tests_supervised_autonomy_state_report.py",
+                    ],
+                    required_diff_contains=[
+                        "task-pool diagnostics",
+                        "test_report",
+                    ],
+                    tests=["tests_supervised_autonomy_state_report.py"],
+                )
+            )
+
+    if len(candidates) < 2 and (
+        "task_selection_scoring" in themes or "repeated_low_value" in themes
+    ):
+        candidate_id = "nova-lab-autodev-sandbox-task-selection-diagnostics-v1"
+        if candidate_id not in blocked_ids:
+            candidates.append(
+                _inventory_backed_candidate(
+                    candidate_id=candidate_id,
+                    goal=(
+                        "Improve Nova's autonomous development sandbox with small task "
+                        "selection diagnostics. Update nova_improvement_lab\\autodev_sandbox.py "
+                        "to expose a deterministic task selection diagnostics helper, and verify "
+                        "with tests_autodev_sandbox.py."
+                    ),
+                    editable=[
+                        "nova_improvement_lab\\autodev_sandbox.py",
+                        "tests_autodev_sandbox.py",
+                    ],
+                    required_diff_contains=[
+                        "task_selection_diagnostics",
+                        "test_autodev_sandbox_task_selection_diagnostics",
+                    ],
+                    tests=["tests_autodev_sandbox.py"],
+                )
+            )
+
+    return candidates[:2]
+
 def _candidate(
     *,
     candidate_id: str,
@@ -283,6 +378,8 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
 
     candidates: list[dict[str, object]] = []
 
+
+
     if evidence_mentions_task_pool_exhaustion(bundle):
         candidates.append(
             _candidate(
@@ -301,6 +398,8 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
             )
         )
 
+
+    candidates.extend(build_inventory_backed_candidate_drafts(bundle))
     if bad_ids:
         candidates.append(
             _candidate(
