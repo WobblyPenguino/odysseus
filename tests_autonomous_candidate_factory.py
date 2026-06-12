@@ -375,3 +375,18 @@ def test_build_autonomous_candidate_drafts_includes_fresh_inventory_expansion_wh
     assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
     assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
 
+
+def test_generator_evidence_bundle_accepts_current_exhaustion_hint(tmp_path) -> None:
+    from tools.generate_autonomous_idea_candidates import build_evidence_bundle
+
+    (tmp_path / "docs").mkdir(parents=True)
+    (tmp_path / "local_ai_cycles" / "memory").mkdir(parents=True)
+
+    bundle = build_evidence_bundle(
+        tmp_path,
+        current_exhaustion_hint="Preflight best candidate below productive minimum before autonomous fallback",
+    )
+
+    assert "preflight best candidate below productive minimum" in bundle.latest_summary.lower()
+    assert "preflight best candidate below productive minimum" in bundle.task_pool_exhausted.lower()
+

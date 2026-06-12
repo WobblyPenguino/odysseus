@@ -36,11 +36,18 @@ def collect_research_notes(root: Path) -> str:
     return "\n\n".join(chunk for chunk in chunks if chunk)
 
 
-def build_evidence_bundle(root: Path) -> EvidenceBundle:
+def build_evidence_bundle(root: Path, *, current_exhaustion_hint: str = "") -> EvidenceBundle:
+    latest_summary = _read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_LOOP_SUMMARY_LATEST.md")
+    task_pool_exhausted = _read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_POOL_EXHAUSTED_LATEST.md")
+    if current_exhaustion_hint.strip():
+        hint = current_exhaustion_hint.strip()
+        latest_summary = "\n".join(part for part in [latest_summary, hint] if part)
+        task_pool_exhausted = "\n".join(part for part in [task_pool_exhausted, hint] if part)
+
     return EvidenceBundle(
         roadmap=_read(root / "docs" / "NOVA_TASK_LOOP_ROADMAP.md"),
-        latest_summary=_read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_LOOP_SUMMARY_LATEST.md"),
-        task_pool_exhausted=_read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_POOL_EXHAUSTED_LATEST.md"),
+        latest_summary=latest_summary,
+        task_pool_exhausted=task_pool_exhausted,
         failure_review=_read(root / "local_ai_cycles" / "memory" / "NOVA_TASK_FAILURE_REVIEW_LATEST.md"),
         audit=_read(root / "docs" / "NOVA_AUTONOMY_FULL_CODEBASE_AUDIT.md"),
         research_notes=collect_research_notes(root),
@@ -92,10 +99,15 @@ def main() -> int:
         "--md",
         default="local_ai_cycles/memory/NOVA_AUTONOMOUS_IDEA_CANDIDATES_LATEST.md",
     )
+    parser.add_argument(
+        "--current-exhaustion-hint",
+        default="",
+        help="Current-cycle task-pool exhaustion hint supplied by the task loop before the exhaustion report is written.",
+    )
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
-    bundle = build_evidence_bundle(root)
+    bundle = build_evidence_bundle(root, current_exhaustion_hint=args.current_exhaustion_hint)
     candidates = build_autonomous_candidate_drafts(bundle, limit=args.limit)
 
     json_path = root / args.json
