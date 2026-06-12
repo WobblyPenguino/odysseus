@@ -644,3 +644,57 @@ def task_pool_exhaustion_diagnostics(bundle: EvidenceBundle) -> dict[str, object
         ),
     }
 
+
+def continuation_after_exhaustion_diagnostics(bundle: EvidenceBundle) -> dict[str, object]:
+    """Summarise why autonomous candidate continuation is needed after exhaustion."""
+
+    import re
+
+    sections = {
+        "latest_summary": str(getattr(bundle, "latest_summary", "") or ""),
+        "task_pool_exhausted": str(getattr(bundle, "task_pool_exhausted", "") or ""),
+        "failure_review": str(getattr(bundle, "failure_review", "") or ""),
+        "roadmap": str(getattr(bundle, "roadmap", "") or ""),
+        "audit": str(getattr(bundle, "audit", "") or ""),
+        "research_notes": str(getattr(bundle, "research_notes", "") or ""),
+    }
+    evidence = "\n".join(sections.values())
+    lower = evidence.lower()
+    candidate_ids = sorted(
+        set(re.findall(r"\b[a-z][a-z0-9]+(?:-[a-z0-9]+)+-v\d+\b", evidence))
+    )
+
+    exhausted = any(
+        marker in lower
+        for marker in (
+            "task-pool-exhausted",
+            "external candidate pool exhausted",
+            "no sufficiently productive task remained",
+            "below productive minimum",
+            "no fresh json draft",
+        )
+    )
+
+    completed_or_skipped = [
+        candidate_id
+        for candidate_id in candidate_ids
+        if candidate_id in lower
+    ]
+
+    return {
+        "task_pool_exhausted": exhausted,
+        "needs_continuation_candidate": exhausted,
+        "candidate_id_count": len(candidate_ids),
+        "candidate_ids": candidate_ids,
+        "completed_or_skipped_candidate_ids": completed_or_skipped,
+        "safe_editable_files": [
+            "nova_improvement_lab\\autonomous_candidate_factory.py",
+            "tests_autonomous_candidate_factory.py",
+        ],
+        "required_changed_files": [
+            "nova_improvement_lab\\autonomous_candidate_factory.py",
+            "tests_autonomous_candidate_factory.py",
+        ],
+        "targeted_tests": ["tests_autonomous_candidate_factory.py"],
+    }
+

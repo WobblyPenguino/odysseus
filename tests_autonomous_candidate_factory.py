@@ -578,3 +578,43 @@ def test_inventory_backed_generation_continues_after_exhaustion_diagnostics_comp
     assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
     assert candidate["RequiredDiffContains"]
 
+
+def test_continuation_after_exhaustion_diagnostics_reports_safe_source_test_contract() -> None:
+    from nova_improvement_lab.autonomous_candidate_factory import (
+        EvidenceBundle,
+        continuation_after_exhaustion_diagnostics,
+    )
+
+    bundle = EvidenceBundle(
+        latest_summary=(
+            "Autonomous candidate fallback failed: no fresh JSON draft written. "
+            "Best candidate below productive minimum."
+        ),
+        task_pool_exhausted=(
+            "Outcome category: task-pool-exhausted\n"
+            "No sufficiently productive task remained.\n"
+            "Idea promotion task draft skipped recent completed candidate(s): "
+            "candidate-factory-task-pool-exhaustion-diagnostics-v1, "
+            "candidate-factory-bad-task-id-filter-v1, "
+            "candidate-factory-failure-feedback-gap-v1"
+        ),
+        roadmap=(
+            "candidate-factory-continuation-after-exhaustion-v1\n"
+            "candidate-factory-validation-gap-v1"
+        ),
+        audit="real codebase source+test improvement",
+    )
+
+    diagnostics = continuation_after_exhaustion_diagnostics(bundle)
+
+    assert diagnostics["task_pool_exhausted"] is True
+    assert diagnostics["needs_continuation_candidate"] is True
+    assert "candidate-factory-continuation-after-exhaustion-v1" in diagnostics["candidate_ids"]
+    assert "candidate-factory-validation-gap-v1" in diagnostics["candidate_ids"]
+    assert diagnostics["safe_editable_files"] == [
+        "nova_improvement_lab\\autonomous_candidate_factory.py",
+        "tests_autonomous_candidate_factory.py",
+    ]
+    assert diagnostics["required_changed_files"] == diagnostics["safe_editable_files"]
+    assert diagnostics["targeted_tests"] == ["tests_autonomous_candidate_factory.py"]
+
