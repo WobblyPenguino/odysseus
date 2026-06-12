@@ -78,7 +78,7 @@ def _check_tokens(
 
 
 def _check_task_pool_health(root: Path) -> ReadinessCheck:
-    """Treat latest task-pool exhaustion evidence as a blocking readiness issue."""
+    """Treat current task-pool exhaustion evidence as a blocking readiness issue."""
 
     pool_relative = "local_ai_cycles/memory/NOVA_TASK_POOL_EXHAUSTED_LATEST.md"
     summary_relative = "local_ai_cycles/memory/NOVA_TASK_LOOP_SUMMARY_LATEST.md"
@@ -87,7 +87,6 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
 
     pool_text = _read_text(pool_path).lower()
     summary_text = _read_text(summary_path).lower()
-    combined = "\n".join([pool_text, summary_text])
 
     exhausted_markers = (
         "no sufficiently productive task remained",
@@ -96,7 +95,9 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
         "best candidate below productive minimum",
         "no aider invocation, commit, or source edit was attempted because the task pool is exhausted",
     )
-    exhausted = any(marker in combined for marker in exhausted_markers)
+    summary_exhausted = any(marker in summary_text for marker in exhausted_markers)
+    pool_exhausted = any(marker in pool_text for marker in exhausted_markers)
+    exhausted = summary_exhausted or pool_exhausted
 
     recovered_markers = (
         "autonomous candidate fallback selected productive task",
@@ -106,8 +107,17 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
     )
     recovered_by_autonomous_fallback = all(marker in summary_text for marker in recovered_markers)
 
-    if exhausted and not recovered_by_autonomous_fallback:
-        evidence_source = summary_relative if "task-pool-exhausted" in summary_text else pool_relative
+    successful_committed_fallback = (
+        "result: committed" in summary_text
+        and "validation gates passed" in summary_text
+        and (
+            "autonomous candidate fallback selected productive task" in summary_text
+            or "best task candidate candidate-factory-" in summary_text
+        )
+    )
+
+    if exhausted and not (recovered_by_autonomous_fallback or successful_committed_fallback):
+        evidence_source = summary_relative if summary_exhausted else pool_relative
         return ReadinessCheck(
             area="candidate pool",
             name=evidence_source,
@@ -116,6 +126,16 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
             next_action=(
                 "Add or approve fresh source-backed candidates, then run a preflight before any live autonomy cycle."
             ),
+            blocking=True,
+        )
+
+    if successful_committed_fallback:
+        return ReadinessCheck(
+            area="candidate pool",
+            name=summary_relative,
+            ok=True,
+            evidence="latest task-loop evidence shows autonomous fallback committed and passed validation",
+            next_action="",
             blocking=True,
         )
 
@@ -147,7 +167,6 @@ def _check_task_pool_health(root: Path) -> ReadinessCheck:
         next_action="",
         blocking=True,
     )
-
 
 def build_autonomy_readiness(root: str | Path = ".") -> dict[str, object]:
     """Build a deterministic readiness report for Nova's autonomy loop."""
