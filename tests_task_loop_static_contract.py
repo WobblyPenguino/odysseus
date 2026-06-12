@@ -865,7 +865,7 @@ def test_task_loop_idea_promotion_skips_recent_bad_outcome_candidates():
 def test_task_loop_uses_autonomous_candidate_fallback_on_pool_exhaustion():
     text = _runner_text()
     assert "Invoke-AutonomousCandidateFallback" in text
-    assert "generate_autonomous_idea_candidates.py --root . --limit 12" in text
+    assert "generate_autonomous_idea_candidates.py --root . --limit 12 --current-exhaustion-hint" in text
     assert "NOVA_AUTONOMOUS_IDEA_CANDIDATES.json" in text
     assert "NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
     assert "preflight best candidate below productive minimum" in text
