@@ -865,7 +865,7 @@ def test_task_loop_idea_promotion_skips_recent_bad_outcome_candidates():
 def test_task_loop_uses_autonomous_candidate_fallback_on_pool_exhaustion():
     text = _runner_text()
     assert "Invoke-AutonomousCandidateFallback" in text
-    assert "generate_autonomous_idea_candidates.py --root . --limit 5" in text
+    assert "generate_autonomous_idea_candidates.py --root . --limit 12" in text
     assert "NOVA_AUTONOMOUS_IDEA_CANDIDATES.json" in text
     assert "NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
     assert "preflight best candidate below productive minimum" in text
@@ -1014,4 +1014,15 @@ def test_nova_operator_liveonce_triages_before_throwing() -> None:
     assert "$liveExit = $LASTEXITCODE" in script
     assert 'Run-Step "Failure triage after live attempt"' in script
     assert "after triage" in script
+
+
+def test_task_loop_generates_wide_autonomous_candidate_pool() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    lines = [
+        line for line in script.splitlines()
+        if "generate_autonomous_idea_candidates.py" in line
+    ]
+    assert lines, "expected autonomous candidate generator call"
+    assert any("--limit 12" in line for line in lines)
+    assert not any("--limit 5" in line for line in lines)
 
