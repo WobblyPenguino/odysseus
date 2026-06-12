@@ -938,3 +938,18 @@ def test_task_loop_quotes_current_exhaustion_hint_for_nested_powershell() -> Non
     assert "$escapedReason = $Reason.Replace(\"'\", \"''\")" in script
     assert "--current-exhaustion-hint '$escapedReason'" in script
 
+
+def test_nova_operator_exposes_safe_modes() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert 'ValidateSet("Status", "Clean", "Check", "Preflight", "DryRun", "LiveOnce", "Triage", "SafeCycle")' in script
+    assert "run_supervised_autonomy_batch.py --max-cycles 1 --dry-run" in script
+    assert "run_supervised_autonomy_batch.py --max-cycles 1" in script
+    assert "nova_failure_triage.py" in script
+
+
+def test_failure_triage_tool_detects_required_file_breach() -> None:
+    script = Path("tools/nova_failure_triage.py").read_text(encoding="utf-8")
+    assert "missing required changed file" in script
+    assert "NOVA_FAILURE_TRIAGE_LATEST.md" in script
+    assert "recommended_action" in script
+
