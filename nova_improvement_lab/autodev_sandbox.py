@@ -377,3 +377,17 @@ def render_action_plan_titles(items: Iterable[WorkItem]) -> list[str]:
     If *items* is empty, an empty list is returned.
     """
     return [i.title for i in sort_work_items_by_priority(items)]
+
+
+def get_task_selection_diagnostics(items: Iterable[WorkItem]) -> list[tuple[str, str, int]]:
+    """Return deterministic task-selection diagnostics for each work item.
+
+    The result uses the same ordering as normal task selection and exposes
+    the title, normalised status, and priority score for each item.
+    """
+
+    return [
+        (item.title, normalise_status(item.status), priority_score(item))
+        for item in sort_work_items_by_priority(items)
+    ]
+

@@ -1,4 +1,4 @@
-from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines, render_action_plan_debug_markdown, render_action_plan_debug_json, render_next_work_item_line, render_action_plan_titles
+from nova_improvement_lab.autodev_sandbox import WorkItem, normalise_status, suggest_next_action, summarise_items, priority_score, sort_work_items_by_priority, select_next_work_item, actionable_work_items, explain_next_action, group_work_items_by_status, summarise_action_plan, format_action_plan_summary, render_action_plan_markdown, render_action_plan_status_line, build_action_plan_debug_dict, render_action_plan_debug_lines, render_action_plan_debug_markdown, render_action_plan_debug_json, render_next_work_item_line, render_action_plan_titles, get_task_selection_diagnostics
 
 
 def test_autodev_sandbox_summarises_status_counts():
@@ -379,3 +379,26 @@ def test_autodev_sandbox_renders_next_work_item_line():
     # When no actionable items remain
     idle_line = render_next_work_item_line([WorkItem("done_item", status="done")])
     assert idle_line == "Next: none"
+
+
+def test_autodev_sandbox_task_selection_diagnostics():
+    items = [
+        WorkItem("todo_task", status="todo"),
+        WorkItem("blocked_task", status="blocked"),
+        WorkItem("review_task", status="review"),
+        WorkItem("done_task", status="done"),
+    ]
+
+    diagnostics = get_task_selection_diagnostics(items)
+
+    assert diagnostics == [
+        ("blocked_task", "blocked", priority_score(WorkItem("blocked_task", status="blocked"))),
+        ("review_task", "review", priority_score(WorkItem("review_task", status="review"))),
+        ("todo_task", "todo", priority_score(WorkItem("todo_task", status="todo"))),
+        ("done_task", "done", priority_score(WorkItem("done_task", status="done"))),
+    ]
+
+
+def test_autodev_sandbox_task_selection_diagnostics_empty():
+    assert get_task_selection_diagnostics([]) == []
+
