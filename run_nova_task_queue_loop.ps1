@@ -2949,8 +2949,8 @@ function Invoke-AutonomousCandidateFallback {
     }
 
     Add-Summary "Autonomous candidate fallback starting: $Reason"
-    $escapedReason = $Reason.Replace('"', '\\"')
-    Run-Cmd "python .\tools\generate_autonomous_idea_candidates.py --root . --limit 5 --current-exhaustion-hint `"$escapedReason`""
+    $escapedReason = $Reason.Replace("'", "''")
+    Run-Cmd "python .\tools\generate_autonomous_idea_candidates.py --root . --limit 5 --current-exhaustion-hint '$escapedReason'"
 
     $autonomousConfig = ".\local_ai_cycles\config\NOVA_AUTONOMOUS_IDEA_CANDIDATES.json"
     $autonomousReport = ".\local_ai_cycles\memory\NOVA_AUTONOMOUS_IDEA_CANDIDATES_LATEST.md"

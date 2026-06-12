@@ -931,3 +931,10 @@ def test_task_loop_recent_outcome_reader_includes_durable_memory() -> None:
     assert "MISTAKE_MEMORY.md" in body
     assert "NO_CHANGE_TARGETS.md" in body
     assert "NOVA_TASK_FAILURE_REVIEW_LATEST.md" in body
+
+
+def test_task_loop_quotes_current_exhaustion_hint_for_nested_powershell() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    assert "$escapedReason = $Reason.Replace(\"'\", \"''\")" in script
+    assert "--current-exhaustion-hint '$escapedReason'" in script
+
