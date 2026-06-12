@@ -184,14 +184,23 @@ try {
     }
 
     if ($Mode -eq "LiveOnce") {
-        Run-Step "Supervised batch live once" {
-            python .\tools\run_supervised_autonomy_batch.py --max-cycles 1
-        }
+        Write-Host ""
+        Write-Host "========== Supervised batch live once ==========" -ForegroundColor Cyan
+        python .\tools\run_supervised_autonomy_batch.py --max-cycles 1
+        $liveExit = $LASTEXITCODE
+
         Clean-GeneratedNoise
+
         Run-Step "Failure triage after live attempt" {
             python .\tools\nova_failure_triage.py
         }
+
         Show-Status
+
+        if ($liveExit -ne 0) {
+            throw "Supervised batch live once failed with exit code $liveExit after triage."
+        }
+
         return
     }
 

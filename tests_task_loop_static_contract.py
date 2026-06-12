@@ -1008,3 +1008,10 @@ def test_nova_operator_package_refreshes_failure_triage() -> None:
     assert 'Run-Step "Refresh failure triage"' in script
     assert "python .\\tools\\nova_failure_triage.py" in script
 
+
+def test_nova_operator_liveonce_triages_before_throwing() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert "$liveExit = $LASTEXITCODE" in script
+    assert 'Run-Step "Failure triage after live attempt"' in script
+    assert "after triage" in script
+
