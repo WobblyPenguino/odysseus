@@ -320,3 +320,58 @@ def test_build_autonomous_candidate_drafts_preserves_meta_candidates_with_invent
 
     assert "tools-report-state-task-pool-diagnostics-v1" in ids
     assert "candidate-factory-pool-exhaustion-summary-v1" in ids
+
+
+def test_inventory_backed_generation_expands_after_primary_inventory_candidates_completed() -> None:
+    roadmap = "\n".join(
+        [
+            "- abc1234 Task queue improvement: tools-report-state-task-pool-diagnostics-v1",
+            "- def5678 Task queue improvement: nova-lab-autodev-sandbox-task-selection-diagnostics-v1",
+            "- candidate-factory-bad-task-id-filter-v1 [recently-completed]",
+            "- candidate-factory-failure-feedback-gap-v1 [recently-completed]",
+        ]
+    )
+    bundle = EvidenceBundle(
+        roadmap=roadmap,
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nNo sufficiently productive task remained.",
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_inventory_backed_candidate_drafts(bundle)
+    ids = candidate_ids(candidates)
+
+    assert "tools-report-state-task-pool-diagnostics-v1" not in ids
+    assert "nova-lab-autodev-sandbox-task-selection-diagnostics-v1" not in ids
+    assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
+    assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
+
+    for candidate in candidates:
+        assert set(["Id", "Goal", "Editable", "RequiredChangedFiles", "RequiredDiffContains", "Tests"]).issubset(candidate)
+        assert candidate["Editable"] == [
+            "nova_improvement_lab\\autonomous_candidate_factory.py",
+            "tests_autonomous_candidate_factory.py",
+        ]
+        assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+        assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
+
+
+def test_build_autonomous_candidate_drafts_includes_fresh_inventory_expansion_when_pool_exhausted() -> None:
+    roadmap = "\n".join(
+        [
+            "- abc1234 Task queue improvement: tools-report-state-task-pool-diagnostics-v1",
+            "- def5678 Task queue improvement: nova-lab-autodev-sandbox-task-selection-diagnostics-v1",
+        ]
+    )
+    bundle = EvidenceBundle(
+        roadmap=roadmap,
+        latest_summary="Task selection scoring diagnostics are needed.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nNo sufficiently productive task remained.",
+        audit="real codebase source+test improvement",
+    )
+
+    ids = candidate_ids(build_autonomous_candidate_drafts(bundle, limit=8))
+
+    assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
+    assert "candidate-factory-promotion-skip-reason-diagnostics-v1" in ids
+

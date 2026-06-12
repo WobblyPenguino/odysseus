@@ -321,6 +321,54 @@ def build_inventory_backed_candidate_drafts(bundle: EvidenceBundle) -> list[dict
                 )
             )
 
+    if exhausted and len(candidates) < 2:
+        fallback_specs = [
+            (
+                "candidate-factory-task-pool-exhaustion-diagnostics-v1",
+                (
+                    "Improve Nova's autonomous candidate factory with deterministic task-pool "
+                    "exhaustion diagnostics. Update nova_improvement_lab\\autonomous_candidate_factory.py "
+                    "to expose a small helper for summarising exhausted candidate-pool state, and verify "
+                    "with tests_autonomous_candidate_factory.py."
+                ),
+                [
+                    "task_pool_exhaustion_diagnostics",
+                    "test_candidate_factory_task_pool_exhaustion_diagnostics",
+                ],
+            ),
+            (
+                "candidate-factory-promotion-skip-reason-diagnostics-v1",
+                (
+                    "Improve Nova's autonomous candidate factory with deterministic promotion-skip "
+                    "diagnostics. Update nova_improvement_lab\\autonomous_candidate_factory.py to expose "
+                    "a small helper for explaining why generated candidates are skipped, and verify with "
+                    "tests_autonomous_candidate_factory.py."
+                ),
+                [
+                    "promotion_skip_reason_diagnostics",
+                    "test_candidate_factory_promotion_skip_reason_diagnostics",
+                ],
+            ),
+        ]
+
+        for candidate_id, goal, required_diff_contains in fallback_specs:
+            if len(candidates) >= 2:
+                break
+            if candidate_id in blocked_ids:
+                continue
+            candidates.append(
+                _inventory_backed_candidate(
+                    candidate_id=candidate_id,
+                    goal=goal,
+                    editable=[
+                        "nova_improvement_lab\\autonomous_candidate_factory.py",
+                        "tests_autonomous_candidate_factory.py",
+                    ],
+                    required_diff_contains=required_diff_contains,
+                    tests=["tests_autonomous_candidate_factory.py"],
+                )
+            )
+
     return candidates[:2]
 
 def _candidate(
