@@ -1788,6 +1788,9 @@ function Write-TaskPrompt {
         "- Make exactly one small real improvement, or make no changes.",
         "- Prefer source + test changes.",
         "- Do not make test-only changes unless the task is already impossible as source+test.",
+        "- Edit every file listed in RequiredChangedFiles; missing any required file is a failed task.",
+        "- Source+test evidence is mandatory for live candidates.",
+        "- Do not make docs-only or report-only patches.",
         "- Do not invent APIs, classes, commands, or output text.",
         "- Do not add placeholder tests, TODOs, pass-only tests, Mock, MagicMock, or assert True.",
         "- Do not ask to add files.",
@@ -2850,6 +2853,8 @@ function Write-IdeaPromotionTaskDraft {
         "- The markdown report is not executable.",
         "- Runtime registration must load the JSON draft.",
         "- The promoted task must pass preflight localization before live execution.",
+        "- The live patch must edit every RequiredChangedFiles entry and include source+test evidence.",
+        "- The live patch must avoid non-editable files and docs-only or report-only changes.",
         "- The idea-promotion task draft alone must never trigger Aider."
     )
 

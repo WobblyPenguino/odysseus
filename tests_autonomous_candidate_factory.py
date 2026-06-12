@@ -1,6 +1,7 @@
 from nova_improvement_lab.autonomous_candidate_factory import (
     EvidenceBundle,
     build_autonomous_candidate_drafts,
+    build_fresh_continuation_candidate_drafts,
     candidate_ids,
     evidence_mentions_task_pool_exhaustion,
     extract_recent_bad_task_ids,
@@ -469,6 +470,104 @@ def test_generator_current_exhaustion_hint_surfaces_continuation_after_skipped_f
         )
         assert candidate["RequiredChangedFiles"] == candidate["Editable"]
         assert candidate["Tests"]
+
+
+def test_fresh_synthesis_continues_after_fixed_candidate_factory_inventory_is_spent() -> None:
+    completed = "\n".join(
+        [
+            "Task queue improvement: candidate-factory-pool-exhaustion-summary-v1",
+            "Task queue improvement: candidate-factory-task-pool-exhaustion-diagnostics-v1",
+            "Task queue improvement: candidate-factory-bad-task-id-filter-v1",
+            "Task queue improvement: candidate-factory-failure-feedback-gap-v1",
+            "Task queue improvement: candidate-factory-continuation-after-exhaustion-v1",
+            (
+                "Idea promotion task draft skipped recent completed candidate(s): "
+                "candidate-factory-pool-exhaustion-summary-v1, "
+                "candidate-factory-task-pool-exhaustion-diagnostics-v1, "
+                "candidate-factory-bad-task-id-filter-v1, "
+                "candidate-factory-failure-feedback-gap-v1"
+            ),
+        ]
+    )
+    bundle = EvidenceBundle(
+        roadmap=completed,
+        latest_summary=(
+            "Best candidate below productive minimum. "
+            "Idea promotion task draft external candidate pool exhausted; no fresh JSON draft written."
+        ),
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nNo sufficiently productive task remained.",
+        failure_review=(
+            "Task ID: candidate-factory-continuation-after-exhaustion-v1\n"
+            "Stage: validation-gate\n"
+            "Reason: missing required changed file(s): tests_autonomous_candidate_factory.py"
+        ),
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_autonomous_candidate_drafts(bundle, limit=12)
+    ids = candidate_ids(candidates)
+
+    assert "candidate-factory-no-goal-repo-audit-v1" in ids
+    assert "candidate-factory-required-files-enforcement-v1" in ids
+    assert "candidate-factory-stale-inventory-recovery-v1" in ids
+    assert "candidate-factory-continuation-after-exhaustion-v1" not in ids
+
+    synthesized = [
+        candidate
+        for candidate in candidates
+        if candidate["Id"].startswith("candidate-factory-")
+        and candidate["Id"] in {
+            "candidate-factory-no-goal-repo-audit-v1",
+            "candidate-factory-required-files-enforcement-v1",
+            "candidate-factory-stale-inventory-recovery-v1",
+            "candidate-factory-live-contract-evidence-v1",
+        }
+    ]
+    assert synthesized
+    for candidate in synthesized:
+        assert candidate["Editable"] == [
+            "nova_improvement_lab\\autonomous_candidate_factory.py",
+            "tests_autonomous_candidate_factory.py",
+        ]
+        assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+        assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
+        assert "tests_autodev_sandbox.py" not in str(candidate)
+        assert "docs\\" not in str(candidate).lower()
+        assert "report-only" in candidate["Goal"]
+
+
+def test_fresh_synthesis_supports_user_goal_mode_with_contract_fields() -> None:
+    bundle = EvidenceBundle(
+        latest_summary="User goal: build a goal-to-candidate planner with acceptance criteria.",
+        task_pool_exhausted="Outcome category: task-pool-exhausted",
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_fresh_continuation_candidate_drafts(bundle, limit=4)
+    ids = candidate_ids(candidates)
+
+    assert "candidate-factory-goal-to-candidate-planner-v1" in ids
+    candidate = next(c for c in candidates if c["Id"] == "candidate-factory-goal-to-candidate-planner-v1")
+    assert "Acceptance criteria" in candidate["Goal"]
+    assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+    assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
+    assert "tests_autodev_sandbox.py" not in str(candidate)
+
+
+def test_validate_idea_promotion_candidates_accepts_fresh_synthesis_candidates() -> None:
+    from tools.validate_idea_promotion_candidates import validate_candidates
+
+    bundle = EvidenceBundle(
+        latest_summary="external candidate pool exhausted; no fresh JSON draft written",
+        task_pool_exhausted="Outcome category: task-pool-exhausted\nNo sufficiently productive task remained.",
+        audit="real codebase source+test improvement",
+    )
+
+    candidates = build_fresh_continuation_candidate_drafts(bundle, limit=4)
+    accepted, rejected = validate_candidates(candidates)
+
+    assert len(accepted) == len(candidates)
+    assert rejected == []
 
 
 def test_candidate_factory_builds_task_pool_exhaustion_summary() -> None:

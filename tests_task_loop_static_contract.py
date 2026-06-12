@@ -939,6 +939,14 @@ def test_task_loop_quotes_current_exhaustion_hint_for_nested_powershell() -> Non
     assert "--current-exhaustion-hint '$escapedReason'" in script
 
 
+def test_task_prompt_requires_required_files_and_source_test_evidence() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    assert "Edit every file listed in RequiredChangedFiles" in script
+    assert "Source+test evidence is mandatory for live candidates" in script
+    assert "Do not make docs-only or report-only patches" in script
+    assert "avoid non-editable files and docs-only or report-only changes" in script
+
+
 def test_nova_operator_exposes_safe_modes() -> None:
     script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
     for mode in ["Status", "Clean", "Check", "Preflight", "DryRun", "LiveOnce", "Triage", "SafeCycle", "Package"]:

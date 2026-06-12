@@ -405,6 +405,144 @@ def _candidate(
     }
 
 
+def build_fresh_continuation_candidate_drafts(
+    bundle: EvidenceBundle, *, limit: int = 4
+) -> list[dict[str, object]]:
+    """Synthesize safe source+test candidates after fixed inventories are spent."""
+
+    text = normalise_evidence_text(bundle)
+    lowered = text.lower()
+    inventory = build_local_discovery_inventory(bundle)
+    blocked_ids = set(inventory.get("completed_task_ids", [])) | set(
+        inventory.get("failed_task_ids", [])
+    ) | extract_recent_bad_task_ids(text)
+
+    needs_synthesis = evidence_mentions_task_pool_exhaustion(bundle) or any(
+        marker in lowered
+        for marker in (
+            "below productive minimum",
+            "external candidate pool exhausted",
+            "no fresh json draft",
+            "skipped recent completed candidate",
+        )
+    )
+    if not needs_synthesis:
+        return []
+
+    goal_mode = any(
+        marker in lowered
+        for marker in (
+            "user goal",
+            "goal-to-candidate",
+            "acceptance criteria",
+            "user prompt",
+        )
+    )
+
+    specs: list[tuple[str, str, list[str]]] = []
+    if goal_mode:
+        specs.append(
+            (
+                "candidate-factory-goal-to-candidate-planner-v1",
+                (
+                    "Add deterministic user-goal candidate planning to Nova's autonomous "
+                    "candidate factory. Acceptance criteria: convert goal evidence into "
+                    "clear candidate contracts with source files, test files, required "
+                    "changed files, targeted tests, required diff markers, and safety "
+                    "constraints. You must edit every RequiredChangedFiles entry, keep the "
+                    "patch source+test, avoid non-editable files, and avoid docs-only or "
+                    "report-only work."
+                ),
+                [
+                    "build_goal_to_candidate_contracts",
+                    "test_candidate_factory_builds_goal_to_candidate_contracts",
+                ],
+            )
+        )
+
+    specs.extend(
+        [
+            (
+                "candidate-factory-no-goal-repo-audit-v1",
+                (
+                    "Add deterministic no-goal repo audit candidate planning to Nova's "
+                    "autonomous candidate factory. Acceptance criteria: summarize local "
+                    "task-pool exhaustion, failure triage, repeated no-change outcomes, "
+                    "missing source+test evidence, stale candidate inventory, and "
+                    "low-scoring candidates into safe source+test candidate contracts. "
+                    "You must edit every RequiredChangedFiles entry, avoid non-editable "
+                    "files, and avoid docs-only or report-only work."
+                ),
+                [
+                    "build_no_goal_repo_audit_candidates",
+                    "test_candidate_factory_builds_no_goal_repo_audit_candidates",
+                ],
+            ),
+            (
+                "candidate-factory-required-files-enforcement-v1",
+                (
+                    "Add deterministic required-file contract guidance to Nova's "
+                    "autonomous candidate factory. Acceptance criteria: generated live "
+                    "candidates must state that every RequiredChangedFiles entry must be "
+                    "edited, source+test evidence is mandatory, non-editable files must "
+                    "not be requested, and docs-only or report-only patches are invalid."
+                ),
+                [
+                    "required_file_contract_guidance",
+                    "test_candidate_factory_required_file_contract_guidance",
+                ],
+            ),
+            (
+                "candidate-factory-stale-inventory-recovery-v1",
+                (
+                    "Add deterministic stale-inventory recovery to Nova's autonomous "
+                    "candidate factory. Acceptance criteria: when fixed candidate-factory "
+                    "tasks are completed, skipped, failed, or quarantined, generate later "
+                    "safe source+test candidates instead of exhausting the JSON draft pool. "
+                    "You must edit every RequiredChangedFiles entry and keep the patch "
+                    "inside the editable source+test contract; docs-only or report-only "
+                    "patches are invalid."
+                ),
+                [
+                    "stale_inventory_recovery",
+                    "test_candidate_factory_stale_inventory_recovery",
+                ],
+            ),
+            (
+                "candidate-factory-live-contract-evidence-v1",
+                (
+                    "Add deterministic live-candidate evidence checks to Nova's "
+                    "autonomous candidate factory. Acceptance criteria: candidate goals "
+                    "must include acceptance criteria, safe editable source and test files, "
+                    "required changed files, targeted tests, required diff markers, and "
+                    "explicit safety constraints before runtime promotion. Docs-only or "
+                    "report-only patches are invalid."
+                ),
+                [
+                    "live_candidate_contract_evidence",
+                    "test_candidate_factory_live_candidate_contract_evidence",
+                ],
+            ),
+        ]
+    )
+
+    candidates: list[dict[str, object]] = []
+    for candidate_id, goal, diff_markers in specs:
+        if candidate_id in blocked_ids:
+            continue
+        candidates.append(
+            _candidate(
+                candidate_id=candidate_id,
+                goal=goal,
+                diff_markers=diff_markers,
+            )
+        )
+        if len(candidates) >= max(1, limit):
+            break
+
+    return candidates
+
+
 def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5) -> list[dict[str, object]]:
     """Build safe source+test candidate drafts from evidence.
 
@@ -543,6 +681,13 @@ def build_autonomous_candidate_drafts(bundle: EvidenceBundle, *, limit: int = 5)
                 ],
             )
         )
+
+    existing_ids = set(candidate_ids(candidates))
+    for candidate in build_fresh_continuation_candidate_drafts(bundle, limit=limit):
+        candidate_id = str(candidate.get("Id", "")).strip()
+        if candidate_id and candidate_id not in existing_ids:
+            candidates.append(candidate)
+            existing_ids.add(candidate_id)
 
     if bad_ids:
         candidates = filter_recent_bad_candidate_ids(candidates, bad_ids)
