@@ -511,7 +511,20 @@ def test_inventory_backed_generation_continues_after_exhaustion_diagnostics_comp
         audit="real codebase source+test improvement",
     )
 
-    ids = candidate_ids(build_autonomous_candidate_drafts(bundle, limit=8))
+    candidates = build_autonomous_candidate_drafts(bundle, limit=8)
+    ids = candidate_ids(candidates)
 
     assert "candidate-factory-continuation-after-exhaustion-v1" in ids
+    candidate = next(
+        c
+        for c in candidates
+        if c["Id"] == "candidate-factory-continuation-after-exhaustion-v1"
+    )
+    assert candidate["Editable"] == [
+        "nova_improvement_lab\\autonomous_candidate_factory.py",
+        "tests_autonomous_candidate_factory.py",
+    ]
+    assert candidate["RequiredChangedFiles"] == candidate["Editable"]
+    assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
+    assert candidate["RequiredDiffContains"]
 
