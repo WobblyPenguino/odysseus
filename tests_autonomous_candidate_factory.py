@@ -232,7 +232,7 @@ def test_local_discovery_inventory_does_not_generate_candidates_for_nonexistent_
     assert "winlocalassistant\\validate.py" not in str(inventory)
 
 
-def test_inventory_backed_generation_produces_non_meta_source_test_candidate() -> None:
+def test_inventory_backed_generation_produces_safe_source_test_candidate() -> None:
     bundle = EvidenceBundle(
         latest_summary="Task selection scoring diagnostics are needed.",
         task_pool_exhausted="Outcome category: task-pool-exhausted\nBest candidate below productive minimum.",
@@ -242,14 +242,15 @@ def test_inventory_backed_generation_produces_non_meta_source_test_candidate() -
     candidates = build_inventory_backed_candidate_drafts(bundle)
     ids = candidate_ids(candidates)
 
-    assert "tools-report-state-task-pool-diagnostics-v1" in ids
-    candidate = next(c for c in candidates if c["Id"] == "tools-report-state-task-pool-diagnostics-v1")
+    assert "tools-report-state-task-pool-diagnostics-v1" not in ids
+    assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
+    candidate = next(c for c in candidates if c["Id"] == "candidate-factory-task-pool-exhaustion-diagnostics-v1")
     assert candidate["Editable"] == [
-        "tools\\report_supervised_autonomy_state.py",
-        "tests_supervised_autonomy_state_report.py",
+        "nova_improvement_lab\\autonomous_candidate_factory.py",
+        "tests_autonomous_candidate_factory.py",
     ]
     assert candidate["RequiredChangedFiles"] == candidate["Editable"]
-    assert candidate["Tests"] == ["tests_supervised_autonomy_state_report.py"]
+    assert candidate["Tests"] == ["tests_autonomous_candidate_factory.py"]
 
 
 def test_inventory_backed_generation_avoids_completed_task_ids() -> None:
@@ -318,8 +319,9 @@ def test_build_autonomous_candidate_drafts_preserves_meta_candidates_with_invent
 
     ids = candidate_ids(build_autonomous_candidate_drafts(bundle))
 
-    assert "tools-report-state-task-pool-diagnostics-v1" in ids
+    assert "tools-report-state-task-pool-diagnostics-v1" not in ids
     assert "candidate-factory-pool-exhaustion-summary-v1" in ids
+    assert "candidate-factory-task-pool-exhaustion-diagnostics-v1" in ids
 
 
 def test_inventory_backed_generation_expands_after_primary_inventory_candidates_completed() -> None:

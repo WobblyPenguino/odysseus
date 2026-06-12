@@ -271,29 +271,10 @@ def build_inventory_backed_candidate_drafts(bundle: EvidenceBundle) -> list[dict
         or bool(inventory.get("asks_for_non_meta_codebase_improvements", False))
     )
 
-    if wants_scoring_or_reporting:
-        candidate_id = "tools-report-state-task-pool-diagnostics-v1"
-        if candidate_id not in blocked_ids:
-            candidates.append(
-                _inventory_backed_candidate(
-                    candidate_id=candidate_id,
-                    goal=(
-                        "Improve Nova's supervised autonomy state report with clearer "
-                        "task-pool diagnostics. Update tools\\report_supervised_autonomy_state.py "
-                        "to surface the latest task-pool exhaustion reason and selected candidate "
-                        "score context, and verify with tests_supervised_autonomy_state_report.py."
-                    ),
-                    editable=[
-                        "tools\\report_supervised_autonomy_state.py",
-                        "tests_supervised_autonomy_state_report.py",
-                    ],
-                    required_diff_contains=[
-                        "task-pool diagnostics",
-                        "test_report",
-                    ],
-                    tests=["tests_supervised_autonomy_state_report.py"],
-                )
-            )
+    # Do not emit tools/report candidates here. The autonomous promotion validator
+    # intentionally restricts generated candidates to safe source+test paths.
+    # Runtime fallback candidates should stay inside nova_improvement_lab plus tests.
+    _ = wants_scoring_or_reporting
 
     if len(candidates) < 2 and (
         "task_selection_scoring" in themes or "repeated_low_value" in themes
