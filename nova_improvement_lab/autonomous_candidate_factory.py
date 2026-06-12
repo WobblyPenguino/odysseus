@@ -571,3 +571,46 @@ def build_task_pool_exhaustion_summary(bundle: EvidenceBundle) -> str:
         + str(fresh_candidate_generation_needed)
     )
 
+
+def task_pool_exhaustion_diagnostics(bundle: EvidenceBundle) -> dict[str, object]:
+    """Return deterministic diagnostics for exhausted autonomous task pools."""
+
+    import re
+
+    evidence = "\n".join(
+        str(getattr(bundle, name, "") or "")
+        for name in (
+            "latest_summary",
+            "task_pool_exhausted",
+            "failure_review",
+            "roadmap",
+            "audit",
+            "research_notes",
+        )
+    )
+    lower = evidence.lower()
+    candidate_ids = sorted(
+        set(re.findall(r"\b[a-z][a-z0-9]+(?:-[a-z0-9]+)+-v\d+\b", evidence))
+    )
+
+    exhausted = any(
+        marker in lower
+        for marker in (
+            "task-pool-exhausted",
+            "no sufficiently productive task remained",
+            "below productive minimum",
+            "external candidate pool exhausted",
+        )
+    )
+
+    return {
+        "task_pool_exhausted": exhausted,
+        "candidate_id_count": len(candidate_ids),
+        "candidate_ids": candidate_ids,
+        "needs_fresh_candidate_generation": exhausted,
+        "has_required_file_contract_failure": (
+            "required-file contract breach" in lower
+            or "missing required changed file" in lower
+        ),
+    }
+

@@ -448,3 +448,36 @@ def test_candidate_factory_builds_task_pool_exhaustion_summary() -> None:
     assert "recent_bad_task_ids=2" in summary
     assert "fresh_candidate_generation_needed=True" in summary
 
+
+def test_candidate_factory_task_pool_exhaustion_diagnostics() -> None:
+    from nova_improvement_lab.autonomous_candidate_factory import (
+        EvidenceBundle,
+        task_pool_exhaustion_diagnostics,
+    )
+
+    bundle = EvidenceBundle(
+        latest_summary=(
+            "Live best candidate below productive minimum. "
+            "candidate-factory-task-pool-exhaustion-diagnostics-v1"
+        ),
+        task_pool_exhausted=(
+            "Outcome category: task-pool-exhausted\n"
+            "No sufficiently productive task remained.\n"
+            "candidate-factory-agent-browser-evidence-v1"
+        ),
+        failure_review=(
+            "Rejected required-file contract breach: missing required changed file(s): "
+            "tests_autonomous_candidate_factory.py."
+        ),
+        roadmap="candidate-factory-bad-task-id-filter-v1",
+        audit="real codebase source+test improvement",
+    )
+
+    diagnostics = task_pool_exhaustion_diagnostics(bundle)
+
+    assert diagnostics["task_pool_exhausted"] is True
+    assert diagnostics["needs_fresh_candidate_generation"] is True
+    assert diagnostics["has_required_file_contract_failure"] is True
+    assert diagnostics["candidate_id_count"] == 3
+    assert "candidate-factory-agent-browser-evidence-v1" in diagnostics["candidate_ids"]
+
