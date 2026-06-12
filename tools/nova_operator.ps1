@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("Status", "Clean", "Check", "Preflight", "DryRun", "LiveOnce", "Triage", "SafeCycle")]
+    [ValidateSet("Status", "Clean", "Check", "Preflight", "DryRun", "LiveOnce", "Triage", "SafeCycle", "Package")]
     [string]$Mode = "Status",
 
     [string]$PackageLabel = ""
@@ -139,6 +139,14 @@ try {
         Run-Step "Failure triage" {
             python .\tools\nova_failure_triage.py
         }
+        Show-Status
+        return
+    }
+
+    if ($Mode -eq "Package") {
+        Clean-GeneratedNoise
+        Assert-CleanGit
+        Package-Checkpoint -Label $PackageLabel
         Show-Status
         return
     }
