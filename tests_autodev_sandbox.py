@@ -402,3 +402,14 @@ def test_autodev_sandbox_task_selection_diagnostics():
 def test_autodev_sandbox_task_selection_diagnostics_empty():
     assert get_task_selection_diagnostics([]) == []
 
+
+import unittest
+from nova_improvement_lab.autodev_sandbox import evaluate_candidates_with_consensus
+
+class TestSandboxConsensusIntegration(unittest.TestCase):
+    def test_evaluate_candidates_with_consensus(self):
+        batches = [["cand_1", "cand_2"], ["cand_3", "cand_4"]]
+        result = evaluate_candidates_with_consensus(batches, lane_count=2)
+        self.assertEqual(result["lane_count"], 2)
+        self.assertIn("global_merkle_root", result)
+        self.assertTrue(result["consensus_verified"])
