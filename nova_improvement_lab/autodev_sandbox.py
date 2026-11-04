@@ -1,4 +1,5 @@
-from __future__ import annotations
+﻿from __future__ import annotations
+from nova_improvement_lab.m24_consensus_engine import MultiLaneConsensusEngine
 
 from dataclasses import dataclass
 from typing import Iterable, Mapping
@@ -76,7 +77,7 @@ def sort_work_items_by_priority(items: Iterable[WorkItem]) -> list[WorkItem]:
 
 def select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None:
     """
-    Return the highest‑priority actionable work item from *items*.
+    Return the highestâ€‘priority actionable work item from *items*.
 
     Actionable items are those whose status is not normalised to "done".
     The returned item respects stable ordering among items of equal priority.
@@ -89,7 +90,7 @@ def select_next_work_item(items: Iterable[WorkItem]) -> WorkItem | None:
 
 def explain_next_action(items: Iterable[WorkItem]) -> str:
     """
-    Return a human‑readable explanation of the next action to take.
+    Return a humanâ€‘readable explanation of the next action to take.
 
     The function uses :func:`select_next_work_item` to determine the highest
     priority actionable item.  If no actionable items remain, ``"idle"``
@@ -143,7 +144,7 @@ def summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object]:
     The returned dictionary contains:
       - ``total``: total number of items
       - ``actionable``: count of items that are not normalised to "done"
-      - ``next_title``: title of the highest‑priority actionable item,
+      - ``next_title``: title of the highestâ€‘priority actionable item,
         or ``None`` if no such item exists
       - ``next_status``: normalised status of that item, or ``None``
       - ``next_score``: priority score of that item, or ``None``
@@ -174,7 +175,7 @@ def summarise_action_plan(items: Iterable[WorkItem]) -> dict[str, object]:
 def format_action_plan_summary(summary: Mapping[str, object]) -> str:
     """
     Format the dictionary returned by :func:`summarise_action_plan` into a
-    stable human‑readable sentence.
+    stable humanâ€‘readable sentence.
 
     The output contains the total number of items, the count of actionable
     items and details about the next item (title, status and score).  If no
@@ -216,7 +217,7 @@ def render_action_plan_markdown(items: Iterable[WorkItem]) -> str:
     ]
 
     if summary["next_title"] is None:
-        # No actionable items – represent as idle.
+        # No actionable items â€“ represent as idle.
         lines.append("- Next title: idle")
         lines.append("- Next status:")
         lines.append("- Next score:")
@@ -230,7 +231,7 @@ def render_action_plan_markdown(items: Iterable[WorkItem]) -> str:
 
 def render_action_plan_status_line(items: Iterable[WorkItem]) -> str:
     """
-    Render a single stable human‑readable line summarising the action plan.
+    Render a single stable humanâ€‘readable line summarising the action plan.
 
     The output contains the total number of items, the count of actionable
     items and details about the next item (title, status and score).  If no
@@ -261,8 +262,8 @@ def build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object]
       - next_title (str | None)
       - next_status (str | None)
       - next_score (int | None)
-      - has_next (bool) – True if there is a next item
-      - status_line (str) – the single‑line status from render_action_plan_status_line
+      - has_next (bool) â€“ True if there is a next item
+      - status_line (str) â€“ the singleâ€‘line status from render_action_plan_status_line
 
     This function simply aggregates data from :func:`summarise_action_plan`
     and :func:`render_action_plan_status_line` to provide a convenient
@@ -286,7 +287,7 @@ def build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object]
 # New helper to render debug lines
 def render_action_plan_debug_lines(items: Iterable[WorkItem]) -> list[str]:
     """
-    Render a stable, human‑readable list of debug lines for an action plan.
+    Render a stable, humanâ€‘readable list of debug lines for an action plan.
 
     The function uses :func:`build_action_plan_debug_dict` and returns a
     deterministic list of strings containing the values for:
@@ -355,7 +356,7 @@ def render_next_work_item_line(items: Iterable[WorkItem]) -> str:
     Render a single stable line summarising the next work item.
 
     The output contains the title, normalised status and priority score of
-    the highest‑priority actionable work item.  If no actionable items are
+    the highestâ€‘priority actionable work item.  If no actionable items are
     available, the function returns ``'Next: none'``.
     """
     next_item = select_next_work_item(items)
@@ -391,3 +392,9 @@ def get_task_selection_diagnostics(items: Iterable[WorkItem]) -> list[tuple[str,
         for item in sort_work_items_by_priority(items)
     ]
 
+
+
+def evaluate_candidates_with_consensus(candidate_batches: list[list[str]], lane_count: int = 4) -> dict:
+    """Evaluates candidate batches using the MultiLaneConsensusEngine."""
+    engine = MultiLaneConsensusEngine(lane_count=lane_count)
+    return engine.evaluate_lanes(candidate_batches)
