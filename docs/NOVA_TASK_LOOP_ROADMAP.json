@@ -1,0 +1,27 @@
+{
+  "last_updated": "2026-06-12T04:06:17",
+  "head": "2dd6be7",
+  "branch": "nova-safe-batch-controller",
+  "latest_commits": [
+    "2dd6be7 Task queue improvement: candidate-factory-failure-feedback-gap-v1",
+    "fc6fbfb Parse fallback-selected supervised batch task",
+    "37810bd Allow supervised autonomy batch controller direct execution",
+    "c1f2046 Add dry-run mode to supervised autonomy batch controller",
+    "98ef304 Add supervised autonomy batch controller",
+    "349dccd Update roadmap after task loop outcome",
+    "6d6515b Task queue improvement: agent-browser-evidence-command-list-v1",
+    "82aa419 Update roadmap after task loop outcome",
+    "bb4c640 Task queue improvement: agent-browser-readonly-command-classifier-v1",
+    "3adc7b2 Update roadmap after task loop outcome",
+    "0ca1f5b Task queue improvement: agent-browser-safe-command-plan-markdown-v1",
+    "5271f04 Use durable outcome memory for autonomous draft filtering"
+  ],
+  "candidate_doctor": {
+    "accepted_count": 16,
+    "rejected_count": 0,
+    "fresh_count": 2,
+    "skipped_recent_count": 14,
+    "next_candidate": "tiny-autodev-sandbox-status-counts-line-v1"
+  },
+  "next_recommended_action": "Add a fresh narrow source+test external candidate or improve task-loop workflow safety."
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+import pytest
 from winlocalassistant.config import AssistantConfig
 from winlocalassistant.core import AssistantCore
 from winlocalassistant.model_context import CONTEXT_HEADER, build_model_context_pack, enrich_messages_with_context
@@ -105,6 +106,70 @@ def test_model_chat_defaults_to_config_model_when_no_model_passed() -> None:
             router.ollama_chat = old_ollama_chat
 
 
+def test_model_context_pack_includes_prompt_named_python_file_preview() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_py_") as tmp:
+        root = Path(tmp)
+        (root / "script.py").write_text("print('hello')", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "script.py" in pack.text
+        assert "print('hello')" in pack.text
+
+
+def test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_py_change_") as tmp:
+        root = Path(tmp)
+        file_path = root / "script.py"
+        file_path.write_text("print('hello')", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        pack1 = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "print('hello')" in pack1.text
+        # Change file content
+        file_path.write_text("print('world')", encoding='utf-8')
+        pack2 = build_model_context_pack(cfg, [{"role": "user", "content": "review script.py"}], desc="quality review")
+        assert "print('world')" in pack2.text
+        # Ensure the old content is no longer present
+        assert "print('hello')" not in pack2.text
+
+
+def test_model_context_pack_rejects_prompt_named_file_outside_workspace() -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_outside_") as tmp:
+        root = Path(tmp)
+        # Create a file inside the workspace
+        (root / "inside.txt").write_text("inside", encoding='utf-8')
+        # Create a file outside the workspace in its parent directory
+        outside_path = Path(root.parent) / "outside.txt"
+        outside_path.write_text("outside", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+        # Prompt referencing the outside file by relative name (should be rejected)
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": f"review {outside_path.name}"}], desc="quality review")
+        assert "outside.txt" not in pack.text
+        # Prompt referencing the inside file should include its preview
+        pack_inside = build_model_context_pack(cfg, [{"role": "user", "content": "review inside.txt"}], desc="quality review")
+        assert "inside.txt" in pack_inside.text
+
+
+def test_model_context_prompt_named_file_signature_survives_read_error(monkeypatch) -> None:
+    with tempfile.TemporaryDirectory(prefix="wla_ctx_sig_err_") as tmp:
+        root = Path(tmp)
+        file_path = root / "error.txt"
+        file_path.write_text("content", encoding='utf-8')
+        cfg = AssistantConfig(workspace=tmp)
+
+        # Monkeypatch Path.read_text to raise an exception for the specific file
+        original_read_text = Path.read_text
+
+        def fake_read_text(self, *args, **kwargs):
+            if self.resolve() == file_path.resolve():
+                raise IOError("simulated read error")
+            return original_read_text(self, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", fake_read_text)
+
+        pack = build_model_context_pack(cfg, [{"role": "user", "content": f"review {file_path.name}"}], desc="quality review")
+        assert CONTEXT_HEADER in pack.text
+
+
 def run_all(verbose: bool = False) -> None:
     tests = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_") and callable(fn)]
     for name, fn in tests:
@@ -115,3 +180,11 @@ def run_all(verbose: bool = False) -> None:
 
 if __name__ == "__main__":
     run_all(verbose=True)
+
+
+def test_model_context_static_defaults_keep_valid_loopback_url() -> None:
+    source = Path("winlocalassistant/model_context.py").read_text(encoding="utf-8")
+    assert 'ollama_url="http://127.0.0.1:11434"' in source
+    assert "127.0.0-1" not in source
+    assert '".[truncated]"' not in source
+    assert '"...[truncated]"' in source

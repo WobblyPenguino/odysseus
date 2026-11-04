@@ -68,8 +68,6 @@ def assess_model_dependency(config: Any, ollama_ps: dict[str, Any] | None = None
                 recommendations.append("Start Ollama with: ollama serve")
                 if model:
                     recommendations.append(f"Pull the selected coder model with: ollama pull {model}")
-            elif not ollama_ps.get("active_models"):
-                recommendations.append("No model is currently loaded. This is OK; Nova will load one on demand, but first generation may be slower.")
         if not model:
             issues.append("No local code/build model is configured.")
             recommendations.append("Set a coder model with /model-code qwen3-coder:30b or another installed coder model.")
@@ -81,6 +79,11 @@ def assess_model_dependency(config: Any, ollama_ps: dict[str, Any] | None = None
     if command_timeout < 10:
         issues.append("Shell command timeout is very low and may interrupt normal verification commands.")
         recommendations.append("Use /command-timeout 120 or higher for normal project verification.")
+
+    # New check - warn if all timeouts are zero
+    if local_timeout == 0 and chat_timeout == 0 and code_timeout == 0 and autonomous_timeout == 0:
+        issues.append("All model timeouts are set to zero, which may lead to indefinite hangs.")
+        recommendations.append("Set at least one timeout value (e.g., local-model-timeout) to prevent unexpected behavior.")
 
     ok = not issues
     status = "ready" if ok else "degraded"

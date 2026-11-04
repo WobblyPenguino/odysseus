@@ -1,13 +1,5 @@
 from __future__ import annotations
 
-"""Project-state snapshot helpers for Nova continuity.
-
-This module intentionally stays small.  It reads existing release, task and
-host-calibration evidence and writes one current snapshot so commands such as
-/project-state and "continue where it left off" can use concrete state instead
-of guessing from chat history.
-"""
-
 import argparse
 import json
 import time
@@ -202,7 +194,7 @@ def render_project_state_snapshot(payload: dict[str, Any]) -> str:
         "",
         f"Version: `{payload.get('current_version', '')}`",
         f"Root: `{payload.get('root', '')}`",
-        f"Last completed patch/package: `{payload.get('last_completed_patch', '') or 'unknown'}`",
+        f"Last completed patch: `{payload.get('last_completed_patch', '') or 'unknown'}`",
         f"Release-readiness: **{readiness.get('status', 'UNKNOWN')}** — {readiness.get('summary', '')}",
         f"Continue readiness: **{payload.get('continue_readiness', 'UNKNOWN')}**",
         f"Packaging allowed: `{payload.get('packaging_allowed')}`",
@@ -224,7 +216,7 @@ def render_project_state_snapshot(payload: dict[str, Any]) -> str:
         lines.extend(f"- `{item}`" for item in changed[:30])
     lines.extend(["", "## Package manifest"])
     if manifest.get("ok"):
-        lines.append(f"- `{manifest.get('release_name') or manifest.get('path')}` version=`{manifest.get('version')}` files=`{manifest.get('file_count')}`")
+        lines.append(f"- `{manifest.get('release_name') or manifest.get('package_path')}` version=`{manifest.get('version')}` files=`{manifest.get('file_count')}`")
     else:
         lines.append(f"- {manifest.get('summary', 'No package manifest found.')}")
     lines.extend(["", "## Host-only advisory checks"])

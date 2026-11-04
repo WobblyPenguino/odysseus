@@ -1,0 +1,72 @@
+
+from tools.validate_idea_promotion_candidates import validate_candidates
+
+
+def _valid_candidate(candidate_id="safe-task-v1"):
+    return {
+        "Id": candidate_id,
+        "Goal": "Add a tiny safe source and test improvement.",
+        "Editable": ["nova_improvement_lab\\autodev_sandbox.py", "tests_autodev_sandbox.py"],
+        "RequiredChangedFiles": ["nova_improvement_lab\\autodev_sandbox.py", "tests_autodev_sandbox.py"],
+        "RequiredDiffContains": ["safe_marker", "test_safe_marker"],
+        "Tests": ["tests_autodev_sandbox.py"],
+    }
+
+
+def test_candidate_validator_accepts_safe_candidate():
+    accepted, rejected = validate_candidates([_valid_candidate()])
+    assert [r.candidate_id for r in accepted] == ["safe-task-v1"]
+    assert rejected == []
+
+
+def test_candidate_validator_rejects_id_with_spaces():
+    accepted, rejected = validate_candidates([_valid_candidate("bad id")])
+    assert accepted == []
+    assert any("Id must be one token with no whitespace" in e for e in rejected[0].errors)
+
+
+def test_candidate_validator_rejects_duplicate_ids():
+    accepted, rejected = validate_candidates([_valid_candidate("dupe-v1"), _valid_candidate("dupe-v1")])
+    assert [r.candidate_id for r in accepted] == ["dupe-v1"]
+    assert any("duplicate Id" in e for e in rejected[0].errors)
+
+
+def test_candidate_validator_rejects_unsafe_paths():
+    candidate = _valid_candidate("unsafe-v1")
+    candidate["Editable"] = ["..\\secrets.txt"]
+    accepted, rejected = validate_candidates([candidate])
+    assert accepted == []
+    assert any("unsafe Editable path" in e for e in rejected[0].errors)
+
+
+def test_candidate_validator_rejects_required_file_not_editable():
+    candidate = _valid_candidate("missing-editable-v1")
+    candidate["Editable"] = ["nova_improvement_lab\\autodev_sandbox.py"]
+    accepted, rejected = validate_candidates([candidate])
+    assert accepted == []
+    assert any("required changed file not listed as editable" in e for e in rejected[0].errors)
+
+
+def test_candidate_validator_accepts_narrow_model_context_runtime_file():
+    candidate = _valid_candidate("model-context-runtime-v1")
+    candidate["Editable"] = ["winlocalassistant\\model_context.py", "tests_model_context_pack.py"]
+    candidate["RequiredChangedFiles"] = ["winlocalassistant\\model_context.py", "tests_model_context_pack.py"]
+    candidate["Tests"] = ["tests_model_context_pack.py"]
+
+    accepted, rejected = validate_candidates([candidate])
+
+    assert [r.candidate_id for r in accepted] == ["model-context-runtime-v1"]
+    assert rejected == []
+
+
+def test_candidate_validator_accepts_narrow_agent_browser_safety_runtime_file():
+    candidate = _valid_candidate("agent-browser-safety-runtime-v1")
+    candidate["Editable"] = ["winlocalassistant\\agent_browser_safety.py", "tests_agent_browser_safety.py"]
+    candidate["RequiredChangedFiles"] = ["winlocalassistant\\agent_browser_safety.py", "tests_agent_browser_safety.py"]
+    candidate["RequiredDiffContains"] = ["summarise_agent_browser_policy", "test_agent_browser_policy_summary_mentions_safety_defaults"]
+    candidate["Tests"] = ["tests_agent_browser_safety.py"]
+
+    accepted, rejected = validate_candidates([candidate])
+
+    assert [r.candidate_id for r in accepted] == ["agent-browser-safety-runtime-v1"]
+    assert rejected == []

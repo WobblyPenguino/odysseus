@@ -25,6 +25,7 @@ class CommandContractResult:
     forbidden_hits: list[str]
     output_preview: str
     error: str = ""
+    output: str = ""  # Added field to store the command output
 
 
 def default_command_contracts() -> list[CommandContract]:
@@ -89,6 +90,7 @@ def verify_command_contracts(
                     missing_markers=missing,
                     forbidden_hits=forbidden,
                     output_preview=_preview(output_text),
+                    output=output_text  # Store the full output
                 )
             )
         except Exception as exc:
@@ -103,6 +105,7 @@ def verify_command_contracts(
                     forbidden_hits=[],
                     output_preview="",
                     error=str(exc),
+                    output="" # Store empty string for error cases
                 )
             )
     passed = sum(1 for result in results if result.ok)
@@ -134,6 +137,9 @@ def render_command_verification_markdown(report: dict) -> str:
             lines.append("  - Forbidden output markers: " + ", ".join(map(str, item.get("forbidden_hits", []))))
         if item.get("error"):
             lines.append("  - Error: " + str(item.get("error")))
+        if item.get('output'): # Add the output to markdown report
+            lines.append(f"  - Output:\n{item.get('output')}")
+
     if not report.get("ok"):
         lines.extend([
             "",

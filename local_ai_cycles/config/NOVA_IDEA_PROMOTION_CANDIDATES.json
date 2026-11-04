@@ -1,0 +1,306 @@
+[
+  {
+    "Id": "tiny-autodev-sandbox-format-action-plan-summary-v1",
+    "Goal": "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add format_action_plan_summary(summary: Mapping[str, object]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must format the output of summarise_action_plan into a stable human-readable sentence containing total, actionable, next title, next status, and next score values. Add a regression test named test_autodev_sandbox_formats_action_plan_summary in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "format_action_plan_summary",
+      "test_autodev_sandbox_formats_action_plan_summary"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-render-action-plan-markdown-v1",
+    "Goal": "Promote the next external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_markdown(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use summarise_action_plan(items) and format_action_plan_summary(summary), then return a small Markdown summary with a heading and stable bullet lines for total, actionable, next title, next status, and next score. Add a regression test named test_autodev_sandbox_renders_action_plan_markdown in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_markdown",
+      "test_autodev_sandbox_renders_action_plan_markdown"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-status-line-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_status_line(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use summarise_action_plan(items) and return one stable human-readable line containing total, actionable, next title, next status, and next score. Add a regression test named test_autodev_sandbox_renders_action_plan_status_line in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_status_line",
+      "test_autodev_sandbox_renders_action_plan_status_line"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-dict-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add build_action_plan_debug_dict(items: Iterable[WorkItem]) -> dict[str, object] to nova_improvement_lab\\autodev_sandbox.py. It must use summarise_action_plan(items) and return a stable debug dictionary containing total, actionable, next_title, next_status, next_score, has_next, and status_line from render_action_plan_status_line(items). Add a regression test named test_autodev_sandbox_builds_action_plan_debug_dict in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "build_action_plan_debug_dict",
+      "test_autodev_sandbox_builds_action_plan_debug_dict"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-lines-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_debug_lines(items: Iterable[WorkItem]) -> list[str] to nova_improvement_lab\\autodev_sandbox.py. It must use build_action_plan_debug_dict(items) and return stable human-readable debug lines for total, actionable, has_next, next_title, next_status, next_score, and status_line. Add a regression test named test_autodev_sandbox_renders_action_plan_debug_lines in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_debug_lines",
+      "test_autodev_sandbox_renders_action_plan_debug_lines"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "real-model-context-prompt-file-signature-safe-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one narrow source+test robustness fix. Improve winlocalassistant/model_context.py so prompt-named file context cache signatures cannot crash if a named file becomes unreadable, locked, or changes between path resolution and signature generation. Add a small helper named _safe_prompt_named_file_signature_entry and use it inside _prompt_named_file_signature. The helper should return a deterministic signature fragment using the prompt file name, resolved path, stat metadata when available, and a content hash when readable, while catching read/stat exceptions safely. Add a regression test named test_model_context_prompt_named_file_signature_survives_read_error in tests_model_context_pack.py using monkeypatch to make Path.read_text raise for a prompt-named file, then verify build_model_context_pack still returns a context pack containing CONTEXT_HEADER. You must modify BOTH files. Do not edit GUI, task loop, unrelated runtime files, or broad project files.",
+    "Editable": [
+      "winlocalassistant\\model_context.py",
+      "tests_model_context_pack.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\model_context.py",
+      "tests_model_context_pack.py"
+    ],
+    "RequiredDiffContains": [
+      "_safe_prompt_named_file_signature_entry",
+      "test_model_context_prompt_named_file_signature_survives_read_error"
+    ],
+    "Tests": [
+      "tests_model_context_pack.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-markdown-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_debug_markdown(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use build_action_plan_debug_dict(items) and return stable Markdown with heading '## Action Plan Debug' and bullet lines for total, actionable, has_next, next_title, next_status, next_score, and status_line. Add a regression test named test_autodev_sandbox_renders_action_plan_debug_markdown in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, broad project files, or unrelated files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_debug_markdown",
+      "test_autodev_sandbox_renders_action_plan_debug_markdown"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-debug-json-v1",
+    "Goal": "Promote the next validated external JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_debug_json(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use build_action_plan_debug_dict(items) and return stable machine-readable JSON with sorted keys for total, actionable, has_next, next_title, next_status, next_score, and status_line. Add a regression test named test_autodev_sandbox_renders_action_plan_debug_json in tests_autodev_sandbox.py. The test should parse the JSON and verify the expected keys and values for both actionable and idle item lists. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, broad project files, or unrelated files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_debug_json",
+      "test_autodev_sandbox_renders_action_plan_debug_json"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-next-item-line-v1",
+    "Goal": "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add render_next_work_item_line(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must use the existing next-work-item selection behaviour and return a stable one-line summary of the next item containing title, normalised status, and priority score. It must return 'Next: none' when no item is available. Add a regression test named test_autodev_sandbox_renders_next_work_item_line in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, roadmap, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_next_work_item_line",
+      "test_autodev_sandbox_renders_next_work_item_line"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-action-plan-titles-v1",
+    "Goal": "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add render_action_plan_titles(items: Iterable[WorkItem]) -> list[str] to nova_improvement_lab\\autodev_sandbox.py. It must return the work item titles in the same priority order used by sort_work_items_by_priority, with stable deterministic output and an empty list for no work items. Add a regression test named test_autodev_sandbox_renders_action_plan_titles in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, roadmap, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_action_plan_titles",
+      "test_autodev_sandbox_renders_action_plan_titles"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "tiny-autodev-sandbox-status-counts-line-v1",
+    "Goal": "Promote the next fresh JSON-drafted Nova task into one tiny source+test improvement. Add render_status_counts_line(items: Iterable[WorkItem]) -> str to nova_improvement_lab\\autodev_sandbox.py. It must summarise normalised work item statuses into a stable compact string sorted by status name, such as 'blocked=1 | done=2 | todo=3', and return 'no statuses' when no statuses are present. Add a regression test named test_autodev_sandbox_renders_status_counts_line in tests_autodev_sandbox.py. You must modify BOTH files. Do not edit Nova runtime, task loop, GUI, roadmap, or broad project files.",
+    "Editable": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredChangedFiles": [
+      "nova_improvement_lab\\autodev_sandbox.py",
+      "tests_autodev_sandbox.py"
+    ],
+    "RequiredDiffContains": [
+      "render_status_counts_line",
+      "test_autodev_sandbox_renders_status_counts_line"
+    ],
+    "Tests": [
+      "tests_autodev_sandbox.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-safety-policy-approval-summary-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add summarise_agent_browser_policy(policy: AgentBrowserSafetyPolicy | None = None) -> str to winlocalassistant\\agent_browser_safety.py. It must produce a stable human-readable summary mentioning localhost-only defaults, read-only-first behaviour, manual install requirement, and manual approval for action commands. Add a regression test named test_agent_browser_policy_summary_mentions_safety_defaults in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "summarise_agent_browser_policy",
+      "test_agent_browser_policy_summary_mentions_safety_defaults"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-safe-command-plan-markdown-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add render_agent_browser_plan_markdown(plan: Mapping[str, object]) -> str to winlocalassistant\\agent_browser_safety.py. It must render allowed/blocked status, URL, blocked reason when present, and planned commands without executing them. Add a regression test named test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "render_agent_browser_plan_markdown",
+      "test_agent_browser_plan_markdown_renders_blocked_and_allowed_plans"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-readonly-command-classifier-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add classify_agent_browser_command(command: str) -> str to winlocalassistant\\agent_browser_safety.py. It must classify known read-only evidence commands as 'readonly', known interaction/action commands as 'requires-approval', and unknown commands as 'unknown'. Add a regression test named test_agent_browser_command_classifier_separates_readonly_action_and_unknown in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "classify_agent_browser_command",
+      "test_agent_browser_command_classifier_separates_readonly_action_and_unknown"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-localhost-port-helper-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add is_probably_local_dev_url(url: str) -> bool to winlocalassistant\\agent_browser_safety.py. It must return true for localhost/127.0.0.1/::1 URLs with or without ports and false for external hosts. Add a regression test named test_agent_browser_detects_probably_local_dev_urls in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "is_probably_local_dev_url",
+      "test_agent_browser_detects_probably_local_dev_urls"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  },
+  {
+    "Id": "agent-browser-evidence-command-list-v1",
+    "Goal": "Improve Nova's Agent Browser safety helpers with one small source+test change. Add build_agent_browser_evidence_command_list(url: str) -> list[str] to winlocalassistant\\agent_browser_safety.py. It must return stable display strings for the safe localhost read-only evidence commands and return an empty list for blocked external URLs. Add a regression test named test_agent_browser_evidence_command_list_is_stable_and_localhost_only in tests_agent_browser_safety.py. You must modify BOTH files. Do not install or run Agent Browser. Do not edit broad Nova runtime files.",
+    "Editable": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredChangedFiles": [
+      "winlocalassistant\\agent_browser_safety.py",
+      "tests_agent_browser_safety.py"
+    ],
+    "RequiredDiffContains": [
+      "build_agent_browser_evidence_command_list",
+      "test_agent_browser_evidence_command_list_is_stable_and_localhost_only"
+    ],
+    "Tests": [
+      "tests_agent_browser_safety.py"
+    ]
+  }
+]

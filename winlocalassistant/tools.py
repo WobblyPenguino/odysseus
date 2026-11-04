@@ -42,6 +42,7 @@ from .watchdog import heartbeat as watchdog_heartbeat, start_watchdog, stop_watc
 from .eventlog import ACTIVITY_PATH, MODEL_IO_PATH, log_activity, log_model_io, tail_jsonl
 from .tool_guides import get_local_model_tool_use_summary
 from .file_context import IMAGE_EXTS, resolve_image_context
+from .screen_analysis import parse_screen_analysis_request, render_screen_analysis_prompt_help
 from .image_generation import build_image_prompt_plan, render_image_prompt_plan_markdown, image_generation_status
 from .project_brief import infer_project_build_brief, render_project_build_brief_markdown, write_project_build_brief
 from .code_repair_audit import write_code_repair_audit_report, render_code_repair_audit_markdown
@@ -74,6 +75,7 @@ from .command_verifier import render_command_verification_markdown
 from .repo_upgrade_assurance import build_repo_upgrade_assurance, render_repo_upgrade_assurance
 from .codebase_sanity_audit import build_codebase_sanity_audit, render_codebase_sanity_audit
 from .maintenance_validation import build_maintenance_validation, render_maintenance_validation
+from .autonomy_readiness import build_autonomy_readiness, render_autonomy_readiness_markdown
 
 from .prompt_test_compiler import build_prompt_contract, validate_contract, render_prompt_contract, render_contract_validation
 from .candidate_tournament import build_candidate_tournament, render_tournament, render_candidate_failure_report, candidate_diff
@@ -446,6 +448,8 @@ class ToolRegistry:
             "video_user_tests": self.video_user_tests_tool,
             "media_status": self.media_status_tool,
             "image_plan": self.image_plan_tool,
+            "screen_analysis_prompt": self.screen_analysis_prompt_tool,
+            "screen_context_help": self.screen_analysis_prompt_tool,
             "image_prompt_plan": self.image_plan_tool,
             "video_storyboard": self.video_storyboard_tool,
             "video_package": self.video_package_tool,
@@ -461,6 +465,8 @@ class ToolRegistry:
             "mission_contract": self.mission_contract_tool,
             "autonomous_mission_contract": self.mission_contract_tool,
             "mission_progress_score": self.mission_progress_score_tool,
+            "autonomy_readiness": self.autonomy_readiness_tool,
+            "autonomy_capability_audit": self.autonomy_readiness_tool,
             "surgical_recipe": self.surgical_recipe_tool,
             "project_type_registry": self.project_type_registry_tool,
             "self_test_from_bug": self.self_test_from_bug_tool,
@@ -1203,6 +1209,20 @@ class ToolRegistry:
     def idle_progress_score_tool(self) -> ToolResult:
         payload = {"progress_score": _score_from_events(_events(160), "idle")}
         return ToolResult(True, "Idle progress score generated", {"message": render_payload(payload, "Idle Progress Score"), **payload})
+
+    def autonomy_readiness_tool(self, path: str = ".") -> ToolResult:
+        """Report whether Nova is ready for supervised autonomous improvement runs."""
+
+        try:
+            target = resolve_inside_workspace(self.workspace, path or ".")
+        except Exception:
+            target = self.workspace
+        report = build_autonomy_readiness(target)
+        return ToolResult(
+            True,
+            "Nova autonomy readiness",
+            {"message": render_autonomy_readiness_markdown(report), **report},
+        )
 
     def tool_choice_trace_tool(self, goal: str = "") -> ToolResult:
         payload = build_tool_choice_trace(goal)
@@ -2088,6 +2108,22 @@ class ToolRegistry:
         lines += ["", "## Recommended flow"]
         lines.extend(f"- {x}" for x in payload.get('recommended_flow', []))
         return ToolResult(True, "Nova media status", {"message": "\n".join(lines), **payload})
+
+    def screen_analysis_prompt_tool(self, request: str = "") -> ToolResult:
+        """Build a safe prompt for manual screenshot/image analysis."""
+
+        kind, user_text = parse_screen_analysis_request(request)
+        message = render_screen_analysis_prompt_help(kind, user_text)
+        return ToolResult(
+            True,
+            "Nova screen analysis prompt",
+            {
+                "message": message,
+                "kind": kind,
+                "request": user_text,
+                "usage": "/screen-analysis-prompt terminal|gui|browser|image DESCRIPTION",
+            },
+        )
 
     def image_plan_tool(self, prompt: str = "", style: str = "cinematic", variations: int | str = 4) -> ToolResult:
         """Plan image prompt variants/seeds without invoking a heavy generation backend."""

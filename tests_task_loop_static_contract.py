@@ -1,0 +1,1049 @@
+from pathlib import Path
+
+RUNNER = Path(__file__).resolve().parent / "run_nova_task_queue_loop.ps1"
+
+
+def _runner_text() -> str:
+    return RUNNER.read_text(encoding="utf-8")
+
+
+def test_task_loop_has_large_file_snippet_context_and_cleanup():
+    text = _runner_text()
+    assert "$MaxAiderEditableFileBytes = 120000" in text
+    assert "function Write-TaskLargeFileSnippetContext" in text
+    assert "task_large_file_snippets_*.md" in text
+    assert "Large editable file(s) skipped and excerpted for context" in text
+
+
+def test_task_loop_denies_aider_file_prompts_with_valid_no_answers():
+    text = _runner_text()
+    assert '$denyInput = ((1..900 | ForEach-Object { "no" }) -join "`n") + "`n"' in text
+    assert '$denyInput = "D`n"' not in text
+    assert "don't`n" not in text
+
+
+def test_task_loop_has_productivity_floor_for_live_and_preflight():
+    text = _runner_text()
+    assert "$MinProductiveTaskScore = 35" in text
+    assert "function Resolve-TaskScore" in text
+    assert "function Write-TaskPoolExhaustedReport" in text
+    assert "No sufficiently productive task remained" in text
+
+    live_idx = text.index("$snippetContext = Write-TaskLargeFileSnippetContext")
+    assert text.rfind("Resolve-TaskScore -Task $task", 0, live_idx) != -1
+
+    preflight_block_idx = text.index("if ($PreflightOnly)")
+    assert text.index("$MinProductiveTaskScore = 35") < preflight_block_idx
+    assert text.index("function Resolve-TaskScore") < preflight_block_idx
+    assert text.index("function Write-TaskPoolExhaustedReport") < preflight_block_idx
+
+    preflight_idx = text.index("Preflight selected task:")
+    assert text.rfind('-Phase "preflight"', 0, preflight_idx) != -1
+    assert "No Aider invocation, commit, or source edit was attempted because the task pool is exhausted." in text
+    assert "exit 0" in text[text.rfind('-Phase "preflight"', 0, preflight_idx):preflight_idx]
+
+
+def test_task_loop_runs_static_contract_before_live_cycles():
+    text = _runner_text()
+    assert "tests_task_loop_static_contract.py" in text
+
+
+def test_task_loop_includes_improvement_lab_task():
+    text = _runner_text()
+    assert "lab-small-source-test-improvement" in text
+    assert "nova_improvement_lab\\text_tools.py" in text
+    assert "tests_improvement_lab_contract.py" in text
+
+
+def test_validation_helper_checks_external_command_exit_codes():
+    helper = Path(__file__).resolve().parent / "tools" / "validate_task_loop_patch.ps1"
+    text = helper.read_text(encoding="utf-8")
+    assert "$LASTEXITCODE" in text
+    assert "throw" in text
+    assert "tests_improvement_lab_contract.py" in text
+    assert "Validation passed." in text
+
+
+def test_diff_classifier_accepts_control_flow_and_assertions():
+    text = _runner_text()
+    assert "function Test-DiffLineLooksExecutable" in text
+    assert "^(if|elif|else|for|while|try|except|finally|with|match|case)" in text
+    assert "return|raise|yield|assert|break|continue|pass" in text
+    assert "Test-DiffLineLooksExecutable -Line" in text
+
+
+def test_task_loop_includes_strict_lab_source_test_task():
+    text = _runner_text()
+    assert "lab-source-test-improvement-v2" in text
+    assert "You must modify BOTH" in text
+    assert "Do not make a test-only patch" in text
+    assert "nova_improvement_lab\\text_tools.py" in text
+    assert "tests_improvement_lab_contract.py" in text
+
+
+def test_task_loop_enforces_required_changed_files():
+    text = _runner_text()
+    assert "RequiredChangedFiles" in text
+    assert "function Assert-TaskRequiredChangedFiles" in text
+    assert "Rejected required-file contract breach" in text
+    assert "Assert-TaskRequiredChangedFiles -Task $task" in text
+
+
+def test_task_loop_enforces_required_diff_markers():
+    text = _runner_text()
+    assert "lab-risk-contract-source-test-v3" in text
+    assert "RequiredDiffContains" in text
+    assert "function Assert-TaskRequiredDiffContains" in text
+    assert "Rejected required-diff contract breach" in text
+    assert "Assert-TaskRequiredDiffContains -Task $task -DiffText $bad" in text
+
+
+def test_required_diff_contract_can_override_generic_executable_classifier():
+    text = _runner_text()
+    assert "$hasRequiredDiffContract" in text
+    assert "$hasExecutableChange" in text
+    assert "Executable classifier fallback: accepted required diff contract" in text
+    assert "Rejected documentation/comment-only patch with no executable code change." in text
+
+
+def test_task_loop_includes_real_model_context_named_file_task():
+    text = _runner_text()
+    assert "real-model-context-named-file-preview-v1" in text
+    assert "winlocalassistant\\model_context.py" in text
+    assert "tests_model_context_pack.py" in text
+    assert "_prompt_named_files" in text
+    assert "test_model_context_pack_includes_prompt_named_python_file_preview" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_rejects_invalid_loopback_url_typo():
+    text = _runner_text()
+    assert "Rejected invalid loopback URL typo 127.0.0-1" in text
+    assert "127.0.0.1" in text
+
+
+def test_task_loop_includes_real_model_context_named_file_cache_task():
+    text = _runner_text()
+    assert "real-model-context-named-file-cache-freshness-v1" in text
+    assert "winlocalassistant\\model_context.py" in text
+    assert "tests_model_context_pack.py" in text
+    assert "_prompt_named_file_signature" in text
+    assert "test_model_context_pack_refreshes_prompt_named_file_preview_after_file_change" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_includes_research_only_repo_inspiration_task():
+    text = _runner_text()
+    assert "research-only-agent-repo-inspiration-v1" in text
+    assert "Research-only planning task" in text
+    assert "Do not clone repos or copy external code" in text
+    assert "docs\\research\\NOVA_AGENT_REPO_INSPIRATION_LATEST.md" in text
+    assert "No source code copied" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredFinalFileContains" in text
+
+
+def test_task_loop_rejects_double_dot_loopback_url_typo():
+    text = _runner_text()
+    assert "Rejected invalid loopback URL typo 127.0.0..11434" in text
+    assert "127.0.0.1:11434" in text
+
+
+def test_research_only_planning_language_is_narrowly_allowed():
+    text = _runner_text()
+    assert "function Test-ResearchOnlyPlanningDiff" in text
+    assert 'StartsWith("research-only-")' in text
+    assert 'StartsWith("docs\\research\\")' in text or 'StartsWith("docs\research\")' in text
+    assert "Research-only planning fallback: allowed planning language" in text
+    assert "Rejected placeholder/speculative patch language." in text
+
+
+def test_task_loop_enforces_required_final_file_contains():
+    text = _runner_text()
+    assert "function Assert-TaskRequiredFinalFileContains" in text
+    assert "Rejected required-final-file contract breach" in text
+    assert "Assert-TaskRequiredFinalFileContains -Task $task" in text
+    assert "$hasResearchOnlyPlanningDiff" in text
+    assert "Research-only executable fallback: accepted docs/research planning diff" in text
+
+
+
+def test_task_loop_writes_task_localization_report():
+    text = _runner_text()
+    assert "function Write-TaskLocalizationReport" in text
+    assert "NOVA_TASK_LOCALIZATION_LATEST.md" in text
+    assert "Task ID:" in text
+    assert "Editable files:" in text
+    assert "Targeted tests:" in text
+    assert "Required changed files:" in text
+    assert "Required diff markers:" in text
+    assert "Required final-file markers:" in text
+    assert "Files that must not be edited:" in text
+    assert "Write-TaskLocalizationReport -Task $task" in text
+
+
+def test_task_loop_writes_localization_report_during_preflight():
+    text = _runner_text()
+    preflight_start = text.find("if ($PreflightOnly)")
+    assert preflight_start != -1
+    preflight_end = text.find("Clean-GeneratedNoise", preflight_start)
+    assert preflight_end != -1
+    preflight_section = text[preflight_start:preflight_end]
+    assert "Write-TaskLocalizationReport -Task $task" in preflight_section
+    assert "NOVA_TASK_LOCALIZATION_LATEST.md" in preflight_section
+
+
+def test_task_loop_defines_localization_helper_before_preflight():
+    text = _runner_text()
+    helper_pos = text.find("function Write-TaskLocalizationReport")
+    preflight_pos = text.find("if ($PreflightOnly)")
+    assert helper_pos != -1
+    assert preflight_pos != -1
+    assert helper_pos < preflight_pos
+
+
+def test_task_loop_includes_model_context_prompt_file_path_safety_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "real-model-context-prompt-file-path-safety-v1" in text
+    assert "_resolve_prompt_named_file" in text
+    assert "test_model_context_pack_rejects_prompt_named_file_outside_workspace" in text
+    assert "winlocalassistant\\model_context.py" in normalised
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_writes_static_tool_status_report():
+    text = _runner_text()
+    assert "function Write-StaticToolStatusReport" in text
+    assert "NOVA_STATIC_TOOL_STATUS_LATEST.md" in text
+    assert "ruff" in text
+    assert "mypy" in text
+    assert "semgrep" in text
+    assert "bandit" in text
+    assert "pip-audit" in text
+    assert "detect-secrets" in text
+    assert "Write-StaticToolStatusReport -Path" in text
+
+
+def test_task_loop_defines_static_tool_status_helper_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-StaticToolStatusReport")
+    call_pos = text.find("Write-StaticToolStatusReport -Path")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_writes_patch_review_report():
+    text = _runner_text()
+    assert "function Write-PatchReviewReport" in text
+    assert "NOVA_PATCH_REVIEW_LATEST.md" in text
+    assert "Reviewer verdict:" in text
+    assert "Risk level:" in text
+    assert "Changed files:" in text
+    assert "Unexpected changed files:" in text
+    assert "Security and correctness review checklist:" in text
+    assert "Write-PatchReviewReport -Task $task" in text
+
+
+def test_task_loop_patch_review_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-PatchReviewReport")
+    call_pos = text.find("Write-PatchReviewReport -Task $task")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_includes_tiny_autodev_sandbox_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-priority-v1" in text
+    assert "priority_score" in text
+    assert "test_autodev_sandbox_prioritises_blockers_before_polish" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_includes_tiny_autodev_sandbox_priority_v2_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-priority-v2" in text
+    assert "priority_score" in text
+    assert "test_autodev_sandbox_prioritises_blockers_before_completed_work" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_has_placeholder_false_positive_contract_override():
+    text = _runner_text()
+    assert "Placeholder/speculative rejection override" in text
+    assert "$canOverridePlaceholderFalsePositive" in text
+    assert "$missingRequiredFiles.Count -eq 0" in text
+    assert "$missingDiffMarkers.Count -eq 0" in text
+    assert "$sourceChanges.Count -gt 0" in text
+    assert "$testChanges.Count -gt 0" in text
+    assert "validation-gate-after-placeholder-override" in text
+    assert "Placeholder/speculative rejection override validation gates passed." in text
+
+
+
+
+def test_task_loop_placeholder_override_has_uncorrupted_nested_test_patterns():
+    text = _runner_text()
+    assert "$sourceChanges = @(" in text
+    assert "$testChanges = @(" in text
+    assert '$pathForKind = ([string]$_).Replace("\\", "/")' in text
+    assert '($pathForKind -notlike "tests_*.py")' in text
+    assert '($pathForKind -notlike "*/tests/*")' in text
+    assert '($pathForKind -like "tests_*.py")' in text
+    assert '($pathForKind -like "*/tests/*")' in text
+    assert "Placeholder/speculative rejection override" in text
+    assert "*     ests" not in text
+    assert "*        ests" not in text
+    assert '-notmatch "\\tests\\"' not in text
+    assert '-match "\\tests\\"' not in text
+
+def test_task_loop_writes_subagent_review_report():
+    text = _runner_text()
+    assert "function Write-SubagentReviewReport" in text
+    assert "NOVA_SUBAGENT_REVIEW_LATEST.md" in text
+    assert "Planner verdict:" in text
+    assert "Localizer verdict:" in text
+    assert "Editor verdict:" in text
+    assert "Reviewer verdict:" in text
+    assert "Tester verdict:" in text
+    assert "Risk verdict:" in text
+    assert "Memory verdict:" in text
+    assert "Overall recommendation:" in text
+    assert "Write-SubagentReviewReport -Task $task" in text
+
+
+def test_task_loop_subagent_review_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-SubagentReviewReport")
+    call_pos = text.find("Write-SubagentReviewReport -Task $task")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_includes_tiny_autodev_sort_priority_task():
+    text = _runner_text()
+    normalised = text.replace("/", "\\")
+    assert "tiny-autodev-sandbox-sort-priority-v1" in text
+    assert "sort_work_items_by_priority" in text
+    assert "test_autodev_sandbox_sorts_items_by_priority_stably" in text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+
+
+def test_task_loop_writes_task_idea_pool_report():
+    text = _runner_text()
+    assert "function Write-TaskIdeaPoolReport" in text
+    assert "NOVA_TASK_IDEA_POOL_LATEST.md" in text
+    assert "Candidate ideas:" in text
+    assert "select_next_work_item" in text
+    assert "actionable_work_items" in text
+    assert "explain_next_action" in text
+    assert "summarise_action_plan" in text
+    assert "Promotion rule:" in text
+    assert "Write-TaskIdeaPoolReport -Path" in text
+
+
+def test_task_loop_idea_pool_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-TaskIdeaPoolReport")
+    call_pos = text.find("Write-TaskIdeaPoolReport -Path")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_writes_idea_pool_during_preflight():
+    text = _runner_text()
+    preflight_pos = text.find("if ($PreflightOnly) {")
+    call_pos = text.find("Write-TaskIdeaPoolReport -Path", preflight_pos)
+    pick_pos = text.find("$task = Pick-Task", preflight_pos)
+    assert preflight_pos != -1
+    assert call_pos != -1
+    assert pick_pos != -1
+    assert preflight_pos < call_pos < pick_pos
+
+
+def test_task_loop_approved_recovery_tasks_include_select_next_work_item_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 20000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-select-next-work-item-v1"' in approved_text
+    assert "select_next_work_item" in approved_text
+    assert "test_autodev_sandbox_selects_highest_priority_item" in approved_text
+    assert "sort_work_items_by_priority" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text
+
+
+def test_task_loop_approved_recovery_tasks_include_actionable_work_items_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 22000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-actionable-work-items-v1"' in approved_text
+    assert "actionable_work_items" in approved_text
+    assert "test_autodev_sandbox_filters_done_items_from_actionable_work" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text
+
+
+def test_task_loop_writes_idea_promotion_candidate_report():
+    text = _runner_text()
+    assert "function Write-IdeaPromotionCandidateReport" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATE_LATEST.md" in text
+    assert "Selected idea: idea-3: explain-next-action" in text
+    assert "tiny-autodev-sandbox-explain-next-action-v1" in text
+    assert "explain_next_action" in text
+    assert "test_autodev_sandbox_explains_next_action_with_evidence" in text
+    assert "Promotion gate:" in text
+    assert "The idea-promotion report alone must never trigger Aider." in text
+
+
+def test_task_loop_idea_promotion_candidate_runs_after_idea_pool():
+    text = _runner_text()
+    idea_call = text.find("Write-TaskIdeaPoolReport -Path")
+    candidate_call = text.find("Write-IdeaPromotionCandidateReport -IdeaPoolPath")
+    assert idea_call != -1
+    assert candidate_call != -1
+    assert idea_call < candidate_call
+
+
+def test_task_loop_idea_promotion_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-IdeaPromotionCandidateReport")
+    call_pos = text.find("Write-IdeaPromotionCandidateReport -IdeaPoolPath")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_approved_recovery_tasks_include_explain_next_action_task():
+    text = _runner_text()
+    approved_start = text.find("$ApprovedRecoveryTasks = @(")
+    assert approved_start != -1
+    approved_text = text[approved_start:approved_start + 24000]
+    normalised = approved_text.replace("/", "\\")
+    assert 'Id = "tiny-autodev-sandbox-explain-next-action-v1"' in approved_text
+    assert "explain_next_action" in approved_text
+    assert "test_autodev_sandbox_explains_next_action_with_evidence" in approved_text
+    assert "select_next_work_item" in approved_text
+    assert "priority_score" in approved_text
+    assert "nova_improvement_lab\\autodev_sandbox.py" in normalised
+    assert "tests_autodev_sandbox.py" in approved_text
+    assert "RequiredChangedFiles" in approved_text
+    assert "RequiredDiffContains" in approved_text
+
+
+def test_task_loop_writes_idea_promotion_task_draft():
+    text = _runner_text()
+    assert "function Write-IdeaPromotionTaskDraft" in text
+    assert "NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.md" in text
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
+    assert "This is dry-run only." in text
+    assert "The idea-promotion task draft alone must never trigger Aider." in text
+
+
+def test_task_loop_idea_promotion_task_draft_runs_after_candidate_report():
+    text = _runner_text()
+    candidate_call = text.find("Write-IdeaPromotionCandidateReport -IdeaPoolPath")
+    draft_call = text.find("Write-IdeaPromotionTaskDraft -CandidatePath")
+    assert candidate_call != -1
+    assert draft_call != -1
+    assert candidate_call < draft_call
+
+
+def test_task_loop_idea_promotion_task_draft_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Write-IdeaPromotionTaskDraft")
+    call_pos = text.find("Write-IdeaPromotionTaskDraft -CandidatePath")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_registers_idea_promotion_task_draft():
+    text = _runner_text()
+    assert "function Register-IdeaPromotionTaskDraft" in text
+    assert "Idea promotion task registered at runtime" in text
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
+    assert "RequiredChangedFiles" in text
+    assert "RequiredDiffContains" in text
+    assert "$script:ApprovedRecoveryTasks" in text
+
+
+def test_task_loop_registers_draft_after_draft_report_is_written():
+    text = _runner_text()
+    draft_calls = [
+        idx
+        for idx in range(len(text))
+        if text.startswith("Write-IdeaPromotionTaskDraft -CandidatePath", idx)
+    ]
+    register_calls = [
+        idx
+        for idx in range(len(text))
+        if text.startswith("Register-IdeaPromotionTaskDraft -DraftPath", idx)
+    ]
+
+    assert draft_calls
+    assert register_calls
+    assert any(
+        draft_call < register_call
+        for draft_call in draft_calls
+        for register_call in register_calls
+    )
+
+
+def test_task_loop_register_draft_helper_defined_before_use():
+    text = _runner_text()
+    helper_pos = text.find("function Register-IdeaPromotionTaskDraft")
+    call_pos = text.find("Register-IdeaPromotionTaskDraft -DraftPath")
+    assert helper_pos != -1
+    assert call_pos != -1
+    assert helper_pos < call_pos
+
+
+def test_task_loop_runtime_registration_updates_parent_task_scope():
+    text = _runner_text()
+    assert "Set-Variable -Name ApprovedRecoveryTasks -Value $currentTasks -Scope 1" in text
+    assert "$script:ApprovedRecoveryTasks = $currentTasks" in text
+    assert "Idea promotion task runtime registration count" in text
+    assert "$currentTasks = @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_picker_explicitly_merges_runtime_promoted_tasks():
+    text = _runner_text()
+    assert "$script:RuntimeApprovedRecoveryTasks = @()" in text
+    assert "$script:RuntimeApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($task)" in text
+    assert "Runtime promoted task candidates visible to picker" in text
+    assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_picker_merges_runtime_promoted_tasks_into_active_tasks():
+    text = _runner_text()
+    assert "$Tasks = @($script:RuntimeApprovedRecoveryTasks) + @($Tasks)" in text
+    assert "Runtime promoted task candidates merged into active task list" in text
+    assert "$ApprovedRecoveryTasks = @($script:RuntimeApprovedRecoveryTasks) + @($ApprovedRecoveryTasks)" in text
+
+
+def test_task_loop_registers_idea_promotion_task_from_json_draft():
+    text = _runner_text()
+    assert "NOVA_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
+    assert "ConvertTo-Json -Depth 6" in text
+    assert "ConvertFrom-Json" in text
+    assert "Idea promotion task registered from JSON draft" in text
+    assert "$taskId = [string]$draft.Id" in text
+    assert "Editable = @($draft.Editable" in text
+    register_start = text.find("function Register-IdeaPromotionTaskDraft")
+    preflight_start = text.find("if ($PreflightOnly) {", register_start)
+    assert register_start != -1
+    assert preflight_start != -1
+    register_text = text[register_start:preflight_start]
+    assert 'Id = "tiny-autodev-sandbox-group-work-items-by-status-v1"' not in register_text
+
+
+def test_task_loop_json_draft_uses_fresh_action_plan_summary_task():
+    text = _runner_text()
+    assert "tiny-autodev-sandbox-action-plan-summary-v1" in text
+    assert "summarise_action_plan" in text
+    assert "test_autodev_sandbox_summarises_action_plan_with_next_item" in text
+    assert "tiny-autodev-sandbox-group-work-items-by-status-v1" not in text[text.find("function Write-IdeaPromotionTaskDraft"):text.find("function Register-IdeaPromotionTaskDraft")]
+
+
+def test_task_loop_json_draft_skips_recent_completed_candidates():
+    text = _runner_text()
+    assert "git --no-pager log --oneline -80" in text
+    assert "$draftCandidates = @(" in text
+    assert "Idea promotion task draft freshness selected" in text
+    assert "Idea promotion task draft skipped recent completed candidate" in text
+    assert "tiny-autodev-sandbox-format-action-plan-summary-v1" in text
+    assert "format_action_plan_summary" in text
+    assert "test_autodev_sandbox_formats_action_plan_summary" in text
+
+
+def test_task_loop_loads_external_idea_promotion_candidate_config():
+    text = _runner_text()
+    assert "CandidateConfigPath" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATES.json" in text
+    assert "Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json" in text
+    assert "Idea promotion task draft loaded candidate config" in text
+
+
+def test_task_loop_external_idea_promotion_candidate_config_has_fresh_task():
+    config = Path("local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json")
+    assert config.exists()
+    text = config.read_text(encoding="utf-8")
+    assert "tiny-autodev-sandbox-render-action-plan-markdown-v1" in text
+    assert "render_action_plan_markdown" in text
+    assert "test_autodev_sandbox_renders_action_plan_markdown" in text
+
+
+def test_task_loop_external_candidate_loader_flattens_json_array():
+    text = _runner_text()
+    assert "$rawCandidates = Get-Content -Path $CandidateConfigPath -Raw | ConvertFrom-Json" in text
+    assert "foreach ($candidateGroup in @($rawCandidates))" in text
+    assert "foreach ($candidate in @($candidateGroup))" in text
+    assert "Idea promotion task draft loaded candidate count" in text
+    assert "$validatedCandidates += $validation.Task" in text
+    assert "$draftCandidates = @($validatedCandidates)" in text
+
+
+def test_task_loop_validates_external_idea_candidate_schema():
+    text = _runner_text()
+    assert "function Test-IdeaPromotionTaskCandidate" in text
+    assert "function Test-SafeIdeaCandidatePath" in text
+    assert "Id must be one token with no whitespace" in text
+    assert "duplicate Id" in text
+    assert "unsafe Editable path" in text
+    assert "required changed file not listed as editable" in text
+    assert "Idea promotion task draft candidate validation accepted" in text
+    assert "Idea promotion task draft rejected invalid candidate" in text
+
+
+def test_task_loop_external_config_contains_fresh_validated_status_line_candidate():
+    config = Path("local_ai_cycles/config/NOVA_IDEA_PROMOTION_CANDIDATES.json")
+    assert config.exists()
+    text = config.read_text(encoding="utf-8")
+    assert "tiny-autodev-sandbox-action-plan-status-line-v1" in text
+    assert "render_action_plan_status_line" in text
+    assert "test_autodev_sandbox_renders_action_plan_status_line" in text
+
+
+def test_task_loop_has_no_literal_backtick_n_before_function_keyword():
+    text = _runner_text()
+    assert "`nfunction " not in text
+    assert "`nfunction Write-IdeaPromotionTaskDraft" not in text
+
+
+def test_validation_gate_runs_external_candidate_validator_probe():
+    from pathlib import Path as _Path
+
+    text = _Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "validate_idea_promotion_candidates.py --config" in text
+    assert "NOVA_IDEA_PROMOTION_CANDIDATES.json --probe" in text
+    assert "tests_idea_promotion_candidate_validator.py" in text
+    assert "Candidate validation probe failed" in text
+
+
+def test_task_loop_live_compile_gate_includes_improvement_lab():
+    text = _runner_text()
+    assert "python -m compileall -q app.py winlocalassistant nova nova_improvement_lab tests_nova_user_sanity.py" in text
+    assert "python -m compileall -q app.py winlocalassistant nova tests_nova_user_sanity.py" not in text
+
+
+def test_task_loop_runs_candidate_doctor_before_idea_promotion():
+    text = _runner_text()
+    normal = text.replace("\\", "/")
+
+    doctor = 'Run-Cmd "python ./tools/idea_candidate_doctor.py"'
+    report = "Idea candidate doctor report: ./local_ai_cycles/memory/NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.md"
+    promotion_call = 'Write-IdeaPromotionCandidateReport -IdeaPoolPath "./local_ai_cycles/memory/NOVA_TASK_IDEA_POOL_LATEST.md"'
+
+    assert doctor in normal
+    assert report in normal
+    assert promotion_call in normal
+
+    doctor_index = normal.index(doctor)
+    promotion_index = normal.index(promotion_call, doctor_index)
+    assert doctor_index < promotion_index
+
+
+
+def test_task_loop_does_not_write_stale_external_json_draft_when_pool_exhausted():
+    text = _runner_text()
+    assert "$usingExternalCandidateConfig = $false" in text
+    assert "$usingExternalCandidateConfig = $true" in text
+    assert "Idea promotion task draft external candidate pool exhausted; no fresh JSON draft written" in text
+    assert "Remove-Item -Path $JsonPath -Force -ErrorAction SilentlyContinue" in text
+    assert "Result: external-candidate-pool-exhausted" in text
+    assert "Idea promotion task draft built-in freshness fallback reused candidate:" in text
+    assert "Idea promotion task draft freshness fallback reused candidate:" not in text
+
+
+def test_task_loop_reads_candidate_doctor_json_and_skips_exhausted_external_pool():
+    text = _runner_text()
+    assert "NOVA_IDEA_CANDIDATE_DOCTOR_LATEST.json" in text
+    assert "$doctorState = Get-Content $doctorJson -Raw | ConvertFrom-Json" in text
+    assert "Idea candidate doctor fresh count:" in text
+    assert "Idea candidate doctor next candidate:" in text
+    assert "if ($freshCount -le 0)" in text
+    assert "Idea promotion skipped: external candidate pool exhausted" in text
+
+
+def test_task_loop_uses_best_candidate_wording_for_below_minimum_exhaustion():
+    text = _runner_text()
+    assert "Best task candidate $($choice.Id): score=$($choice.Score); reasons=$($choice.Reasons)" in text
+    assert "Best candidate below productive minimum:" in text
+    assert "No sufficiently productive task remained: best candidate" in text
+    assert "Best candidate: $taskId" in text
+    assert "Best candidate score: $Score" in text
+    assert "Selected task $($choice.Id): score=$($choice.Score)" not in text
+    assert "No sufficiently productive task remained: selected" not in text
+
+
+def test_task_loop_avoids_powershell_colon_variable_parse_bug():
+    text = _runner_text()
+    assert "$taskId: score=" not in text
+    assert "${taskId}: score=" in text
+
+
+def test_preflight_checks_productive_threshold_before_selected_task_summary():
+    text = _runner_text()
+    start = text.index("if ($PreflightOnly) {")
+    threshold = text.index(
+        "if ($null -ne $preflightTaskScore -and $preflightTaskScore -lt $MinProductiveTaskScore)",
+        start,
+    )
+    result = text.index('Add-Summary "Result: preflight-only"', start)
+    localization = text.index("Write-TaskLocalizationReport -Task $task", start)
+
+    assert threshold < result
+    assert threshold < localization
+
+
+def test_task_prompt_avoids_literal_noneditable_file_names_that_trigger_aider_prompts():
+    text = _runner_text()
+    assert "Do not mention, request, or add any file outside the editable-file list." in text
+    assert "Do not mention or request app.py, README.md, CHANGELOG.md, core.py, tools.py, webui.py, or startup scripts" not in text
+
+
+def test_task_loop_internal_candidate_validator_allows_model_context_file_exactly():
+    text = _runner_text()
+    assert "$normal -eq 'winlocalassistant\\model_context.py'" in text
+    assert "$normal -like 'nova_improvement_lab\\*.py'" in text
+    assert "unsafe Editable path" in text
+    assert "unsafe RequiredChangedFiles path" in text
+
+
+def test_task_loop_records_denied_aider_add_file_prompts():
+    text = _runner_text()
+    assert "function Add-AiderAddFilePromptSummary" in text
+    assert "Add file to the chat\\?" in text
+    assert "Aider add-file prompts denied for non-editable file(s):" in text
+    assert "Add-AiderAddFilePromptSummary -OutputText $text -Task $task" in text
+    assert "Added pyproject\\.toml" in text
+    assert "Added pytest\\.ini" in text
+
+
+def test_task_loop_clears_stale_review_artifacts_before_live_run():
+    text = _runner_text()
+    assert "function Clear-LatestReviewArtifacts" in text
+    assert "NOVA_PATCH_REVIEW_LATEST.md" in text
+    assert "NOVA_SUBAGENT_REVIEW_LATEST.md" in text
+    assert "Clean-GeneratedNoise\nAssert-CleanGit\nClear-LatestReviewArtifacts\nWrite-StaticToolStatusReport" in text
+    assert text.index("Clear-LatestReviewArtifacts\nWrite-StaticToolStatusReport") < text.index("$denyInput | & $Aider")
+
+
+def test_task_loop_writes_failure_review_before_resetting_failed_live_changes():
+    text = _runner_text()
+    assert "function Write-TaskFailureReviewReport" in text
+    assert "NOVA_TASK_FAILURE_REVIEW_LATEST.md" in text
+    assert "Task failure review report:" in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-output-scan"' in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "aider-run"' in text
+    assert 'Write-TaskFailureReviewReport -Task $task -Before $before -Stage "validation-gate"' in text
+    assert 'Remove-Item -Path ".\\local_ai_cycles\\memory\\NOVA_TASK_FAILURE_REVIEW_LATEST.md"' in text
+
+
+def test_task_loop_validator_rejects_double_quoted_markdown_fences():
+    validator = Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "double-quoted Markdown fence strings found" in validator
+    assert "Select-String -Path .\\run_nova_task_queue_loop.ps1 -Pattern" in validator
+    assert '"```' in validator
+
+
+def test_task_loop_validator_checks_roadmap_updater():
+    validator = Path("tools/validate_task_loop_patch.ps1").read_text(encoding="utf-8")
+    assert "python -m py_compile tools/update_task_loop_roadmap.py" in validator
+    assert "Roadmap updater compile failed" in validator
+
+
+def test_roadmap_updater_preserves_manual_section_markers():
+    updater = Path("tools/update_task_loop_roadmap.py").read_text(encoding="utf-8")
+    assert "NOVA_ROADMAP_MANUAL_START" in updater
+    assert "NOVA_ROADMAP_MANUAL_END" in updater
+    assert "def extract_manual_section" in updater
+    assert "manual_section = extract_manual_section(existing)" in updater
+    assert "render_markdown(state, manual_section)" in updater
+
+
+def test_roadmap_updater_avoids_timestamp_only_churn():
+    updater = Path("tools/update_task_loop_roadmap.py").read_text(encoding="utf-8")
+    assert "def comparable_state" in updater
+    assert 'comparable.pop("last_updated", None)' in updater
+    assert "previous_state = load_json(ROADMAP_JSON)" in updater
+    assert 'state["last_updated"] = previous_state.get("last_updated", state["last_updated"])' in updater
+
+
+def test_task_loop_updates_roadmap_after_success_and_exhaustion():
+    text = _runner_text()
+    assert "function Update-TaskLoopRoadmap" in text
+    assert r".\tools\update_task_loop_roadmap.py" in text
+    assert r"Roadmap updated: .\docs\NOVA_TASK_LOOP_ROADMAP.md" in text
+    assert "Update-TaskLoopRoadmap" in text
+    assert "exit 0" in text
+    assert 'category=success-cooldown reason=recent-success-cooldown structured_event=1" | Add-Content $NoChangeTargets\n    Update-TaskLoopRoadmap' in text
+
+
+def test_task_loop_auto_commits_roadmap_only_updates_after_success():
+    text = _runner_text()
+    assert "[switch]$AutoCommit" in text
+    assert "Roadmap auto-commit: committed roadmap-only update" in text
+    assert "Roadmap auto-commit skipped: non-roadmap dirty files are present" in text
+    assert "git commit -m \"Update roadmap after task loop outcome\"" in text
+    assert "Update-TaskLoopRoadmap -AutoCommit" in text
+
+
+def test_task_loop_scores_failure_categories_by_severity():
+    text = _runner_text()
+    assert "function Get-TaskSignalSeverityPenalty" in text
+    assert "context-protected-file|protected-file|context/token" in text
+    assert "required-file|missing required changed file|test-only patch" in text
+    assert "required-diff|missing required diff marker" in text
+    assert "syntaxerror|invalid syntax|compile|test-failed|command failed" in text
+    assert "validation-failed|documentation/comment-only|no executable code" in text
+    assert "low-significance|low-value|no-change" in text
+    assert "placeholder-or-speculative" in text
+    assert "$severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons" in text
+    assert "$score -= $severityPenalty" in text
+    assert "task outcome severity penalty=$severityPenalty" in text
+
+
+def test_task_loop_severity_penalty_applies_before_used_this_run_penalty():
+    text = _runner_text()
+    severity_idx = text.index("$severityPenalty = Get-TaskSignalSeverityPenalty -Reasons $signals.Reasons")
+    used_this_run_idx = text.index("if ($usedThisRun)", severity_idx)
+    assert severity_idx < used_this_run_idx
+
+
+def test_task_loop_internal_candidate_validator_allows_agent_browser_safety_file_exactly():
+    text = _runner_text()
+    assert "$normal -eq 'winlocalassistant\\model_context.py'" in text
+    assert "$normal -eq 'winlocalassistant\\agent_browser_safety.py'" in text
+    assert "unsafe Editable path" in text
+    assert "unsafe RequiredChangedFiles path" in text
+
+
+def test_task_loop_idea_promotion_skips_recent_bad_outcome_candidates():
+    text = _runner_text()
+    assert "Read-IdeaPromotionRecentOutcomeText" in text
+    assert "Test-IdeaPromotionCandidateRecentBadOutcome" in text
+    assert "NOVA_TASK_LOOP_SUMMARY_LATEST.md" in text
+    assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in text
+    assert "validation-failed" in text
+    assert "required-diff" in text
+    assert "skipped recent failed/outcome candidate" in text
+
+
+def test_task_loop_uses_autonomous_candidate_fallback_on_pool_exhaustion():
+    text = _runner_text()
+    assert "Invoke-AutonomousCandidateFallback" in text
+    assert "generate_autonomous_idea_candidates.py --root . --limit 12 --current-exhaustion-hint" in text
+    assert "NOVA_AUTONOMOUS_IDEA_CANDIDATES.json" in text
+    assert "NOVA_AUTONOMOUS_IDEA_PROMOTION_TASK_DRAFT_LATEST.json" in text
+    assert "preflight best candidate below productive minimum" in text
+    assert "Autonomous candidate fallback selected productive task" in text
+
+
+def test_task_loop_autonomous_fallback_defers_exhaustion_report_until_after_retry():
+    text = _runner_text()
+    assert "Resolve-TaskScoreFromSummaryById" in text
+    assert "Preflight best candidate below productive minimum before autonomous fallback" in text
+    fallback_idx = text.index("$fallbackUsed = Invoke-AutonomousCandidateFallback")
+    report_idx = text.index('Write-TaskPoolExhaustedReport -Task $task -Phase "preflight" -Score $preflightTaskScore', fallback_idx)
+    assert fallback_idx < report_idx
+
+
+def test_task_loop_autonomous_fallback_clears_stale_pool_exhaustion_report():
+    text = _runner_text()
+    assert "Autonomous candidate fallback cleared stale task-pool exhaustion report" in text
+    assert "NOVA_TASK_POOL_EXHAUSTED_LATEST.md" in text
+    assert "Remove-Item -Path" in text
+
+
+def test_task_loop_uses_autonomous_candidate_fallback_before_live_prompt_generation():
+    text = _runner_text()
+    assert "Live best candidate below productive minimum before autonomous fallback" in text
+    assert 'Invoke-AutonomousCandidateFallback -Reason "live best candidate below productive minimum"' in text
+    assert "Live autonomous candidate fallback selected productive task" in text
+
+    fallback_idx = text.index("Live best candidate below productive minimum before autonomous fallback")
+    context_idx = text.index("Write-TaskContext -Path $context -Task $task")
+    prompt_idx = text.index("Write-TaskPrompt -Path $prompt -Task $task")
+    aider_idx = text.index("$aiderArgs = @(", prompt_idx)
+
+    assert fallback_idx < context_idx
+    assert fallback_idx < prompt_idx
+    assert fallback_idx < aider_idx
+
+
+def test_task_loop_recent_bad_outcome_filter_uses_candidate_context_window() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Test-IdeaPromotionCandidateRecentBadOutcome")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "$lines = $OutcomeText -split" in body
+    assert "$window" in body
+    assert "score=0" in body
+    assert "stage: validation-gate" in body
+    assert "command failed:" in body
+    assert "[regex]::Escape($CandidateId)" in body
+
+
+def test_task_loop_recent_bad_outcome_filter_ignores_marker_text_inside_candidate_ids() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Test-IdeaPromotionCandidateRecentBadOutcome")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "$windowForMarkers" in body
+    assert "(?:-[a-z0-9]+)+-v\\d+" in body
+    assert "$windowForMarkers.Contains($marker)" in body
+
+
+def test_task_loop_recent_outcome_reader_includes_durable_memory() -> None:
+    from pathlib import Path
+
+    text = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    start = text.index("function Read-IdeaPromotionRecentOutcomeText")
+    end = text.find("\nfunction ", start + 1)
+    body = text[start:end]
+
+    assert "MISTAKE_MEMORY.md" in body
+    assert "NO_CHANGE_TARGETS.md" in body
+    assert "NOVA_TASK_FAILURE_REVIEW_LATEST.md" in body
+
+
+def test_task_loop_quotes_current_exhaustion_hint_for_nested_powershell() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    assert "$escapedReason = $Reason.Replace(\"'\", \"''\")" in script
+    assert "--current-exhaustion-hint '$escapedReason'" in script
+
+
+def test_task_prompt_requires_required_files_and_source_test_evidence() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    assert "Edit every file listed in RequiredChangedFiles" in script
+    assert "Source+test evidence is mandatory for live candidates" in script
+    assert "Do not make docs-only or report-only patches" in script
+    assert "avoid non-editable files and docs-only or report-only changes" in script
+
+
+def test_nova_operator_exposes_safe_modes() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    for mode in ["Status", "Clean", "Check", "Preflight", "DryRun", "LiveOnce", "Triage", "SafeCycle", "Package"]:
+        assert f'"{mode}"' in script
+    assert "run_supervised_autonomy_batch.py --max-cycles 1 --dry-run" in script
+    assert "run_supervised_autonomy_batch.py --max-cycles 1" in script
+    assert "nova_failure_triage.py" in script
+    assert "Package-Checkpoint -Label $PackageLabel" in script
+
+
+def test_failure_triage_tool_detects_required_file_breach() -> None:
+    script = Path("tools/nova_failure_triage.py").read_text(encoding="utf-8")
+    assert "missing required changed file" in script
+    assert "NOVA_FAILURE_TRIAGE_LATEST.md" in script
+    assert "recommended_action" in script
+
+
+def test_failure_triage_prefers_latest_cycle_section() -> None:
+    from tools.nova_failure_triage import latest_cycle_section
+
+    summary = """
+## Cycle 1
+Task: old-task
+Result: rejected
+Why: Rejected required-file contract breach for task 'old-task': missing required changed file(s): tests_old.py. Changed file(s): old.py.
+
+## Cycle 2
+Task: latest-task
+Result: rejected
+Why: Rejected required-file contract breach for task 'latest-task': missing required changed file(s): tests_latest.py. Changed file(s): latest.py.
+"""
+
+    latest = latest_cycle_section(summary)
+    assert "latest-task" in latest
+    assert "tests_latest.py" in latest
+    assert "old-task" not in latest
+
+
+def test_nova_operator_has_package_mode() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert '"Package"' in script
+    assert "Package-Checkpoint -Label $PackageLabel" in script
+
+
+def test_failure_triage_changed_files_ignore_missing_required_prefix() -> None:
+    from tools.nova_failure_triage import find_last, split_files
+
+    why = (
+        "Rejected required-file contract breach for task 'candidate-factory-pool-exhaustion-summary-v1': "
+        "missing required changed file(s): tests_autonomous_candidate_factory.py. "
+        "Changed file(s): nova_improvement_lab\\autonomous_candidate_factory.py."
+    )
+
+    missing = split_files(
+        find_last(r"missing required changed file\(s\):\s*([^\n]+?)\.\s*Changed file", why)
+    )
+    changed = split_files(
+        find_last(r"(?<!required )Changed file\(s\):\s*([^\n]+)", why)
+    )
+
+    assert missing == ["tests_autonomous_candidate_factory.py"]
+    assert changed == ["nova_improvement_lab\\autonomous_candidate_factory.py"]
+
+
+def test_nova_operator_package_refreshes_failure_triage() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert 'Run-Step "Refresh failure triage"' in script
+    assert "python .\\tools\\nova_failure_triage.py" in script
+
+
+def test_nova_operator_liveonce_triages_before_throwing() -> None:
+    script = Path("tools/nova_operator.ps1").read_text(encoding="utf-8")
+    assert "$liveExit = $LASTEXITCODE" in script
+    assert 'Run-Step "Failure triage after live attempt"' in script
+    assert "after triage" in script
+
+
+def test_task_loop_generates_wide_autonomous_candidate_pool() -> None:
+    script = Path("run_nova_task_queue_loop.ps1").read_text(encoding="utf-8")
+    lines = [
+        line for line in script.splitlines()
+        if "generate_autonomous_idea_candidates.py" in line
+    ]
+    assert lines, "expected autonomous candidate generator call"
+    assert any("--limit 12" in line for line in lines)
+    assert not any("--limit 5" in line for line in lines)
+

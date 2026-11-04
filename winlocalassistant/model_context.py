@@ -55,6 +55,80 @@ def _first_json_file(folder: Path, patterns: list[str]) -> Path | None:
         return candidates[-1]
 
 
+def _resolve_prompt_named_file(match: str, workspace: Path) -> Path | None:
+    """Resolve a file name from the prompt to an absolute path inside the workspace.
+
+    Returns the resolved Path if it is within the workspace and exists as a file,
+    otherwise returns None.
+    """
+    candidate = (workspace / match).resolve()
+    try:
+        # Ensure the candidate is inside the workspace
+        if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
+            if candidate.exists() and candidate.is_file():
+                return candidate
+    except Exception:
+        pass
+    return None
+
+
+def _prompt_named_files(prompt: str, workspace: Path) -> list[tuple[str, str]]:
+    """Return a list of (filename, preview) for small top‑level files explicitly named in the prompt."""
+    named_files = []
+    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
+        candidate = _resolve_prompt_named_file(match, workspace)
+        if candidate is not None:
+            named_files.append((match, _safe_read_text(candidate, limit=2200)))
+    return named_files
+
+
+def _safe_prompt_named_file_signature_entry(match: str, candidate: Path) -> tuple[str, str]:
+    """
+    Return a deterministic signature fragment for a prompt‑named file.
+
+    The fragment includes the original match string, the resolved absolute path,
+    stat metadata (mtime and size) when available, and a content hash if readable.
+    All operations are wrapped in try/except blocks to avoid raising exceptions
+    during cache key calculation.
+    """
+    # Resolve path string safely
+    try:
+        resolved = str(candidate.resolve())
+    except Exception:
+        resolved = ""
+    # Stat metadata
+    stat_info = ""
+    try:
+        st = candidate.stat()
+        stat_info = f"{st.st_mtime}:{st.st_size}"
+    except Exception:
+        pass
+    # Content hash
+    content_hash = ""
+    try:
+        text = candidate.read_text(encoding="utf-8", errors="replace")
+        content_hash = sha256(text.encode("utf-8")).hexdigest()
+    except Exception:
+        pass
+    fragment = f"{match}:{resolved}:{stat_info}:{content_hash}"
+    return (match, fragment)
+
+
+def _prompt_named_file_signature(prompt: str, workspace: Path) -> str:
+    """Return a hash that changes when any prompt‑named file content changes."""
+    named = []
+    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
+        candidate = _resolve_prompt_named_file(match, workspace)
+        if candidate is not None:
+            # Use safe helper to build a deterministic fragment
+            _, fragment = _safe_prompt_named_file_signature_entry(match, candidate)
+            named.append(fragment)
+    # Sort to ensure deterministic order
+    named.sort()
+    sig_str = "".join(named)
+    return sha256(sig_str.encode("utf-8")).hexdigest()
+
+
 def _workspace_summary(workspace: Path, prompt: str) -> dict[str, Any]:
     summary: dict[str, Any] = {"path": str(workspace), "exists": workspace.exists()}
     if not workspace.exists() or not workspace.is_dir():
@@ -81,15 +155,7 @@ def _workspace_summary(workspace: Path, prompt: str) -> dict[str, Any]:
     if previews:
         summary["previews"] = previews
     # If the prompt names a file, include a compact preview when it is in workspace.
-    named_files = []
-    for match in re.findall(r"[A-Za-z0-9_./\\-]+\.(?:py|js|ts|html|css|md|json|txt|bat|ps1|yaml|yml)", prompt or ""):
-        candidate = (workspace / match).resolve()
-        try:
-            if workspace.resolve() in candidate.parents or candidate == workspace.resolve():
-                if candidate.exists() and candidate.is_file():
-                    named_files.append((match, _safe_read_text(candidate, limit=2200)))
-        except Exception:
-            continue
+    named_files = _prompt_named_files(prompt, workspace)
     if named_files:
         summary["named_file_previews"] = {name: text for name, text in named_files[:4] if text}
     return summary
@@ -107,7 +173,7 @@ def _active_file_contexts() -> list[dict[str, Any]]:
                 "kind": ctx.kind,
                 "size_bytes": ctx.size_bytes,
                 "summary": ctx.summary,
-                "image_hint": f"Use /image-analyze context:{ctx.context_id} => PROMPT" if ctx.kind == "image" else "",
+                "image_hint": f"Use /image-analyze context:{ctx.context_id} => PROMPT analyzes an uploaded image/photo" if ctx.kind == "image" else "",
             })
         return rows
     except Exception:
@@ -216,6 +282,7 @@ def _build_model_context_pack_cached(
     planner_model: str,
     model_provider: str,
     skill_mode: str,
+    prompt_named_file_signature: str,
 ) -> ContextPack:
     config = AssistantConfig(
         workspace=workspace,
@@ -309,6 +376,8 @@ def build_model_context_pack(config: AssistantConfig, messages: list[dict[str, s
             workspace_mtime = workspace.stat().st_mtime
     except Exception:
         workspace_mtime = 0.0
+    # Compute signature of any prompt‑named files to invalidate cache when they change
+    prompt_named_file_signature = _prompt_named_file_signature(prompt_excerpt, workspace)
     return _build_model_context_pack_cached(
         str(workspace),
         workspace_mtime,
@@ -323,6 +392,7 @@ def build_model_context_pack(config: AssistantConfig, messages: list[dict[str, s
         str(getattr(config, "planner_model", "") or getattr(config, "model", "") or ""),
         str(getattr(config, "model_provider", "ollama") or "ollama"),
         str(getattr(config, "skill_mode", "auto") or "auto"),
+        prompt_named_file_signature,
     )
 
 

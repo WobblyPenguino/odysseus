@@ -230,24 +230,18 @@ def ollama_chat(
                 return content
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
-            _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc))
+            _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc), timed_out_or_error=True)
+            # Apply a short cooldown after an HTTP error to avoid rapid retries
             _OLLAMA_COOLDOWN_UNTIL = time.time() + max(0.0, timeout_quarantine_sec)
-            time.sleep(max(0.0, timeout_quarantine_sec))
-            return None
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
-            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc))
+            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), timed_out_or_error=True)
+            # Apply a short cooldown after a generic error to avoid rapid retries
             _OLLAMA_COOLDOWN_UNTIL = time.time() + max(0.0, timeout_quarantine_sec)
-            # Sleep through the quarantine while holding the lock. This prevents
-            # the UI/agent from immediately starting a second prompt into an
-            # Ollama server that may still be cleaning up the failed request.
-            time.sleep(max(0.0, timeout_quarantine_sec))
-            return None
     finally:
         _OLLAMA_BUSY_SINCE = None
         _OLLAMA_BUSY_DESC = ""
         _OLLAMA_BUSY_REQUEST_ID = ""
         _OLLAMA_LOCK.release()
-
 
 
 def ollama_vision_chat(
@@ -275,6 +269,7 @@ def ollama_vision_chat(
     if _OLLAMA_COOLDOWN_UNTIL and now < _OLLAMA_COOLDOWN_UNTIL:
         return None
     _try_stop_stopping_model(model)
+
     acquired, queue_wait_sec = _acquire_ollama_lane(model=model, desc=desc, queue_timeout_sec=900.0)
     if not acquired:
         return None
@@ -318,15 +313,13 @@ def ollama_vision_chat(
                 return content
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
-            _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc))
+            _set_last_error(request_id, desc, started, f"http_{exc.code}", body or repr(exc), timed_out_or_error=True)
+            # Apply a short cooldown after an HTTP error to avoid rapid retries
             _OLLAMA_COOLDOWN_UNTIL = time.time() + max(0.0, timeout_quarantine_sec)
-            time.sleep(max(0.0, timeout_quarantine_sec))
-            return None
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
-            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc))
+            _set_last_error(request_id, desc, started, "timeout_or_error", repr(exc), timed_out_or_error=True)
+            # Apply a short cooldown after a generic error to avoid rapid retries
             _OLLAMA_COOLDOWN_UNTIL = time.time() + max(0.0, timeout_quarantine_sec)
-            time.sleep(max(0.0, timeout_quarantine_sec))
-            return None
     finally:
         _OLLAMA_BUSY_SINCE = None
         _OLLAMA_BUSY_DESC = ""
