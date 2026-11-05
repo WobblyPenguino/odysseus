@@ -1,23 +1,46 @@
-﻿import json
+import json
 import os
-from typing import Dict, Any
+import tempfile
 
 class EpochPersistenceManager:
-    """Provides durable storage for cluster epochs, fencing tokens, and Merkle audit trails."""
-    def __init__(self, storage_path: str = "cluster_state_epoch.json"):
-        self.storage_path = storage_path
+    def __init__(self, filepath="cluster_state_epoch.json"):
+        self.filepath = filepath
 
     def save_state(self, epoch: int, fencing_token: int, global_merkle_root: str) -> None:
-        state = {
-            "epoch": epoch,
-            "fencing_token": fencing_token,
-            "global_merkle_root": global_merkle_root
-        }
-        with open(self.storage_path, "w", encoding="UTF-8") as f:
-            json.dump(state, f, indent=2)
+        existing = self.load_state()
+        if existing and epoch < existing.get("epoch", 0):
+            raise ValueError(f"Monotonic epoch violation: new epoch {epoch} < stored epoch {existing.get("epoch")}")
 
-    def load_state(self) -> Dict[str, Any]:
-        if not os.path.exists(self.storage_path):
-            return {"epoch": 1, "fencing_token": 0, "global_merkle_root": None}
-        with open(self.storage_path, "r", encoding="UTF-8") as f:
-            return json.load(f)
+        payload = {
+            "epoch": int(epoch),
+            "fencing_token": int(fencing_token),
+            "global_merkle_root": str(global_merkle_root)
+        }
+
+        dir_name = os.path.dirname(os.path.abspath(self.filepath)) or "."
+        os.makedirs(dir_name, exist_ok=True)
+
+        fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2)
+            os.replace(tmp_path, self.filepath)
+        except Exception as e:
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+            raise IOError(f"Failed to atomically persist epoch state: {e}")
+
+    def load_state(self) -> dict | None:
+        if not os.path.exists(self.filepath):
+            return None
+        try:
+            with open(self.filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, dict) or "epoch" not in data:
+                return None
+            return data
+        except (json.JSONDecodeError, IOError):
+            return None
