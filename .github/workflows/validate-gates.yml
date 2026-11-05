@@ -1,0 +1,35 @@
+name: Nova Engine Gate Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-gates:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore nova_sidecar_work.csproj
+
+    - name: Build Engine
+      run: dotnet build nova_sidecar_work.csproj --configuration Release --no-restore
+
+    - name: Run Milestone Gates (M15 - M20)
+      run: |
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m15
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m16
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m17
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m18
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m19
+        dotnet run --project nova_sidecar_work.csproj -- --validate-gate m20
