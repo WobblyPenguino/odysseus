@@ -31,3 +31,6 @@ nova_cycle_report.md
 code_quality_gates/
 code_reviews/
 codebase_integrity_reports/
+
+bin/
+obj/
