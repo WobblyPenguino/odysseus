@@ -6,14 +6,7 @@ class SwarmLeaderElection:
         self.node_id = node_id
         self.cluster_nodes = cluster_nodes
         self.persistence = EpochPersistenceManager(persistence_path)
-        
-        existing = self.persistence.load_state()
-        if existing:
-            self.epoch = existing.get("epoch", 1)
-            self._fencing_token = existing.get("fencing_token", 0)
-        else:
-            self.epoch = 1
-            self._fencing_token = 0
+        self.epoch = 1
 
     def evaluate_leadership(self) -> bool:
         active_nodes = [n for n in self.cluster_nodes if n.get("active", True)]
@@ -24,27 +17,34 @@ class SwarmLeaderElection:
 
     def get_fencing_token(self) -> dict:
         is_leader = self.evaluate_leadership()
+        
+        existing = self.persistence.load_state()
+        if existing:
+            self.epoch = existing.get("epoch", 1)
+            current_token = existing.get("fencing_token", 0)
+        else:
+            current_token = 0
+
         if not is_leader:
             return {
                 "node_id": self.node_id,
                 "is_current_node_leader": False,
                 "epoch": self.epoch,
-                "fencing_token": self._fencing_token
+                "fencing_token": current_token
             }
 
-        self._fencing_token += 1
-        current_root = self.persistence.load_state()
-        merkle_root = current_root.get("global_merkle_root", "0" * 64) if current_root else "0" * 64
+        next_token = current_token + 1
+        current_root = existing.get("global_merkle_root", "0" * 64) if existing else "0" * 64
         
         self.persistence.save_state(
             epoch=self.epoch,
-            fencing_token=self._fencing_token,
-            global_merkle_root=merkle_root
+            fencing_token=next_token,
+            global_merkle_root=current_root
         )
 
         return {
             "node_id": self.node_id,
             "is_current_node_leader": True,
             "epoch": self.epoch,
-            "fencing_token": self._fencing_token
+            "fencing_token": next_token
         }
