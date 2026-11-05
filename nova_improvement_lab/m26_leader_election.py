@@ -1,48 +1,50 @@
-﻿import time
-from typing import List, Dict, Any, Optional
+import os
+from nova_improvement_lab.m29_epoch_persistence import EpochPersistenceManager
 
 class SwarmLeaderElection:
-    """Manages priority-weighted leader election with epochs, lease validity, and fencing tokens."""
-    def __init__(self, node_id: str, cluster_nodes: List[Dict[str, Any]], lease_duration_seconds: float = 5.0):
+    def __init__(self, node_id: str, cluster_nodes: list[dict], persistence_path: str = "cluster_state_epoch.json"):
         self.node_id = node_id
         self.cluster_nodes = cluster_nodes
-        self.lease_duration_seconds = lease_duration_seconds
-        self.current_epoch = 1
-        self.fencing_token = 0
+        self.persistence = EpochPersistenceManager(persistence_path)
+        self.epoch = 1
 
-    def elect_leader(self, current_time: Optional[float] = None) -> str:
-        """
-        Elects the active node with the highest priority. 
-        Only active nodes are eligible. Ties are broken lexicographically by node ID.
-        """
-        now = current_time if current_time is not None else time.time()
+    def evaluate_leadership(self) -> bool:
         active_nodes = [n for n in self.cluster_nodes if n.get("active", True)]
-        
         if not active_nodes:
-            raise ValueError("No active nodes available for leader election.")
+            return False
+        leader = max(active_nodes, key=lambda n: (n.get("priority", 0), n.get("id", "")))
+        return leader.get("id") == self.node_id
 
-        # Sort by priority descending, then node_id ascending for deterministic tie-breaking
-        sorted_nodes = sorted(
-            active_nodes,
-            key=lambda x: (-x.get("priority", 0), x.get("id", ""))
+    def get_fencing_token(self) -> dict:
+        is_leader = self.evaluate_leadership()
+        
+        existing = self.persistence.load_state()
+        if existing:
+            self.epoch = existing.get("epoch", 1)
+            current_token = existing.get("fencing_token", 0)
+        else:
+            current_token = 0
+
+        if not is_leader:
+            return {
+                "node_id": self.node_id,
+                "is_current_node_leader": False,
+                "epoch": self.epoch,
+                "fencing_token": current_token
+            }
+
+        next_token = current_token + 1
+        current_root = existing.get("global_merkle_root", "0" * 64) if existing else "0" * 64
+        
+        self.persistence.save_state(
+            epoch=self.epoch,
+            fencing_token=next_token,
+            global_merkle_root=current_root
         )
 
-        leader = sorted_nodes[0]["id"]
-        return leader
-
-    def get_fencing_token(self, current_time: Optional[float] = None) -> Dict[str, Any]:
-        """
-        Issues an epoch-bound fencing token to prevent stale leaders from committing actions.
-        """
-        leader = self.elect_leader(current_time=current_time)
-        is_leader = (self.node_id == leader)
-        
-        if is_leader:
-            self.fencing_token += 1
-
         return {
-            "leader_id": leader,
-            "is_current_node_leader": is_leader,
-            "epoch": self.current_epoch,
-            "fencing_token": self.fencing_token if is_leader else None
+            "node_id": self.node_id,
+            "is_current_node_leader": True,
+            "epoch": self.epoch,
+            "fencing_token": next_token
         }
