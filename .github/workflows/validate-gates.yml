@@ -25,6 +25,9 @@ jobs:
     - name: Build Engine
       run: dotnet build nova_sidecar_work.csproj --configuration Release --no-restore
 
+    - name: Run Unit Tests & MMF Validation
+      run: dotnet test nova_sidecar_work.csproj --configuration Release --no-build --logger "console;verbosity=normal"
+
     - name: Run Milestone Gates (M15 - M20)
       run: |
         dotnet run --project nova_sidecar_work.csproj -- --validate-gate m15
