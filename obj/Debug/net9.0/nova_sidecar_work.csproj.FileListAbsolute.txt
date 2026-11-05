@@ -1,0 +1,15 @@
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\bin\Debug\net9.0\nova_sidecar_work.exe
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\bin\Debug\net9.0\nova_sidecar_work.deps.json
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\bin\Debug\net9.0\nova_sidecar_work.runtimeconfig.json
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\bin\Debug\net9.0\nova_sidecar_work.dll
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\bin\Debug\net9.0\nova_sidecar_work.pdb
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.AssemblyInfoInputs.cache
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.AssemblyInfo.cs
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.csproj.CoreCompileInputs.cache
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.sourcelink.json
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.dll
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\refint\nova_sidecar_work.dll
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.pdb
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\nova_sidecar_work.genruntimeconfig.cache
+C:\Users\Daniel\Documents\GitHub\odysseus\data\nova_sidecar_work\obj\Debug\net9.0\ref\nova_sidecar_work.dll
