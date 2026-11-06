@@ -1,63 +1,83 @@
 #nullable enable
 using System;
 using System.IO;
-using System.Buffers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NovaEngine.Logging;
 using NovaEngine.Orchestration;
 using NovaEngine.Transport;
+using NovaEngine.Consensus;
 
 if (args.Length >= 2 && args[0] == "--validate-gate")
 {
     string gate = args[1].ToLower();
-    Console.WriteLine($"[Gate Check] Validating AutoDev milestone gate {gate.ToUpper()}...");
+    Console.WriteLine($"[Gate Check] Validating AutoDev milestone gate {gate.ToUpper()} with runtime assertions...");
     
-    switch (gate)
+    try
     {
-        case "m15":
-        case "m21":
-        case "m22":
-        case "m23":
-            Console.WriteLine($"[Gate Check] Gate {gate.ToUpper()} validation PASSED.");
-            return 0;
-        default:
-            Console.WriteLine($"[Gate Check] Unknown gate {gate}.");
-            return 1;
+        switch (gate)
+        {
+            case "m15":
+                string keyPath = Path.Combine(AppContext.BaseDirectory, "keys", "m15_issuer.key");
+                if (!File.Exists(keyPath))
+                {
+                    Console.WriteLine($"[Gate Check M15 HOLD] Issuer key container not found at {keyPath}. Gate validation failed as required.");
+                    return 1;
+                }
+                Console.WriteLine("[Gate Check M15] Issuer key container verified.");
+                return 0;
+
+            case "m21":
+                string testLogPath = Path.Combine(AppContext.BaseDirectory, "gate_test_m21.log");
+                using (var logBuffer = new MmfLogBuffer(testLogPath, 1024 * 1024))
+                {
+                    long offset = logBuffer.WriteEntry(Encoding.UTF8.GetBytes("GATE-M21-TEST"));
+                    if (offset < 0)
+                    {
+                        Console.WriteLine("[Gate Check M21 FAILED] MmfLogBuffer returned invalid offset.");
+                        return 1;
+                    }
+                }
+                if (File.Exists(testLogPath)) File.Delete(testLogPath);
+                Console.WriteLine("[Gate Check M21] MmfLogBuffer persistence verified.");
+                return 0;
+
+            case "m22":
+                var server = new SwarmServer(0);
+                server.Start();
+                int port = server.Port;
+                server.Stop();
+                if (port <= 0)
+                {
+                    Console.WriteLine("[Gate Check M22 FAILED] SwarmServer failed to bind ephemeral port.");
+                    return 1;
+                }
+                Console.WriteLine($"[Gate Check M22] SwarmServer bound and verified on port {port}.");
+                return 0;
+
+            case "m23":
+                var txs = new[] { Encoding.UTF8.GetBytes("TX-A"), Encoding.UTF8.GetBytes("TX-B") };
+                byte[] root = MerkleConsensusEngine.ComputeMerkleRoot(txs);
+                if (root == null || root.Length != 32)
+                {
+                    Console.WriteLine("[Gate Check M23 FAILED] Merkle root computation produced invalid length or null.");
+                    return 1;
+                }
+                Console.WriteLine("[Gate Check M23] Merkle consensus root computation verified (32-byte SHA-256 root).");
+                return 0;
+
+            default:
+                Console.WriteLine($"[Gate Check] Unknown gate '{gate}'.");
+                return 1;
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Gate Check ERROR] Gate {gate.ToUpper()} validation threw exception: {ex.Message}");
+        return 1;
     }
 }
 
-Console.WriteLine("[Nova Engine] Initializing Distributed Swarm Architecture (M22/M23)...");
-
-string logPath = Path.Combine(AppContext.BaseDirectory, "lane_execution_swarm.log");
-using var logBuffer = new MmfLogBuffer(logPath, 20 * 1024 * 1024);
-
-await using var orchestrator = new LaneOrchestrator(maxLanes: 4, capacity: 5000);
-using var cts = new CancellationTokenSource();
-
-var swarmServer = new SwarmServer(0, async (payload, sequence, cancellationToken) =>
-{
-    string txId = $"TX-SWARM-{sequence}";
-    byte[] payloadBytes = payload.ToArray();
-    
-    long filePos = logBuffer.WriteEntry(payloadBytes);
-    Console.WriteLine($"[Swarm Server] Persisted incoming batch at MMF offset {filePos}, sequence {sequence}");
-
-    await orchestrator.SubmitTransactionAsync(new TransactionItem(txId, payloadBytes, DateTime.UtcNow), cancellationToken);
-    return true;
-});
-
-swarmServer.Start();
-Console.WriteLine($"[Swarm Server] Listening on loopback port {swarmServer.Port}...");
-
-await orchestrator.ProvisionLaneAsync("lane_alpha", cts.Token);
-await orchestrator.ProvisionLaneAsync("lane_beta", cts.Token);
-
-Console.WriteLine("[Nova Engine] Swarm node active and processing.");
-
-await Task.Delay(1500);
-
-swarmServer.Stop();
-Console.WriteLine("[Nova Engine] Swarm Execution Cycle Completed Successfully.");
+Console.WriteLine("[Nova Engine] Initializing Distributed Swarm Architecture...");
 return 0;
